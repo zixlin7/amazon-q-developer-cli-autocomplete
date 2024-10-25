@@ -1,0 +1,29 @@
+{
+  "name": "@amzn/fig-io-proto",
+  "version": "1.0.0",
+  "license": "MIT OR Apache-2.0",
+  "author": "Amazon Web Services",
+  "type": "module",
+  "exports": {
+    "./*": "./dist/*.pb.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "build": "./build-ts.sh",
+    "lint": "buf lint && (buf format --exit-code > /dev/null || (echo 'Run `buf format -w`' && exit 1))",
+    "lint:fix": "buf format -w",
+    "precommit": "exit 0",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "long": "^5.2.3",
+    "protobufjs": "^7.3.0"
+  },
+  "devDependencies": {
+    "@amzn/fig-io-tsconfig": "workspace:^",
+    "ts-proto": "~1.176.1",
+    "typescript": "^5.4.5"
+  }
+}

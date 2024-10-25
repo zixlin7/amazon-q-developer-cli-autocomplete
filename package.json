@@ -1,0 +1,39 @@
+{
+  "name": "root",
+  "private": true,
+  "author": "Fig Team",
+  "license": "MIT OR Apache-2.0",
+  "packageManager": "pnpm@9.11.0",
+  "engines": {
+    "node": "^20.0.0"
+  },
+  "scripts": {
+    "build": "turbo build",
+    "b": "turbo build",
+    "test": "vitest",
+    "test:ci": "vitest run --run",
+    "test:ui": "vitest --ui",
+    "coverage": "vitest run --coverage",
+    "lint": "turbo lint --parallel",
+    "lint:fix": "turbo lint:fix --parallel",
+    "dev": "turbo dev",
+    "dev:autocomplete": "pnpm -C apps/autocomplete dev",
+    "dev:dashboard": "pnpm -C apps/dashboard dev",
+    "preview:autocomplete": "pnpm -C apps/autocomplete preview",
+    "preview:dashboard": "pnpm -C apps/dashboard preview",
+    "clean": "turbo clean --parallel",
+    "prepare": "husky install",
+    "precommit": "lint-staged --config .lintstagedrc.mjs"
+  },
+  "devDependencies": {
+    "@vitest/coverage-v8": "^1.6.0",
+    "@vitest/ui": "^1.6.0",
+    "husky": "^9.0.11",
+    "lint-staged": "^15.2.5",
+    "micromatch": "^4.0.7",
+    "prettier": "^3.2.5",
+    "tsx": "^4.11.0",
+    "turbo": "^2.0.1",
+    "vitest": "^1.6.0"
+  }
+}

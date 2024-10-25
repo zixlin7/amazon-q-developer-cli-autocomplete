@@ -1,0 +1,18 @@
+{
+  "name": "fig-api-tests",
+  "version": "1.0.0",
+  "main": "index.js",
+  "type": "module",
+  "license": "MIT",
+  "scripts": {
+    "test": "vitest",
+    "precommit": "exit 0"
+  },
+  "devDependencies": {
+    "@amzn/fig-io-types": "link:../../packages/types",
+    "@types/node": "^20.12.12",
+    "@amzn/fig-io-api-bindings": "workspace:^",
+    "typescript": "^5.4.5",
+    "vitest": "^1.6.0"
+  }
+}

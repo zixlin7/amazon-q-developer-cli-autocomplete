@@ -1,0 +1,23 @@
+[package]
+name = "aws-toolkit-telemetry-definitions"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+[lints]
+workspace = true
+
+[build-dependencies]
+convert_case = "0.6.0"
+prettyplease = "0.2.15"
+quote = "1.0.33"
+serde.workspace = true
+serde_json.workspace = true
+syn = "2.0.38"
+
+[dependencies]
+amzn-toolkit-telemetry = { path = "../amzn-toolkit-telemetry" }
+serde.workspace = true
+
+[dev-dependencies]
+serde_json.workspace = true

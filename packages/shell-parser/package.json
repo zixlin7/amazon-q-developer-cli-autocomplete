@@ -1,0 +1,35 @@
+{
+  "name": "@amzn/fig-io-shell-parser",
+  "version": "1.0.0",
+  "license": "MIT OR Apache-2.0",
+  "author": "Amazon Web Services",
+  "type": "module",
+  "exports": "./dist/index.js",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "dev": "tsc --watch",
+    "build": "tsc",
+    "test": "vitest",
+    "coverage": "vitest run --coverage",
+    "lint": "eslint src tests && prettier --check src tests",
+    "lint:fix": "eslint --fix src tests && prettier --write src tests",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@amzn/fig-io-shared": "workspace:^"
+  },
+  "devDependencies": {
+    "@amzn/fig-io-eslint-config": "workspace:^",
+    "@amzn/fig-io-tsconfig": "workspace:^",
+    "@vitest/coverage-v8": "^1.6.0",
+    "eslint": "^8.57.0",
+    "prettier": "^3.2.5",
+    "typescript": "^5.4.5",
+    "vitest": "^1.6.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

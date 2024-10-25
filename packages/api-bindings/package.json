@@ -1,0 +1,41 @@
+{
+  "name": "@amzn/fig-io-api-bindings",
+  "version": "0.30.3",
+  "license": "MIT OR Apache-2.0",
+  "author": "Amazon Web Services",
+  "type": "module",
+  "exports": "./dist/index.js",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "clean": "rm -rf dist/",
+    "build": "npm run clean && npm run generate-requests && tsc",
+    "lint": "eslint src && prettier --check src",
+    "lint:fix": "eslint --fix src && prettier --write src",
+    "precommit": "lint-staged",
+    "prepublishOnly": "npm run build",
+    "generate-requests": "tsx codegen/generate-requests.ts && prettier -w src/requests.ts"
+  },
+  "dependencies": {
+    "@amzn/fig-io-proto": "workspace:^"
+  },
+  "devDependencies": {
+    "@amzn/fig-io-eslint-config": "workspace:^",
+    "@amzn/fig-io-tsconfig": "workspace:^",
+    "@tsconfig/recommended": "^1.0.6",
+    "@types/node": "^20.12.12",
+    "@typescript/analyze-trace": "^0.10.1",
+    "eslint": "^8.57.0",
+    "lint-staged": "^15.2.5",
+    "prettier": "^3.2.5",
+    "ts-morph": "^22.0.0",
+    "ts-proto": "~1.176.1",
+    "tslib": "^2.6.2",
+    "tsx": "^4.11.0",
+    "typescript": "^5.4.5"
+  },
+  "lint-staged": {
+    "*.{ts,tsx}": "npx eslint --cache --fix"
+  }
+}

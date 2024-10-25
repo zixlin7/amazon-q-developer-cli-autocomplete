@@ -1,0 +1,280 @@
+{
+  "types": [
+    {
+      "name": "amazonqConversationId",
+      "type": "string",
+      "description": "Uniquely identifies a message with which the user interacts."
+    },
+    {
+      "name": "codewhispererterminal_command",
+      "type": "string",
+      "description": "The CLI tool a completion was for"
+    },
+    {
+      "name": "codewhispererterminal_duration",
+      "type": "int",
+      "description": "A duration in milliseconds"
+    },
+    {
+      "name": "codewhispererterminal_timeToSuggestion",
+      "type": "int",
+      "description": "How long the AI model roundtrip took"
+    },
+    {
+      "name": "codewhispererterminal_accepted",
+      "type": "boolean",
+      "description": "Whether the user accepted a completion"
+    },
+    {
+      "name": "codewhispererterminal_suggestionState",
+      "type": "string",
+      "description": "The result of a suggestion from the service"
+    },
+    {
+      "name": "codewhispererterminal_typedCount",
+      "type": "int",
+      "description": "A count of characters in the user edit buffer prior to accepting a suggestion"
+    },
+    {
+      "name": "codewhispererterminal_suggestedCount",
+      "type": "int",
+      "description": "A count of characters in an accepted suggestion"
+    },
+    {
+      "name": "codewhispererterminal_subcommand",
+      "type": "string",
+      "description": "A codewhisperer CLI subcommand"
+    },
+    {
+      "name": "codewhispererterminal_doctorCheck",
+      "type": "string",
+      "description": "A codewhisperer CLI doctor check"
+    },
+    {
+      "name": "codewhispererterminal_menuBarItem",
+      "type": "string",
+      "description": "A dashboard menu bar item"
+    },
+    {
+      "name": "codewhispererterminal_route",
+      "type": "string",
+      "description": "The local route of a dashboard page"
+    },
+    {
+      "name": "codewhispererterminal_terminal",
+      "type": "string",
+      "description": "The user terminal"
+    },
+    {
+      "name": "codewhispererterminal_terminalVersion",
+      "type": "string",
+      "description": "The user terminal version"
+    },
+    {
+      "name": "codewhispererterminal_shell",
+      "type": "string",
+      "description": "The user shell"
+    },
+    {
+      "name": "codewhispererterminal_inCloudshell",
+      "type": "boolean",
+      "description": "Whether the CLI is running in the AWS CloudShell environment"
+    },
+    {
+      "name": "codewhispererterminal_shellVersion",
+      "type": "string",
+      "description": "The user shell version"
+    },
+    {
+      "name": "codewhispererterminal_oldClientId",
+      "type": "string",
+      "description": "The old client id that was generated incorrectly and is used to correlate old events"
+    },
+    {
+      "name": "credentialStartUrl",
+      "type": "string",
+      "description": "The start URL of current SSO connection"
+    },
+    {
+      "name": "requestId",
+      "type": "string",
+      "description": "The id assigned to an AWS request"
+    },
+    {
+      "name": "oauthFlow",
+      "type": "string",
+      "description": "The oauth authentication flow executed by the user, e.g. device code or PKCE"
+    },
+    {
+      "name": "result",
+      "type": "string",
+      "description": "Whether or not the operation succeeded"
+    },
+    {
+      "name": "reason",
+      "type": "string",
+      "description": "Description of what caused an error, if any"
+    }
+  ],
+  "metrics": [
+    {
+      "name": "amazonq_startChat",
+      "description": "Captures start of the conversation with amazonq /dev",
+      "metadata": [
+        { "type": "amazonqConversationId" },
+        { "type": "credentialStartUrl", "required": false },
+        { "type": "codewhispererterminal_inCloudshell" }
+      ]
+    },
+    {
+      "name": "codewhispererterminal_addChatMessage",
+      "description": "Captures active usage with Q Chat in shell",
+      "metadata": [
+        { "type": "amazonqConversationId" },
+        { "type": "credentialStartUrl", "required": false },
+        { "type": "codewhispererterminal_inCloudshell" }
+      ]
+    },
+    {
+      "name": "amazonq_endChat",
+      "description": "Captures end of the conversation with amazonq /dev",
+      "metadata": [
+        { "type": "amazonqConversationId" },
+        { "type": "credentialStartUrl", "required": false },
+        { "type": "codewhispererterminal_inCloudshell" }
+      ]
+    },
+    {
+      "name": "codewhispererterminal_userLoggedIn",
+      "description": "Emitted when users log in",
+      "passive": false,
+      "metadata": [
+        { "type": "credentialStartUrl" },
+        { "type": "codewhispererterminal_inCloudshell" }
+      ]
+    },
+    {
+      "name": "codewhispererterminal_refreshCredentials",
+      "description": "Emitted when users refresh their credentials",
+      "passive": false,
+      "metadata": [
+        { "type": "credentialStartUrl" },
+        { "type": "requestId" },
+        { "type": "oauthFlow" },
+        { "type": "result" },
+        { "type": "reason", "required": false },
+        { "type": "codewhispererterminal_inCloudshell" }
+      ]
+    },
+    {
+      "name": "codewhispererterminal_completionInserted",
+      "description": "Emitted on Autocomplete user decisions",
+      "passive": false,
+      "metadata": [
+        { "type": "credentialStartUrl" },
+        { "type": "codewhispererterminal_terminal" },
+        { "type": "codewhispererterminal_terminalVersion" },
+        { "type": "codewhispererterminal_shell" },
+        { "type": "codewhispererterminal_shellVersion" },
+        { "type": "codewhispererterminal_command" },
+        { "type": "codewhispererterminal_duration" },
+        { "type": "codewhispererterminal_inCloudshell" }
+      ]
+    },
+    {
+      "name": "codewhispererterminal_inlineShellActioned",
+      "description": "Emitted on InlineShell user decisions",
+      "passive": false,
+      "metadata": [
+        { "type": "credentialStartUrl" },
+        { "type": "codewhispererterminal_terminal" },
+        { "type": "codewhispererterminal_terminalVersion" },
+        { "type": "codewhispererterminal_shell" },
+        { "type": "codewhispererterminal_shellVersion" },
+        { "type": "codewhispererterminal_duration" },
+        { "type": "codewhispererterminal_accepted" },
+        { "type": "codewhispererterminal_typedCount" },
+        { "type": "codewhispererterminal_suggestedCount" },
+        { "type": "codewhispererterminal_suggestionState" },
+        { "type": "codewhispererterminal_inCloudshell" }
+      ]
+    },
+    {
+      "name": "codewhispererterminal_translationActioned",
+      "description": "Emitted on Translation user decisions",
+      "passive": false,
+      "metadata": [
+        { "type": "credentialStartUrl" },
+        { "type": "codewhispererterminal_terminal" },
+        { "type": "codewhispererterminal_terminalVersion" },
+        { "type": "codewhispererterminal_shell" },
+        { "type": "codewhispererterminal_shellVersion" },
+        { "type": "codewhispererterminal_duration" },
+        { "type": "codewhispererterminal_timeToSuggestion" },
+        { "type": "codewhispererterminal_accepted" },
+        { "type": "codewhispererterminal_inCloudshell" }
+      ]
+    },
+    {
+      "name": "codewhispererterminal_cliSubcommandExecuted",
+      "description": "Emitted on CW CLI subcommand executed",
+      "passive": false,
+      "metadata": [
+        { "type": "credentialStartUrl" },
+        { "type": "codewhispererterminal_terminal" },
+        { "type": "codewhispererterminal_terminalVersion" },
+        { "type": "codewhispererterminal_shell" },
+        { "type": "codewhispererterminal_shellVersion" },
+        { "type": "codewhispererterminal_subcommand" },
+        { "type": "codewhispererterminal_inCloudshell" }
+      ]
+    },
+    {
+      "name": "codewhispererterminal_doctorCheckFailed",
+      "description": "Emitted when CW CLI user fails a doctor check",
+      "passive": false,
+      "metadata": [
+        { "type": "credentialStartUrl" },
+        { "type": "codewhispererterminal_terminal" },
+        { "type": "codewhispererterminal_terminalVersion" },
+        { "type": "codewhispererterminal_shell" },
+        { "type": "codewhispererterminal_shellVersion" },
+        { "type": "codewhispererterminal_doctorCheck" },
+        { "type": "codewhispererterminal_inCloudshell" }
+      ]
+    },
+    {
+      "name": "codewhispererterminal_dashboardPageViewed",
+      "description": "Emitted when a user views a dashboard page",
+      "passive": false,
+      "metadata": [
+        { "type": "credentialStartUrl" },
+        { "type": "codewhispererterminal_route" }
+      ]
+    },
+    {
+      "name": "codewhispererterminal_menuBarActioned",
+      "description": "Emitted when a user clicks the menu bar",
+      "passive": false,
+      "metadata": [
+        { "type": "credentialStartUrl" },
+        { "type": "codewhispererterminal_menuBarItem" }
+      ]
+    },
+    {
+      "name": "codewhispererterminal_figUserMigrated",
+      "description": "Emitted when a user migrates from fig",
+      "passive": false,
+      "metadata": [{ "type": "credentialStartUrl" }]
+    },
+    {
+      "name": "codewhispererterminal_migrateOldClientId",
+      "description": "Emitted once for users who generated an invalid client id",
+      "passive": false,
+      "metadata": [
+        { "type": "credentialStartUrl" },
+        { "type": "codewhispererterminal_oldClientId" }
+      ]
+    }
+  ]
+}

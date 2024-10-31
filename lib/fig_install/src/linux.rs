@@ -9,7 +9,10 @@ use fig_integrations::desktop_entry::{
 use fig_integrations::gnome_extension::GnomeExtensionIntegration;
 use fig_os_shim::Context;
 use fig_util::CLI_BINARY_NAME;
-use fig_util::directories::fig_data_dir_ctx;
+use fig_util::directories::{
+    fig_data_dir_ctx,
+    local_webview_data_dir,
+};
 use tokio::sync::mpsc::Sender;
 use tracing::warn;
 use url::Url;
@@ -184,11 +187,19 @@ pub(crate) async fn uninstall_desktop(ctx: &Context) -> Result<(), Error> {
             .map_err(|err| warn!(?err, "Failed to remove data dir"))
             .ok();
     }
+    let webview_dir_path = local_webview_data_dir(ctx)?;
+    if fs.exists(&webview_dir_path) {
+        fs.remove_dir_all(&webview_dir_path)
+            .await
+            .map_err(|err| warn!(?err, "Failed to remove webview data dir"))
+            .ok();
+    }
     Ok(())
 }
 
 #[cfg(test)]
 mod tests {
+    use fig_os_shim::Os;
     use fig_util::CLI_BINARY_NAME;
     use fig_util::directories::home_dir;
 
@@ -236,7 +247,12 @@ mod tests {
 
     #[tokio::test]
     async fn test_uninstall_desktop_removes_data_dir() {
-        let ctx = Context::builder().with_test_home().await.unwrap().build_fake();
+        let ctx = Context::builder()
+            .with_test_home()
+            .await
+            .unwrap()
+            .with_os(Os::Linux)
+            .build_fake();
         let fs = ctx.fs();
         let data_dir_path = fig_data_dir_ctx(fs).unwrap();
         fs.create_dir_all(&data_dir_path).await.unwrap();

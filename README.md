@@ -1,6 +1,6 @@
-# Amazon Q for command line Monorepo
+# Amazon Q Developer for command line Monorepo
 
-The FigIoDesktop monorepo houses most of the core code for the Amazon Q desktop
+The FigIoDesktop monorepo houses most of the core code for the Amazon Q Developer desktop
 app and CLI.
 
 ## Overview
@@ -11,7 +11,7 @@ Several projects live here:
 - [`packages/dashboard`](packages/dashboard/) - The dashboard react app
 - [`figterm/`](figterm/) - figterm, our headless terminal/pseudoterminal that
   intercepts the user’s terminal edit buffer.
-- [`q_cli/`](q_cli/) - the `q` CLI, allows users to interface with Amazon Q from
+- [`q_cli/`](q_cli/) - the `q` CLI, allows users to interface with Amazon Q Developer from
   the command line
 - [`fig_desktop/`](fig_desktop/) - the Rust desktop app, uses
   [`tao`](https://docs.rs/tao/latest/tao/)/[`wry`](https://docs.rs/wry/latest/wry/)
@@ -19,9 +19,9 @@ Several projects live here:
 - [`fig_input_method/`](fig_input_method/) - The input method used to get cursor
   position on macOS
 - [`extensions/vscode`](extensions/vscode/) - Contains the VSCode plugin needed
-  for the Amazon Q for command line to work in VSCode
+  for the Amazon Q Developer for command line to work in VSCode
 - [`extensions/jetbrains`](extensions/jetbrains/) - Contains the VSCode plugin
-  needed for the Amazon Q for command line to work in Jetbrains IDEs
+  needed for the Amazon Q Developer for command line to work in Jetbrains IDEs
 
 Other folder to be aware of
 

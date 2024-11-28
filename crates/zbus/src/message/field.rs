@@ -62,7 +62,7 @@ pub(crate) enum FieldCode {
 
 assert_impl_all!(FieldCode: Send, Sync, Unpin);
 
-impl<'f> Field<'f> {
+impl Field<'_> {
     /// Get the associated code for this field.
     pub fn code(&self) -> FieldCode {
         match self {
@@ -114,13 +114,13 @@ pub(crate) enum Field<'f> {
 
 assert_impl_all!(Field<'_>: Send, Sync, Unpin);
 
-impl<'f> Type for Field<'f> {
+impl Type for Field<'_> {
     fn signature() -> Signature<'static> {
         Signature::from_static_str_unchecked("(yv)")
     }
 }
 
-impl<'f> Serialize for Field<'f> {
+impl Serialize for Field<'_> {
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
     where
         S: Serializer,

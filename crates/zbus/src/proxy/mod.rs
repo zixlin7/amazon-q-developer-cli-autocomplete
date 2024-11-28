@@ -206,7 +206,7 @@ impl<'a, T> PropertyChanged<'a, T> {
             values: RwLockReadGuard<'w, HashMap<String, PropertyValue>>,
         }
 
-        impl<'w> Deref for Wrapper<'w> {
+        impl Deref for Wrapper<'_> {
             type Target = Value<'static>;
 
             fn deref(&self) -> &Self::Target {
@@ -1113,7 +1113,7 @@ impl OwnerChangedStream<'_> {
     }
 }
 
-impl<'a> stream::Stream for OwnerChangedStream<'a> {
+impl stream::Stream for OwnerChangedStream<'_> {
     type Item = Option<UniqueName<'static>>;
 
     fn poll_next(self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Option<Self::Item>> {
@@ -1286,7 +1286,7 @@ impl<'a> SignalStream<'a> {
 
 assert_impl_all!(SignalStream<'_>: Send, Sync, Unpin);
 
-impl<'a> stream::Stream for SignalStream<'a> {
+impl stream::Stream for SignalStream<'_> {
     type Item = Message;
 
     fn poll_next(self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Option<Self::Item>> {
@@ -1294,7 +1294,7 @@ impl<'a> stream::Stream for SignalStream<'a> {
     }
 }
 
-impl<'a> OrderedStream for SignalStream<'a> {
+impl OrderedStream for SignalStream<'_> {
     type Data = Message;
     type Ordering = Sequence;
 
@@ -1320,7 +1320,7 @@ impl<'a> OrderedStream for SignalStream<'a> {
     }
 }
 
-impl<'a> stream::FusedStream for SignalStream<'a> {
+impl stream::FusedStream for SignalStream<'_> {
     fn is_terminated(&self) -> bool {
         ordered_stream::FusedOrderedStream::is_terminated(&self.stream)
     }

@@ -111,8 +111,6 @@ impl Client {
         }
     }
 
-    /// Generate recommendations for the given file context
-
     /// List the customizations the user has access to
     pub async fn list_customizations(&self) -> Result<Vec<Customization>, Error> {
         let mut customizations = Vec::new();

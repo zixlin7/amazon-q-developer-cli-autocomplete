@@ -237,7 +237,7 @@ mod tests {
         #[cfg(target_os = "linux")]
         match Address::from_str("unix:path=/tmp,abstract=foo").unwrap_err() {
             Error::Address(e) => {
-                assert_eq!(e, "unix: address is invalid")
+                assert_eq!(e, "unix: address is invalid");
             },
             _ => panic!(),
         }

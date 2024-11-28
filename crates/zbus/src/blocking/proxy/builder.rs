@@ -73,7 +73,7 @@ impl<'a, T> Builder<'a, T> {
     }
 }
 
-impl<'a, T> Builder<'a, T>
+impl<T> Builder<'_, T>
 where
     T: ProxyDefault,
 {

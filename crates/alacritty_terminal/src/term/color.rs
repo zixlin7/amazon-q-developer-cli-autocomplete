@@ -120,7 +120,7 @@ impl<'de> Deserialize<'de> for Rgb {
             b: u8,
         }
 
-        impl<'a> Visitor<'a> for RgbVisitor {
+        impl Visitor<'_> for RgbVisitor {
             type Value = Rgb;
 
             fn expecting(&self, f: &mut Formatter<'_>) -> fmt::Result {
@@ -216,7 +216,7 @@ impl<'de> Deserialize<'de> for CellRgb {
         const EXPECTING: &str = "CellForeground, CellBackground, or hex color like #ff00ff";
 
         struct CellRgbVisitor;
-        impl<'a> Visitor<'a> for CellRgbVisitor {
+        impl Visitor<'_> for CellRgbVisitor {
             type Value = CellRgb;
 
             fn expecting(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {

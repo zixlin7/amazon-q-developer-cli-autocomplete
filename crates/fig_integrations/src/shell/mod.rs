@@ -914,8 +914,7 @@ mod test {
     fn all_dotfile_shell_integrations() -> Vec<ShellScriptShellIntegration> {
         Shell::all()
             .iter()
-            .map(|shell| shell.get_script_integrations().unwrap())
-            .flatten()
+            .flat_map(|shell| shell.get_script_integrations().unwrap())
             .collect()
     }
 

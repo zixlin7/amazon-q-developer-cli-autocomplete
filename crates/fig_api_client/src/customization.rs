@@ -10,7 +10,6 @@ const CUSTOMIZATION_STATE_KEY: &str = "api.selectedCustomization";
 
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]
-
 pub struct Customization {
     pub arn: String,
     #[serde(skip_serializing_if = "Option::is_none")]

@@ -48,6 +48,4 @@ book/
 
 .env*
 
-rust-toolchain.toml
-
 run-build.sh

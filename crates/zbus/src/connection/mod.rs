@@ -956,7 +956,7 @@ impl Connection {
         // FIXME: Maybe it makes sense after all to implement Deref<Target= ObjectServer> for
         // crate::ObjectServer instead of this wrapper?
         struct Wrapper<'a>(&'a blocking::ObjectServer);
-        impl<'a> Deref for Wrapper<'a> {
+        impl Deref for Wrapper<'_> {
             type Target = ObjectServer;
 
             fn deref(&self) -> &Self::Target {

@@ -218,7 +218,7 @@ impl QuickFields {
     }
 }
 
-impl<'m> Default for Fields<'m> {
+impl Default for Fields<'_> {
     fn default() -> Self {
         Self(Vec::with_capacity(MAX_FIELDS_IN_MESSAGE))
     }

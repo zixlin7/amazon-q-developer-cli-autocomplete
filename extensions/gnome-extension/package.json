@@ -10,7 +10,7 @@
     "all": "node ./build-scripts/all.js",
     "build": "npx tsc && node ./build-scripts/extension.js",
     "types": "node ./build-scripts/types.js",
-    "clean": "rm ./types/.*.d.ts && rm *.zip",
+    "clean": "rm -f ./types/.*.d.ts && rm -f *.zip",
     "lint": "eslint src build-scripts && prettier --check src build-scripts types",
     "lint:fix": "eslint --fix src build-scripts && prettier --write src build-scripts types"
   },
@@ -19,7 +19,7 @@
     "eslint": "9.16.0",
     "globals": "^15.13.0",
     "typescript": "^5.7.2",
-    "typescript-eslint": "^8.16.0"
+    "typescript-eslint": "^8.17.0"
   },
   "dependencies": {
     "@girs/gjs": "4.0.0-beta.16",

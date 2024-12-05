@@ -21,10 +21,8 @@ import {
 import {
   importFromPublicCDN,
   publicSpecExists,
-  getPrivateSpec,
   SpecFileImport,
   importSpecFromFile,
-  getSpecInfo,
   isDiffVersionedSpec,
   importFromLocalhost,
 } from "./loadHelpers.js";
@@ -82,14 +80,6 @@ export const getSpecPath = async (
 
   if (!isScript) {
     const type = SpecLocationSource.GLOBAL;
-
-    const privateNamespaceId = getPrivateSpec({
-      name,
-      isScript: false,
-    })?.namespaceId;
-    if (privateNamespaceId !== undefined) {
-      return { name, type, privateNamespaceId };
-    }
 
     // If `isScript` is undefined, we are parsing the first token, and
     // any path with a / is a script.
@@ -165,30 +155,16 @@ export const importSpecFromLocation = async (
     // If we couldn't successfully load a dev spec try loading from specPath.
     const { name, path } = specLocation;
     const [dirname, basename] = splitPath(`${path || "~/"}${name}`);
-    try {
-      const privateSpecMatch = await getSpecInfo(
-        basename,
-        dirname,
-        localLogger,
-      );
-      resolvedLocation = { type: "private", ...privateSpecMatch };
-      // specFile = await importFromPrivateCDN(privateSpecMatch, authClient);
-    } catch (err) {
-      specFile = await importSpecFromFile(
-        basename,
-        `${dirname}.fig/autocomplete/build/`,
-        localLogger,
-      );
-    }
+
+    specFile = await importSpecFromFile(
+      basename,
+      `${dirname}.fig/autocomplete/build/`,
+      localLogger,
+    );
   } else if (!specFile) {
     const { name, diffVersionedFile: versionFileName } = specLocation;
-    const privateSpecMatch = getPrivateSpec({ name, isScript: false });
 
-    if (privateSpecMatch) {
-      logger.info(`Found private spec ${privateSpecMatch}...`);
-      resolvedLocation = { type: "private", ...privateSpecMatch };
-      // specFile = await importFromPrivateCDN(privateSpecMatch, authClient);
-    } else if (await publicSpecExists(name)) {
+    if (await publicSpecExists(name)) {
       // If we're here, importing was successful.
       try {
         const result = await importFromPublicCDN(

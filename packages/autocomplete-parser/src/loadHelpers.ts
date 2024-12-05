@@ -11,15 +11,9 @@ import {
   fread,
   isInDevMode,
 } from "@amzn/fig-io-api-bindings-wrappers";
-import { AuthClient, CDN, Routes } from "@amzn/fig-io-api-client";
 import z from "zod";
 import { MOST_USED_SPECS } from "./constants.js";
-import { mixinCache } from "./caches.js";
-import {
-  LoadLocalSpecError,
-  MissingSpecError,
-  SpecCDNError,
-} from "./errors.js";
+import { LoadLocalSpecError, SpecCDNError } from "./errors.js";
 
 export type SpecFileImport =
   | {
@@ -30,9 +24,6 @@ export type SpecFileImport =
       default: Fig.Subcommand;
       versions: Fig.VersionDiffMap;
     };
-
-// All private specs a users has access to
-let privateSpecs: CDN.PrivateSpecInfo[] = [];
 
 const makeCdnUrlFactory =
   (baseUrl: string) =>
@@ -58,58 +49,6 @@ export const importString = async (str: string) => {
   stringImportCache.set(str, result);
   return result;
 };
-
-type FigConfiguration = {
-  scriptCompletions?: Record<
-    string,
-    string | { name: string; namespace?: string }
-  >;
-} /* @vite-ignore */;
-
-export const importFromPrivateCDN = async (
-  info: CDN.PrivateSpecInfo,
-  authClient: AuthClient,
-): Promise<SpecFileImport> =>
-  Routes.cdn
-    .getPrivateSpec(info.namespace, info.name, authClient)
-    .then(importString);
-
-export async function getSpecInfo(
-  name: string,
-  path: string,
-  localLogger: Logger = logger,
-): Promise<CDN.PrivateSpecInfo> {
-  localLogger.info(`Loading local spec in ${path}`);
-  const result = await fread(`${ensureTrailingSlash(path)}.fig/config.json`);
-  const configuration: FigConfiguration = JSON.parse(result);
-  const specToLoad = configuration?.scriptCompletions?.[name];
-
-  let specInfo: CDN.PrivateSpecInfo | undefined;
-  if (typeof specToLoad === "string") {
-    if (specToLoad.startsWith("@") && specToLoad.includes("/")) {
-      const idx = specToLoad.indexOf("/");
-      specInfo = getPrivateSpec({
-        name: specToLoad.slice(idx + 1),
-        namespace: specToLoad.slice(1, idx),
-        isScript: true,
-      });
-    } else {
-      specInfo = getPrivateSpec({ name: specToLoad, isScript: true });
-    }
-  } else if (specToLoad) {
-    specInfo = getPrivateSpec({
-      name: specToLoad.name,
-      namespace: specToLoad.namespace,
-      isScript: true,
-    });
-  }
-
-  if (!specInfo) {
-    throw new MissingSpecError("No spec found");
-  }
-
-  return specInfo;
-}
 
 /*
  * Deprecated: eventually will just use importLocalSpec above
@@ -295,41 +234,6 @@ export async function isDiffVersionedSpec(name: string): Promise<boolean> {
   return diffVersionedSpecs.has(name);
 }
 
-export async function loadPrivateSpecs(
-  authClient: AuthClient,
-): Promise<CDN.PrivateSpecInfo[]> {
-  try {
-    const data = await Routes.cdn.getPrivateSpecList(authClient);
-
-    if (data && data.length) {
-      logger.info("Successfully fetched private spec information");
-      privateSpecs = data;
-      return data;
-    }
-  } catch (err) {
-    logger.info("Could not fetch private spec info");
-  }
-  return [];
-}
-
-export function getPrivateSpec({
-  name,
-  isScript,
-  namespace,
-}: {
-  name: string;
-  isScript?: boolean;
-  namespace?: string;
-}): CDN.PrivateSpecInfo | undefined {
-  return privateSpecs.find(
-    (spec) =>
-      spec.name === name &&
-      (isScript === undefined ||
-        Boolean(spec.isScript) === Boolean(isScript)) &&
-      (namespace === undefined || spec.namespace === namespace),
-  );
-}
-
 export async function preloadSpecs(): Promise<SpecFileImport[]> {
   return Promise.all(
     MOST_USED_SPECS.map(async (name) => {
@@ -342,72 +246,3 @@ export async function preloadSpecs(): Promise<SpecFileImport[]> {
     }).map((promise) => promise.catch((e) => e)),
   );
 }
-
-let preloadPromise: Promise<void> | undefined;
-
-export const resetPreloadPromise = () => {
-  preloadPromise = undefined;
-};
-
-interface MixinFile {
-  file: Fig.Subcommand;
-  key: string;
-}
-
-const mergeConflictingMixinFiles = (mixinFiles: MixinFile[]) => {
-  const mixinFilesMap = mixinFiles.reduce(
-    (acc, { file, key }) => ({
-      ...acc,
-      [key]: [...(key in acc ? acc[key] : []), file],
-    }),
-    {} as Record<string, Fig.Subcommand[]>,
-  );
-
-  const mergedMixinFilesMap = Object.entries(mixinFilesMap).reduce(
-    (mergedAcc, [key, files]) => {
-      const mergedFile = files.reduce(
-        (acc, file) => mergeSubcommands(acc, file),
-        { name: files[0].name } as Fig.Subcommand,
-      );
-      return { ...mergedAcc, [key]: mergedFile };
-    },
-    {} as Record<string, Fig.Subcommand>,
-  );
-
-  return mergedMixinFilesMap;
-};
-
-export const getMixinCacheKey = (specName: string, specNamespace?: string) =>
-  specNamespace ? `private:${specNamespace}/${specName}` : `public:${specName}`;
-
-// This is to prevent multiple fetches being made while the first
-// fetch hasn't resolved yet
-export const preloadMixins = (authClient: AuthClient) => {
-  if (!preloadPromise) {
-    preloadPromise = (async () => {
-      try {
-        const mixinMetas = await Routes.mixins.getAll(authClient);
-
-        const mixinFiles = await Promise.all(
-          mixinMetas.map(({ specFile, specName, specNamespace }) =>
-            importString(specFile)
-              .then((res) => res.default)
-              .then((file) => ({
-                file,
-                key: getMixinCacheKey(specName, specNamespace),
-              })),
-          ),
-        );
-
-        const mergedMixinFiles = mergeConflictingMixinFiles(mixinFiles);
-        Object.entries(mergedMixinFiles).forEach(([key, file]) => {
-          mixinCache.set(key, file);
-        });
-        logger.info("Mixins preloaded successfully");
-      } catch {
-        logger.info("Could not preload mixins");
-      }
-    })();
-  }
-  return preloadPromise;
-};

@@ -8,7 +8,6 @@ import {
   longestCommonPrefix,
   ensureTrailingSlash,
 } from "@amzn/fig-io-shared/utils";
-import { getPrivateSpec } from "@amzn/fig-io-autocomplete-parser";
 import { SETTINGS } from "@amzn/fig-io-api-bindings-wrappers";
 import { trackEvent } from "../telemetry";
 import { NamedSetState, AutocompleteState, Visibility } from "./types";
@@ -110,13 +109,7 @@ const insertString = (
     if ("specLocation" in annotation) {
       const { specLocation: location, spec } = annotation;
       specLocation = {
-        location: {
-          ...location,
-          privateNamespaceId:
-            location.type === SpecLocationSource.GLOBAL
-              ? getPrivateSpec({ name: location.name })?.namespaceId
-              : undefined,
-        },
+        location,
         name: spec.name[0],
       };
     }

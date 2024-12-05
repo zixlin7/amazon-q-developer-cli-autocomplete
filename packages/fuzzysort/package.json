@@ -6,5 +6,8 @@
   "private": true,
   "type": "module",
   "exports": "./fuzzysort.js",
-  "types": "./fuzzysort.d.ts"
+  "types": "./fuzzysort.d.ts",
+  "files": [
+    "*"
+  ]
 }

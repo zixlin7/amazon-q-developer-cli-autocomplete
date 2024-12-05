@@ -8,6 +8,9 @@
     ".": "./dist/index.js",
     "./*": "./dist/*.js"
   },
+  "files": [
+    "dist"
+  ],
   "engines": {
     "node": ">=18"
   },
@@ -29,7 +32,7 @@
     "@amzn/fig-io-types": "workspace:^",
     "@withfig/autocomplete-types": "^1.31.0",
     "eslint": "^9.16.0",
-    "prettier": "^3.4.1",
+    "prettier": "^3.4.2",
     "typescript": "^5.7.2"
   }
 }

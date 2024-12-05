@@ -8,7 +8,6 @@ import react from "eslint-plugin-react/configs/recommended.js";
 import jsxRuntime from "eslint-plugin-react/configs/jsx-runtime.js";
 // @ts-ignore
 import reactHooks from "eslint-plugin-react-hooks";
-// @ts-ignore
 import reactRefresh from "eslint-plugin-react-refresh";
 import type { TSESLint } from "@typescript-eslint/utils";
 
@@ -35,17 +34,7 @@ const config = ({
       // @ts-ignore
       rules: reactHooks.configs.recommended.rules,
     },
-    {
-      plugins: {
-        "react-refresh": reactRefresh,
-      },
-      rules: {
-        "react-refresh/only-export-components": [
-          "warn",
-          { allowConstantExport: true },
-        ],
-      },
-    },
+    reactRefresh.default.configs.recommended,
     {
       languageOptions: {
         parserOptions: {

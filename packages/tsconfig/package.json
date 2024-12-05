@@ -6,5 +6,9 @@
   "private": true,
   "peerDependencies": {
     "typescript": "*"
-  }
+  },
+  "files": [
+    "base.json",
+    "dom.json"
+  ]
 }

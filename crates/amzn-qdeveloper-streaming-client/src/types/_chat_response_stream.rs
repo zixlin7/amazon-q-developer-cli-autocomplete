@@ -10,10 +10,14 @@ pub enum ChatResponseStream {
     CodeEvent(crate::types::CodeEvent),
     /// Code References event
     CodeReferenceEvent(crate::types::CodeReferenceEvent),
+    /// DryRun Succeed Event
+    DryRunSucceedEvent(crate::types::DryRunSucceedEvent),
     /// Followup prompt event
     FollowupPromptEvent(crate::types::FollowupPromptEvent),
     /// Intents event
     IntentsEvent(crate::types::IntentsEvent),
+    /// Interactions components event
+    InteractionComponentsEvent(crate::types::InteractionComponentsEvent),
     /// Invalid State event
     InvalidStateEvent(crate::types::InvalidStateEvent),
     /// Message Metadata event
@@ -85,6 +89,24 @@ impl ChatResponseStream {
     }
 
     /// Tries to convert the enum instance into
+    /// [`DryRunSucceedEvent`](crate::types::ChatResponseStream::DryRunSucceedEvent), extracting the
+    /// inner [`DryRunSucceedEvent`](crate::types::DryRunSucceedEvent). Returns `Err(&Self)` if
+    /// it can't be converted.
+    pub fn as_dry_run_succeed_event(&self) -> ::std::result::Result<&crate::types::DryRunSucceedEvent, &Self> {
+        if let ChatResponseStream::DryRunSucceedEvent(val) = &self {
+            ::std::result::Result::Ok(val)
+        } else {
+            ::std::result::Result::Err(self)
+        }
+    }
+
+    /// Returns true if this is a
+    /// [`DryRunSucceedEvent`](crate::types::ChatResponseStream::DryRunSucceedEvent).
+    pub fn is_dry_run_succeed_event(&self) -> bool {
+        self.as_dry_run_succeed_event().is_ok()
+    }
+
+    /// Tries to convert the enum instance into
     /// [`FollowupPromptEvent`](crate::types::ChatResponseStream::FollowupPromptEvent), extracting
     /// the inner [`FollowupPromptEvent`](crate::types::FollowupPromptEvent). Returns `Err(&
     /// Self)` if it can't be converted.
@@ -117,6 +139,27 @@ impl ChatResponseStream {
     /// Returns true if this is a [`IntentsEvent`](crate::types::ChatResponseStream::IntentsEvent).
     pub fn is_intents_event(&self) -> bool {
         self.as_intents_event().is_ok()
+    }
+
+    /// Tries to convert the enum instance into
+    /// [`InteractionComponentsEvent`](crate::types::ChatResponseStream::InteractionComponentsEvent),
+    /// extracting the inner
+    /// [`InteractionComponentsEvent`](crate::types::InteractionComponentsEvent). Returns `Err(&
+    /// Self)` if it can't be converted.
+    pub fn as_interaction_components_event(
+        &self,
+    ) -> ::std::result::Result<&crate::types::InteractionComponentsEvent, &Self> {
+        if let ChatResponseStream::InteractionComponentsEvent(val) = &self {
+            ::std::result::Result::Ok(val)
+        } else {
+            ::std::result::Result::Err(self)
+        }
+    }
+
+    /// Returns true if this is a
+    /// [`InteractionComponentsEvent`](crate::types::ChatResponseStream::InteractionComponentsEvent).
+    pub fn is_interaction_components_event(&self) -> bool {
+        self.as_interaction_components_event().is_ok()
     }
 
     /// Tries to convert the enum instance into

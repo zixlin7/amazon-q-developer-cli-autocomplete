@@ -39,5 +39,11 @@ pub fn ser_update_profile_input_input(
     if let Some(var_11) = &input.target_profile_type {
         object.key("targetProfileType").string(var_11.as_str());
     }
+    if let Some(var_12) = &input.opt_in_features {
+        #[allow(unused_mut)]
+        let mut object_13 = object.key("optInFeatures").start_object();
+        crate::protocol_serde::shape_opt_in_features::ser_opt_in_features(&mut object_13, var_12)?;
+        object_13.finish();
+    }
     Ok(())
 }

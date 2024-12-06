@@ -708,6 +708,52 @@ impl From<crate::operation::list_customization_versions::ListCustomizationVersio
         }
     }
 }
+impl<R>
+    From<
+        ::aws_smithy_runtime_api::client::result::SdkError<
+            crate::operation::list_dashboard_metrics::ListDashboardMetricsError,
+            R,
+        >,
+    > for Error
+where
+    R: Send + Sync + std::fmt::Debug + 'static,
+{
+    fn from(
+        err: ::aws_smithy_runtime_api::client::result::SdkError<
+            crate::operation::list_dashboard_metrics::ListDashboardMetricsError,
+            R,
+        >,
+    ) -> Self {
+        match err {
+            ::aws_smithy_runtime_api::client::result::SdkError::ServiceError(context) => Self::from(context.into_err()),
+            _ => Error::Unhandled(crate::error::sealed_unhandled::Unhandled {
+                meta: ::aws_smithy_types::error::metadata::ProvideErrorMetadata::meta(&err).clone(),
+                source: err.into(),
+            }),
+        }
+    }
+}
+impl From<crate::operation::list_dashboard_metrics::ListDashboardMetricsError> for Error {
+    fn from(err: crate::operation::list_dashboard_metrics::ListDashboardMetricsError) -> Self {
+        match err {
+            crate::operation::list_dashboard_metrics::ListDashboardMetricsError::InternalServerError(inner) => {
+                Error::InternalServerError(inner)
+            },
+            crate::operation::list_dashboard_metrics::ListDashboardMetricsError::ThrottlingError(inner) => {
+                Error::ThrottlingError(inner)
+            },
+            crate::operation::list_dashboard_metrics::ListDashboardMetricsError::ValidationError(inner) => {
+                Error::ValidationError(inner)
+            },
+            crate::operation::list_dashboard_metrics::ListDashboardMetricsError::AccessDeniedError(inner) => {
+                Error::AccessDeniedError(inner)
+            },
+            crate::operation::list_dashboard_metrics::ListDashboardMetricsError::Unhandled(inner) => {
+                Error::Unhandled(inner)
+            },
+        }
+    }
+}
 impl<R> From<::aws_smithy_runtime_api::client::result::SdkError<crate::operation::list_profiles::ListProfilesError, R>>
     for Error
 where
@@ -1038,6 +1084,45 @@ impl From<crate::operation::update_profile::UpdateProfileError> for Error {
                 Error::AccessDeniedError(inner)
             },
             crate::operation::update_profile::UpdateProfileError::Unhandled(inner) => Error::Unhandled(inner),
+        }
+    }
+}
+impl<R> From<::aws_smithy_runtime_api::client::result::SdkError<crate::operation::vend_key_grant::VendKeyGrantError, R>>
+    for Error
+where
+    R: Send + Sync + std::fmt::Debug + 'static,
+{
+    fn from(
+        err: ::aws_smithy_runtime_api::client::result::SdkError<crate::operation::vend_key_grant::VendKeyGrantError, R>,
+    ) -> Self {
+        match err {
+            ::aws_smithy_runtime_api::client::result::SdkError::ServiceError(context) => Self::from(context.into_err()),
+            _ => Error::Unhandled(crate::error::sealed_unhandled::Unhandled {
+                meta: ::aws_smithy_types::error::metadata::ProvideErrorMetadata::meta(&err).clone(),
+                source: err.into(),
+            }),
+        }
+    }
+}
+impl From<crate::operation::vend_key_grant::VendKeyGrantError> for Error {
+    fn from(err: crate::operation::vend_key_grant::VendKeyGrantError) -> Self {
+        match err {
+            crate::operation::vend_key_grant::VendKeyGrantError::InternalServerError(inner) => {
+                Error::InternalServerError(inner)
+            },
+            crate::operation::vend_key_grant::VendKeyGrantError::ThrottlingError(inner) => {
+                Error::ThrottlingError(inner)
+            },
+            crate::operation::vend_key_grant::VendKeyGrantError::ValidationError(inner) => {
+                Error::ValidationError(inner)
+            },
+            crate::operation::vend_key_grant::VendKeyGrantError::ResourceNotFoundError(inner) => {
+                Error::ResourceNotFoundError(inner)
+            },
+            crate::operation::vend_key_grant::VendKeyGrantError::AccessDeniedError(inner) => {
+                Error::AccessDeniedError(inner)
+            },
+            crate::operation::vend_key_grant::VendKeyGrantError::Unhandled(inner) => Error::Unhandled(inner),
         }
     }
 }

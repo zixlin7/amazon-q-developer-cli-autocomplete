@@ -33,5 +33,14 @@ pub fn ser_create_customization_input_input(
     if let Some(var_10) = &input.client_token {
         object.key("clientToken").string(var_10.as_str());
     }
+    if let Some(var_11) = &input.include_repos {
+        let mut array_12 = object.key("includeRepos").start_array();
+        for item_13 in var_11 {
+            {
+                array_12.value().string(item_13.as_str());
+            }
+        }
+        array_12.finish();
+    }
     Ok(())
 }

@@ -259,6 +259,24 @@ pub(crate) fn transformation_plan_correct_errors(
     builder
 }
 
+pub(crate) fn test_generation_job_correct_errors(
+    mut builder: crate::types::builders::TestGenerationJobBuilder,
+) -> crate::types::builders::TestGenerationJobBuilder {
+    if builder.test_generation_job_id.is_none() {
+        builder.test_generation_job_id = Some(Default::default())
+    }
+    if builder.test_generation_job_group_name.is_none() {
+        builder.test_generation_job_group_name = Some(Default::default())
+    }
+    if builder.status.is_none() {
+        builder.status = "no value was set".parse::<crate::types::TestGenerationJobStatus>().ok()
+    }
+    if builder.creation_time.is_none() {
+        builder.creation_time = Some(::aws_smithy_types::DateTime::from_fractional_secs(0, 0_f64))
+    }
+    builder
+}
+
 pub(crate) fn completion_correct_errors(
     mut builder: crate::types::builders::CompletionBuilder,
 ) -> crate::types::builders::CompletionBuilder {

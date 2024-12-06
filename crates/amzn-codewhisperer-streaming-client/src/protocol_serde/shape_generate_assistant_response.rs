@@ -52,13 +52,13 @@ pub fn de_generate_assistant_response_http_error(
 
     let _error_message = generic.message().map(|msg| msg.to_owned());
     Err(match error_code {
-        "ThrottlingException" => {
+        "ThrottlingError" => {
             crate::operation::generate_assistant_response::GenerateAssistantResponseError::ThrottlingError({
                 #[allow(unused_mut)]
                 let mut tmp = {
                     #[allow(unused_mut)]
                     let mut output = crate::types::error::builders::ThrottlingErrorBuilder::default();
-                    output = crate::protocol_serde::shape_throttling_exception::de_throttling_exception_json_err(
+                    output = crate::protocol_serde::shape_throttling_error::de_throttling_error_json_err(
                         _response_body,
                         output,
                     )
@@ -66,7 +66,7 @@ pub fn de_generate_assistant_response_http_error(
                         crate::operation::generate_assistant_response::GenerateAssistantResponseError::unhandled,
                     )?;
                     let output = output.meta(generic);
-                    crate::serde_util::throttling_exception_correct_errors(output)
+                    crate::serde_util::throttling_error_correct_errors(output)
                         .build()
                         .map_err(
                             crate::operation::generate_assistant_response::GenerateAssistantResponseError::unhandled,
@@ -75,13 +75,13 @@ pub fn de_generate_assistant_response_http_error(
                 tmp
             })
         },
-        "ValidationException" => {
+        "ValidationError" => {
             crate::operation::generate_assistant_response::GenerateAssistantResponseError::ValidationError({
                 #[allow(unused_mut)]
                 let mut tmp = {
                     #[allow(unused_mut)]
                     let mut output = crate::types::error::builders::ValidationErrorBuilder::default();
-                    output = crate::protocol_serde::shape_validation_exception::de_validation_exception_json_err(
+                    output = crate::protocol_serde::shape_validation_error::de_validation_error_json_err(
                         _response_body,
                         output,
                     )
@@ -89,7 +89,30 @@ pub fn de_generate_assistant_response_http_error(
                         crate::operation::generate_assistant_response::GenerateAssistantResponseError::unhandled,
                     )?;
                     let output = output.meta(generic);
-                    crate::serde_util::validation_exception_correct_errors(output)
+                    crate::serde_util::validation_error_correct_errors(output)
+                        .build()
+                        .map_err(
+                            crate::operation::generate_assistant_response::GenerateAssistantResponseError::unhandled,
+                        )?
+                };
+                tmp
+            })
+        },
+        "AccessDeniedError" => {
+            crate::operation::generate_assistant_response::GenerateAssistantResponseError::AccessDeniedError({
+                #[allow(unused_mut)]
+                let mut tmp = {
+                    #[allow(unused_mut)]
+                    let mut output = crate::types::error::builders::AccessDeniedErrorBuilder::default();
+                    output = crate::protocol_serde::shape_access_denied_error::de_access_denied_error_json_err(
+                        _response_body,
+                        output,
+                    )
+                    .map_err(
+                        crate::operation::generate_assistant_response::GenerateAssistantResponseError::unhandled,
+                    )?;
+                    let output = output.meta(generic);
+                    crate::serde_util::access_denied_error_correct_errors(output)
                         .build()
                         .map_err(
                             crate::operation::generate_assistant_response::GenerateAssistantResponseError::unhandled,
@@ -117,29 +140,6 @@ pub fn de_generate_assistant_response_http_error(
                     .build()
                     .map_err(crate::operation::generate_assistant_response::GenerateAssistantResponseError::unhandled)?
                     };
-                tmp
-            })
-        },
-        "AccessDeniedException" => {
-            crate::operation::generate_assistant_response::GenerateAssistantResponseError::AccessDeniedError({
-                #[allow(unused_mut)]
-                let mut tmp = {
-                    #[allow(unused_mut)]
-                    let mut output = crate::types::error::builders::AccessDeniedErrorBuilder::default();
-                    output = crate::protocol_serde::shape_access_denied_exception::de_access_denied_exception_json_err(
-                        _response_body,
-                        output,
-                    )
-                    .map_err(
-                        crate::operation::generate_assistant_response::GenerateAssistantResponseError::unhandled,
-                    )?;
-                    let output = output.meta(generic);
-                    crate::serde_util::access_denied_exception_correct_errors(output)
-                        .build()
-                        .map_err(
-                            crate::operation::generate_assistant_response::GenerateAssistantResponseError::unhandled,
-                        )?
-                };
                 tmp
             })
         },

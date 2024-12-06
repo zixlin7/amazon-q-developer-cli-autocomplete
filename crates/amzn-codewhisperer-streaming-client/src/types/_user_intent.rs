@@ -14,9 +14,11 @@
 /// match userintent {
 ///     UserIntent::ApplyCommonBestPractices => { /* ... */ },
 ///     UserIntent::CiteSources => { /* ... */ },
+///     UserIntent::CodeGeneration => { /* ... */ },
 ///     UserIntent::ExplainCodeSelection => { /* ... */ },
 ///     UserIntent::ExplainLineByLine => { /* ... */ },
 ///     UserIntent::GenerateCloudformationTemplate => { /* ... */ },
+///     UserIntent::GenerateUnitTests => { /* ... */ },
 ///     UserIntent::ImproveCode => { /* ... */ },
 ///     UserIntent::ShowExamples => { /* ... */ },
 ///     UserIntent::SuggestAlternateImplementation => { /* ... */ },
@@ -57,12 +59,16 @@ pub enum UserIntent {
     ApplyCommonBestPractices,
     /// Cite Sources
     CiteSources,
+    /// generate code
+    CodeGeneration,
     /// Explain Code Selection
     ExplainCodeSelection,
     /// Explain Code Line By Line
     ExplainLineByLine,
     /// Generate CloudFormation Template
     GenerateCloudformationTemplate,
+    /// Generate Unit Tests
+    GenerateUnitTests,
     /// Improve Code
     ImproveCode,
     /// Show More Examples
@@ -80,9 +86,11 @@ impl ::std::convert::From<&str> for UserIntent {
         match s {
             "APPLY_COMMON_BEST_PRACTICES" => UserIntent::ApplyCommonBestPractices,
             "CITE_SOURCES" => UserIntent::CiteSources,
+            "CODE_GENERATION" => UserIntent::CodeGeneration,
             "EXPLAIN_CODE_SELECTION" => UserIntent::ExplainCodeSelection,
             "EXPLAIN_LINE_BY_LINE" => UserIntent::ExplainLineByLine,
             "GENERATE_CLOUDFORMATION_TEMPLATE" => UserIntent::GenerateCloudformationTemplate,
+            "GENERATE_UNIT_TESTS" => UserIntent::GenerateUnitTests,
             "IMPROVE_CODE" => UserIntent::ImproveCode,
             "SHOW_EXAMPLES" => UserIntent::ShowExamples,
             "SUGGEST_ALTERNATE_IMPLEMENTATION" => UserIntent::SuggestAlternateImplementation,
@@ -105,9 +113,11 @@ impl UserIntent {
         match self {
             UserIntent::ApplyCommonBestPractices => "APPLY_COMMON_BEST_PRACTICES",
             UserIntent::CiteSources => "CITE_SOURCES",
+            UserIntent::CodeGeneration => "CODE_GENERATION",
             UserIntent::ExplainCodeSelection => "EXPLAIN_CODE_SELECTION",
             UserIntent::ExplainLineByLine => "EXPLAIN_LINE_BY_LINE",
             UserIntent::GenerateCloudformationTemplate => "GENERATE_CLOUDFORMATION_TEMPLATE",
+            UserIntent::GenerateUnitTests => "GENERATE_UNIT_TESTS",
             UserIntent::ImproveCode => "IMPROVE_CODE",
             UserIntent::ShowExamples => "SHOW_EXAMPLES",
             UserIntent::SuggestAlternateImplementation => "SUGGEST_ALTERNATE_IMPLEMENTATION",
@@ -120,9 +130,11 @@ impl UserIntent {
         &[
             "APPLY_COMMON_BEST_PRACTICES",
             "CITE_SOURCES",
+            "CODE_GENERATION",
             "EXPLAIN_CODE_SELECTION",
             "EXPLAIN_LINE_BY_LINE",
             "GENERATE_CLOUDFORMATION_TEMPLATE",
+            "GENERATE_UNIT_TESTS",
             "IMPROVE_CODE",
             "SHOW_EXAMPLES",
             "SUGGEST_ALTERNATE_IMPLEMENTATION",
@@ -151,9 +163,11 @@ impl ::std::fmt::Display for UserIntent {
         match self {
             UserIntent::ApplyCommonBestPractices => write!(f, "APPLY_COMMON_BEST_PRACTICES"),
             UserIntent::CiteSources => write!(f, "CITE_SOURCES"),
+            UserIntent::CodeGeneration => write!(f, "CODE_GENERATION"),
             UserIntent::ExplainCodeSelection => write!(f, "EXPLAIN_CODE_SELECTION"),
             UserIntent::ExplainLineByLine => write!(f, "EXPLAIN_LINE_BY_LINE"),
             UserIntent::GenerateCloudformationTemplate => write!(f, "GENERATE_CLOUDFORMATION_TEMPLATE"),
+            UserIntent::GenerateUnitTests => write!(f, "GENERATE_UNIT_TESTS"),
             UserIntent::ImproveCode => write!(f, "IMPROVE_CODE"),
             UserIntent::ShowExamples => write!(f, "SHOW_EXAMPLES"),
             UserIntent::SuggestAlternateImplementation => write!(f, "SUGGEST_ALTERNATE_IMPLEMENTATION"),

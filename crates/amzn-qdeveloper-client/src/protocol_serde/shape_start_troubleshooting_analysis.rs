@@ -53,6 +53,20 @@ pub fn de_start_troubleshooting_analysis_http_error(
             };
             tmp
         }),
+        "ConflictException" => crate::operation::start_troubleshooting_analysis::StartTroubleshootingAnalysisError::ConflictError({
+            #[allow(unused_mut)]
+            let mut tmp = {
+                #[allow(unused_mut)]
+                let mut output = crate::types::error::builders::ConflictErrorBuilder::default();
+                output = crate::protocol_serde::shape_conflict_exception::de_conflict_exception_json_err(_response_body, output)
+                    .map_err(crate::operation::start_troubleshooting_analysis::StartTroubleshootingAnalysisError::unhandled)?;
+                let output = output.meta(generic);
+                crate::serde_util::conflict_exception_correct_errors(output)
+                    .build()
+                    .map_err(crate::operation::start_troubleshooting_analysis::StartTroubleshootingAnalysisError::unhandled)?
+            };
+            tmp
+        }),
         "ValidationException" => crate::operation::start_troubleshooting_analysis::StartTroubleshootingAnalysisError::ValidationError({
             #[allow(unused_mut)]
             let mut tmp = {

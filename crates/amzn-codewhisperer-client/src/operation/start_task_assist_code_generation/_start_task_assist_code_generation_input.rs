@@ -10,6 +10,14 @@ pub struct StartTaskAssistCodeGenerationInput {
     pub workspace_state: ::std::option::Option<crate::types::WorkspaceState>,
     #[allow(missing_docs)] // documentation missing in model
     pub task_assist_plan: ::std::option::Option<::std::vec::Vec<crate::types::TaskAssistPlanStep>>,
+    /// ID which represents a single code generation in a conversation
+    pub code_generation_id: ::std::option::Option<::std::string::String>,
+    /// ID which represents a single code generation in a conversation
+    pub current_code_generation_id: ::std::option::Option<::std::string::String>,
+    #[allow(missing_docs)] // documentation missing in model
+    pub intent: ::std::option::Option<crate::types::Intent>,
+    #[allow(missing_docs)] // documentation missing in model
+    pub intent_context: ::std::option::Option<crate::types::IntentContext>,
 }
 impl StartTaskAssistCodeGenerationInput {
     /// Structure to represent the current state of a chat conversation.
@@ -27,6 +35,26 @@ impl StartTaskAssistCodeGenerationInput {
     /// value was sent, use `.task_assist_plan.is_none()`.
     pub fn task_assist_plan(&self) -> &[crate::types::TaskAssistPlanStep] {
         self.task_assist_plan.as_deref().unwrap_or_default()
+    }
+
+    /// ID which represents a single code generation in a conversation
+    pub fn code_generation_id(&self) -> ::std::option::Option<&str> {
+        self.code_generation_id.as_deref()
+    }
+
+    /// ID which represents a single code generation in a conversation
+    pub fn current_code_generation_id(&self) -> ::std::option::Option<&str> {
+        self.current_code_generation_id.as_deref()
+    }
+
+    #[allow(missing_docs)] // documentation missing in model
+    pub fn intent(&self) -> ::std::option::Option<&crate::types::Intent> {
+        self.intent.as_ref()
+    }
+
+    #[allow(missing_docs)] // documentation missing in model
+    pub fn intent_context(&self) -> ::std::option::Option<&crate::types::IntentContext> {
+        self.intent_context.as_ref()
     }
 }
 impl StartTaskAssistCodeGenerationInput {
@@ -46,6 +74,10 @@ pub struct StartTaskAssistCodeGenerationInputBuilder {
     pub(crate) conversation_state: ::std::option::Option<crate::types::ConversationState>,
     pub(crate) workspace_state: ::std::option::Option<crate::types::WorkspaceState>,
     pub(crate) task_assist_plan: ::std::option::Option<::std::vec::Vec<crate::types::TaskAssistPlanStep>>,
+    pub(crate) code_generation_id: ::std::option::Option<::std::string::String>,
+    pub(crate) current_code_generation_id: ::std::option::Option<::std::string::String>,
+    pub(crate) intent: ::std::option::Option<crate::types::Intent>,
+    pub(crate) intent_context: ::std::option::Option<crate::types::IntentContext>,
 }
 impl StartTaskAssistCodeGenerationInputBuilder {
     /// Structure to represent the current state of a chat conversation.
@@ -109,6 +141,74 @@ impl StartTaskAssistCodeGenerationInputBuilder {
         &self.task_assist_plan
     }
 
+    /// ID which represents a single code generation in a conversation
+    pub fn code_generation_id(mut self, input: impl ::std::convert::Into<::std::string::String>) -> Self {
+        self.code_generation_id = ::std::option::Option::Some(input.into());
+        self
+    }
+
+    /// ID which represents a single code generation in a conversation
+    pub fn set_code_generation_id(mut self, input: ::std::option::Option<::std::string::String>) -> Self {
+        self.code_generation_id = input;
+        self
+    }
+
+    /// ID which represents a single code generation in a conversation
+    pub fn get_code_generation_id(&self) -> &::std::option::Option<::std::string::String> {
+        &self.code_generation_id
+    }
+
+    /// ID which represents a single code generation in a conversation
+    pub fn current_code_generation_id(mut self, input: impl ::std::convert::Into<::std::string::String>) -> Self {
+        self.current_code_generation_id = ::std::option::Option::Some(input.into());
+        self
+    }
+
+    /// ID which represents a single code generation in a conversation
+    pub fn set_current_code_generation_id(mut self, input: ::std::option::Option<::std::string::String>) -> Self {
+        self.current_code_generation_id = input;
+        self
+    }
+
+    /// ID which represents a single code generation in a conversation
+    pub fn get_current_code_generation_id(&self) -> &::std::option::Option<::std::string::String> {
+        &self.current_code_generation_id
+    }
+
+    #[allow(missing_docs)] // documentation missing in model
+    pub fn intent(mut self, input: crate::types::Intent) -> Self {
+        self.intent = ::std::option::Option::Some(input);
+        self
+    }
+
+    #[allow(missing_docs)] // documentation missing in model
+    pub fn set_intent(mut self, input: ::std::option::Option<crate::types::Intent>) -> Self {
+        self.intent = input;
+        self
+    }
+
+    #[allow(missing_docs)] // documentation missing in model
+    pub fn get_intent(&self) -> &::std::option::Option<crate::types::Intent> {
+        &self.intent
+    }
+
+    #[allow(missing_docs)] // documentation missing in model
+    pub fn intent_context(mut self, input: crate::types::IntentContext) -> Self {
+        self.intent_context = ::std::option::Option::Some(input);
+        self
+    }
+
+    #[allow(missing_docs)] // documentation missing in model
+    pub fn set_intent_context(mut self, input: ::std::option::Option<crate::types::IntentContext>) -> Self {
+        self.intent_context = input;
+        self
+    }
+
+    #[allow(missing_docs)] // documentation missing in model
+    pub fn get_intent_context(&self) -> &::std::option::Option<crate::types::IntentContext> {
+        &self.intent_context
+    }
+
     /// Consumes the builder and constructs a
     /// [`StartTaskAssistCodeGenerationInput`](crate::operation::start_task_assist_code_generation::StartTaskAssistCodeGenerationInput).
     pub fn build(
@@ -122,6 +222,10 @@ impl StartTaskAssistCodeGenerationInputBuilder {
                 conversation_state: self.conversation_state,
                 workspace_state: self.workspace_state,
                 task_assist_plan: self.task_assist_plan,
+                code_generation_id: self.code_generation_id,
+                current_code_generation_id: self.current_code_generation_id,
+                intent: self.intent,
+                intent_context: self.intent_context,
             },
         )
     }

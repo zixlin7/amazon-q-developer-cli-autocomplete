@@ -52,19 +52,16 @@ pub fn de_generate_code_from_commands_http_error(
 
     let _error_message = generic.message().map(|msg| msg.to_owned());
     Err(match error_code {
-        "ThrottlingException" => {
-            crate::operation::generate_code_from_commands::GenerateCodeFromCommandsError::ThrottlingError({
+        "ServiceQuotaExceededError" => {
+            crate::operation::generate_code_from_commands::GenerateCodeFromCommandsError::ServiceQuotaExceededError({
                 #[allow(unused_mut)]
                 let mut tmp = {
                     #[allow(unused_mut)]
-                    let mut output = crate::types::error::builders::ThrottlingErrorBuilder::default();
-                    output = crate::protocol_serde::shape_throttling_exception::de_throttling_exception_json_err(
-                        _response_body,
-                        output,
-                    )
+                    let mut output = crate::types::error::builders::ServiceQuotaExceededErrorBuilder::default();
+                    output = crate::protocol_serde::shape_service_quota_exceeded_error::de_service_quota_exceeded_error_json_err(_response_body, output)
                     .map_err(crate::operation::generate_code_from_commands::GenerateCodeFromCommandsError::unhandled)?;
                     let output = output.meta(generic);
-                    crate::serde_util::throttling_exception_correct_errors(output)
+                    crate::serde_util::service_quota_exceeded_error_correct_errors(output)
                         .build()
                         .map_err(
                             crate::operation::generate_code_from_commands::GenerateCodeFromCommandsError::unhandled,
@@ -73,19 +70,61 @@ pub fn de_generate_code_from_commands_http_error(
                 tmp
             })
         },
-        "ValidationException" => {
-            crate::operation::generate_code_from_commands::GenerateCodeFromCommandsError::ValidationError({
+        "ThrottlingError" => {
+            crate::operation::generate_code_from_commands::GenerateCodeFromCommandsError::ThrottlingError({
                 #[allow(unused_mut)]
                 let mut tmp = {
                     #[allow(unused_mut)]
-                    let mut output = crate::types::error::builders::ValidationErrorBuilder::default();
-                    output = crate::protocol_serde::shape_validation_exception::de_validation_exception_json_err(
+                    let mut output = crate::types::error::builders::ThrottlingErrorBuilder::default();
+                    output = crate::protocol_serde::shape_throttling_error::de_throttling_error_json_err(
                         _response_body,
                         output,
                     )
                     .map_err(crate::operation::generate_code_from_commands::GenerateCodeFromCommandsError::unhandled)?;
                     let output = output.meta(generic);
-                    crate::serde_util::validation_exception_correct_errors(output)
+                    crate::serde_util::throttling_error_correct_errors(output)
+                        .build()
+                        .map_err(
+                            crate::operation::generate_code_from_commands::GenerateCodeFromCommandsError::unhandled,
+                        )?
+                };
+                tmp
+            })
+        },
+        "ValidationError" => {
+            crate::operation::generate_code_from_commands::GenerateCodeFromCommandsError::ValidationError({
+                #[allow(unused_mut)]
+                let mut tmp = {
+                    #[allow(unused_mut)]
+                    let mut output = crate::types::error::builders::ValidationErrorBuilder::default();
+                    output = crate::protocol_serde::shape_validation_error::de_validation_error_json_err(
+                        _response_body,
+                        output,
+                    )
+                    .map_err(crate::operation::generate_code_from_commands::GenerateCodeFromCommandsError::unhandled)?;
+                    let output = output.meta(generic);
+                    crate::serde_util::validation_error_correct_errors(output)
+                        .build()
+                        .map_err(
+                            crate::operation::generate_code_from_commands::GenerateCodeFromCommandsError::unhandled,
+                        )?
+                };
+                tmp
+            })
+        },
+        "AccessDeniedError" => {
+            crate::operation::generate_code_from_commands::GenerateCodeFromCommandsError::AccessDeniedError({
+                #[allow(unused_mut)]
+                let mut tmp = {
+                    #[allow(unused_mut)]
+                    let mut output = crate::types::error::builders::AccessDeniedErrorBuilder::default();
+                    output = crate::protocol_serde::shape_access_denied_error::de_access_denied_error_json_err(
+                        _response_body,
+                        output,
+                    )
+                    .map_err(crate::operation::generate_code_from_commands::GenerateCodeFromCommandsError::unhandled)?;
+                    let output = output.meta(generic);
+                    crate::serde_util::access_denied_error_correct_errors(output)
                         .build()
                         .map_err(
                             crate::operation::generate_code_from_commands::GenerateCodeFromCommandsError::unhandled,
@@ -107,27 +146,6 @@ pub fn de_generate_code_from_commands_http_error(
                     .map_err(crate::operation::generate_code_from_commands::GenerateCodeFromCommandsError::unhandled)?;
                     let output = output.meta(generic);
                     crate::serde_util::internal_server_error_correct_errors(output)
-                        .build()
-                        .map_err(
-                            crate::operation::generate_code_from_commands::GenerateCodeFromCommandsError::unhandled,
-                        )?
-                };
-                tmp
-            })
-        },
-        "AccessDeniedException" => {
-            crate::operation::generate_code_from_commands::GenerateCodeFromCommandsError::AccessDeniedError({
-                #[allow(unused_mut)]
-                let mut tmp = {
-                    #[allow(unused_mut)]
-                    let mut output = crate::types::error::builders::AccessDeniedErrorBuilder::default();
-                    output = crate::protocol_serde::shape_access_denied_exception::de_access_denied_exception_json_err(
-                        _response_body,
-                        output,
-                    )
-                    .map_err(crate::operation::generate_code_from_commands::GenerateCodeFromCommandsError::unhandled)?;
-                    let output = output.meta(generic);
-                    crate::serde_util::access_denied_exception_correct_errors(output)
                         .build()
                         .map_err(
                             crate::operation::generate_code_from_commands::GenerateCodeFromCommandsError::unhandled,

@@ -364,6 +364,49 @@ impl From<crate::operation::get_code_analysis::GetCodeAnalysisError> for Error {
     }
 }
 impl<R>
+    From<::aws_smithy_runtime_api::client::result::SdkError<crate::operation::get_code_fix_job::GetCodeFixJobError, R>>
+    for Error
+where
+    R: Send + Sync + std::fmt::Debug + 'static,
+{
+    fn from(
+        err: ::aws_smithy_runtime_api::client::result::SdkError<
+            crate::operation::get_code_fix_job::GetCodeFixJobError,
+            R,
+        >,
+    ) -> Self {
+        match err {
+            ::aws_smithy_runtime_api::client::result::SdkError::ServiceError(context) => Self::from(context.into_err()),
+            _ => Error::Unhandled(crate::error::sealed_unhandled::Unhandled {
+                meta: ::aws_smithy_types::error::metadata::ProvideErrorMetadata::meta(&err).clone(),
+                source: err.into(),
+            }),
+        }
+    }
+}
+impl From<crate::operation::get_code_fix_job::GetCodeFixJobError> for Error {
+    fn from(err: crate::operation::get_code_fix_job::GetCodeFixJobError) -> Self {
+        match err {
+            crate::operation::get_code_fix_job::GetCodeFixJobError::InternalServerError(inner) => {
+                Error::InternalServerError(inner)
+            },
+            crate::operation::get_code_fix_job::GetCodeFixJobError::ThrottlingError(inner) => {
+                Error::ThrottlingError(inner)
+            },
+            crate::operation::get_code_fix_job::GetCodeFixJobError::ValidationError(inner) => {
+                Error::ValidationError(inner)
+            },
+            crate::operation::get_code_fix_job::GetCodeFixJobError::ResourceNotFoundError(inner) => {
+                Error::ResourceNotFoundError(inner)
+            },
+            crate::operation::get_code_fix_job::GetCodeFixJobError::AccessDeniedError(inner) => {
+                Error::AccessDeniedError(inner)
+            },
+            crate::operation::get_code_fix_job::GetCodeFixJobError::Unhandled(inner) => Error::Unhandled(inner),
+        }
+    }
+}
+impl<R>
     From<
         ::aws_smithy_runtime_api::client::result::SdkError<
             crate::operation::get_task_assist_code_generation::GetTaskAssistCodeGenerationError,
@@ -408,6 +451,50 @@ impl From<crate::operation::get_task_assist_code_generation::GetTaskAssistCodeGe
                 Error::AccessDeniedError(inner)
             }
             crate::operation::get_task_assist_code_generation::GetTaskAssistCodeGenerationError::Unhandled(inner) => Error::Unhandled(inner),
+        }
+    }
+}
+impl<R>
+    From<
+        ::aws_smithy_runtime_api::client::result::SdkError<
+            crate::operation::get_test_generation::GetTestGenerationError,
+            R,
+        >,
+    > for Error
+where
+    R: Send + Sync + std::fmt::Debug + 'static,
+{
+    fn from(
+        err: ::aws_smithy_runtime_api::client::result::SdkError<
+            crate::operation::get_test_generation::GetTestGenerationError,
+            R,
+        >,
+    ) -> Self {
+        match err {
+            ::aws_smithy_runtime_api::client::result::SdkError::ServiceError(context) => Self::from(context.into_err()),
+            _ => Error::Unhandled(crate::error::sealed_unhandled::Unhandled {
+                meta: ::aws_smithy_types::error::metadata::ProvideErrorMetadata::meta(&err).clone(),
+                source: err.into(),
+            }),
+        }
+    }
+}
+impl From<crate::operation::get_test_generation::GetTestGenerationError> for Error {
+    fn from(err: crate::operation::get_test_generation::GetTestGenerationError) -> Self {
+        match err {
+            crate::operation::get_test_generation::GetTestGenerationError::InternalServerError(inner) => {
+                Error::InternalServerError(inner)
+            },
+            crate::operation::get_test_generation::GetTestGenerationError::ThrottlingError(inner) => {
+                Error::ThrottlingError(inner)
+            },
+            crate::operation::get_test_generation::GetTestGenerationError::ValidationError(inner) => {
+                Error::ValidationError(inner)
+            },
+            crate::operation::get_test_generation::GetTestGenerationError::AccessDeniedError(inner) => {
+                Error::AccessDeniedError(inner)
+            },
+            crate::operation::get_test_generation::GetTestGenerationError::Unhandled(inner) => Error::Unhandled(inner),
         }
     }
 }
@@ -796,6 +883,50 @@ impl From<crate::operation::start_code_analysis::StartCodeAnalysisError> for Err
 impl<R>
     From<
         ::aws_smithy_runtime_api::client::result::SdkError<
+            crate::operation::start_code_fix_job::StartCodeFixJobError,
+            R,
+        >,
+    > for Error
+where
+    R: Send + Sync + std::fmt::Debug + 'static,
+{
+    fn from(
+        err: ::aws_smithy_runtime_api::client::result::SdkError<
+            crate::operation::start_code_fix_job::StartCodeFixJobError,
+            R,
+        >,
+    ) -> Self {
+        match err {
+            ::aws_smithy_runtime_api::client::result::SdkError::ServiceError(context) => Self::from(context.into_err()),
+            _ => Error::Unhandled(crate::error::sealed_unhandled::Unhandled {
+                meta: ::aws_smithy_types::error::metadata::ProvideErrorMetadata::meta(&err).clone(),
+                source: err.into(),
+            }),
+        }
+    }
+}
+impl From<crate::operation::start_code_fix_job::StartCodeFixJobError> for Error {
+    fn from(err: crate::operation::start_code_fix_job::StartCodeFixJobError) -> Self {
+        match err {
+            crate::operation::start_code_fix_job::StartCodeFixJobError::InternalServerError(inner) => {
+                Error::InternalServerError(inner)
+            },
+            crate::operation::start_code_fix_job::StartCodeFixJobError::ThrottlingError(inner) => {
+                Error::ThrottlingError(inner)
+            },
+            crate::operation::start_code_fix_job::StartCodeFixJobError::ValidationError(inner) => {
+                Error::ValidationError(inner)
+            },
+            crate::operation::start_code_fix_job::StartCodeFixJobError::AccessDeniedError(inner) => {
+                Error::AccessDeniedError(inner)
+            },
+            crate::operation::start_code_fix_job::StartCodeFixJobError::Unhandled(inner) => Error::Unhandled(inner),
+        }
+    }
+}
+impl<R>
+    From<
+        ::aws_smithy_runtime_api::client::result::SdkError<
             crate::operation::start_task_assist_code_generation::StartTaskAssistCodeGenerationError,
             R,
         >,
@@ -843,6 +974,55 @@ impl From<crate::operation::start_task_assist_code_generation::StartTaskAssistCo
                 Error::AccessDeniedError(inner)
             }
             crate::operation::start_task_assist_code_generation::StartTaskAssistCodeGenerationError::Unhandled(inner) => Error::Unhandled(inner),
+        }
+    }
+}
+impl<R>
+    From<
+        ::aws_smithy_runtime_api::client::result::SdkError<
+            crate::operation::start_test_generation::StartTestGenerationError,
+            R,
+        >,
+    > for Error
+where
+    R: Send + Sync + std::fmt::Debug + 'static,
+{
+    fn from(
+        err: ::aws_smithy_runtime_api::client::result::SdkError<
+            crate::operation::start_test_generation::StartTestGenerationError,
+            R,
+        >,
+    ) -> Self {
+        match err {
+            ::aws_smithy_runtime_api::client::result::SdkError::ServiceError(context) => Self::from(context.into_err()),
+            _ => Error::Unhandled(crate::error::sealed_unhandled::Unhandled {
+                meta: ::aws_smithy_types::error::metadata::ProvideErrorMetadata::meta(&err).clone(),
+                source: err.into(),
+            }),
+        }
+    }
+}
+impl From<crate::operation::start_test_generation::StartTestGenerationError> for Error {
+    fn from(err: crate::operation::start_test_generation::StartTestGenerationError) -> Self {
+        match err {
+            crate::operation::start_test_generation::StartTestGenerationError::InternalServerError(inner) => {
+                Error::InternalServerError(inner)
+            },
+            crate::operation::start_test_generation::StartTestGenerationError::ThrottlingError(inner) => {
+                Error::ThrottlingError(inner)
+            },
+            crate::operation::start_test_generation::StartTestGenerationError::ConflictError(inner) => {
+                Error::ConflictError(inner)
+            },
+            crate::operation::start_test_generation::StartTestGenerationError::ValidationError(inner) => {
+                Error::ValidationError(inner)
+            },
+            crate::operation::start_test_generation::StartTestGenerationError::AccessDeniedError(inner) => {
+                Error::AccessDeniedError(inner)
+            },
+            crate::operation::start_test_generation::StartTestGenerationError::Unhandled(inner) => {
+                Error::Unhandled(inner)
+            },
         }
     }
 }

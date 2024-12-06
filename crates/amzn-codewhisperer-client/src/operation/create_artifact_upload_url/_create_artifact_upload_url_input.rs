@@ -17,6 +17,8 @@ pub struct CreateArtifactUploadUrlInput {
     pub upload_intent: ::std::option::Option<crate::types::UploadIntent>,
     #[allow(missing_docs)] // documentation missing in model
     pub upload_context: ::std::option::Option<crate::types::UploadContext>,
+    /// Upload ID returned by CreateUploadUrl API
+    pub upload_id: ::std::option::Option<::std::string::String>,
 }
 impl CreateArtifactUploadUrlInput {
     #[allow(missing_docs)] // documentation missing in model
@@ -53,6 +55,11 @@ impl CreateArtifactUploadUrlInput {
     pub fn upload_context(&self) -> ::std::option::Option<&crate::types::UploadContext> {
         self.upload_context.as_ref()
     }
+
+    /// Upload ID returned by CreateUploadUrl API
+    pub fn upload_id(&self) -> ::std::option::Option<&str> {
+        self.upload_id.as_deref()
+    }
 }
 impl ::std::fmt::Debug for CreateArtifactUploadUrlInput {
     fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -64,6 +71,7 @@ impl ::std::fmt::Debug for CreateArtifactUploadUrlInput {
         formatter.field("artifact_type", &self.artifact_type);
         formatter.field("upload_intent", &self.upload_intent);
         formatter.field("upload_context", &self.upload_context);
+        formatter.field("upload_id", &self.upload_id);
         formatter.finish()
     }
 }
@@ -87,6 +95,7 @@ pub struct CreateArtifactUploadUrlInputBuilder {
     pub(crate) artifact_type: ::std::option::Option<crate::types::ArtifactType>,
     pub(crate) upload_intent: ::std::option::Option<crate::types::UploadIntent>,
     pub(crate) upload_context: ::std::option::Option<crate::types::UploadContext>,
+    pub(crate) upload_id: ::std::option::Option<::std::string::String>,
 }
 impl CreateArtifactUploadUrlInputBuilder {
     #[allow(missing_docs)] // documentation missing in model
@@ -211,6 +220,23 @@ impl CreateArtifactUploadUrlInputBuilder {
         &self.upload_context
     }
 
+    /// Upload ID returned by CreateUploadUrl API
+    pub fn upload_id(mut self, input: impl ::std::convert::Into<::std::string::String>) -> Self {
+        self.upload_id = ::std::option::Option::Some(input.into());
+        self
+    }
+
+    /// Upload ID returned by CreateUploadUrl API
+    pub fn set_upload_id(mut self, input: ::std::option::Option<::std::string::String>) -> Self {
+        self.upload_id = input;
+        self
+    }
+
+    /// Upload ID returned by CreateUploadUrl API
+    pub fn get_upload_id(&self) -> &::std::option::Option<::std::string::String> {
+        &self.upload_id
+    }
+
     /// Consumes the builder and constructs a
     /// [`CreateArtifactUploadUrlInput`](crate::operation::create_artifact_upload_url::CreateArtifactUploadUrlInput).
     pub fn build(
@@ -228,6 +254,7 @@ impl CreateArtifactUploadUrlInputBuilder {
                 artifact_type: self.artifact_type,
                 upload_intent: self.upload_intent,
                 upload_context: self.upload_context,
+                upload_id: self.upload_id,
             },
         )
     }
@@ -242,6 +269,7 @@ impl ::std::fmt::Debug for CreateArtifactUploadUrlInputBuilder {
         formatter.field("artifact_type", &self.artifact_type);
         formatter.field("upload_intent", &self.upload_intent);
         formatter.field("upload_context", &self.upload_context);
+        formatter.field("upload_id", &self.upload_id);
         formatter.finish()
     }
 }

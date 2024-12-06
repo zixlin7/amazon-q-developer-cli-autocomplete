@@ -31,59 +31,134 @@ pub fn ser_telemetry_event(
             crate::protocol_serde::shape_code_scan_event::ser_code_scan_event(&mut object_4, inner)?;
             object_4.finish();
         },
-        crate::types::TelemetryEvent::CodeScanRemediationsEvent(inner) => {
+        crate::types::TelemetryEvent::CodeScanSucceededEvent(inner) => {
             #[allow(unused_mut)]
-            let mut object_5 = object_3.key("codeScanRemediationsEvent").start_object();
-            crate::protocol_serde::shape_code_scan_remediations_event::ser_code_scan_remediations_event(
+            let mut object_5 = object_3.key("codeScanSucceededEvent").start_object();
+            crate::protocol_serde::shape_code_scan_succeeded_event::ser_code_scan_succeeded_event(
                 &mut object_5,
                 inner,
             )?;
             object_5.finish();
         },
-        crate::types::TelemetryEvent::MetricData(inner) => {
+        crate::types::TelemetryEvent::CodeScanFailedEvent(inner) => {
             #[allow(unused_mut)]
-            let mut object_6 = object_3.key("metricData").start_object();
-            crate::protocol_serde::shape_metric_data::ser_metric_data(&mut object_6, inner)?;
+            let mut object_6 = object_3.key("codeScanFailedEvent").start_object();
+            crate::protocol_serde::shape_code_scan_failed_event::ser_code_scan_failed_event(&mut object_6, inner)?;
             object_6.finish();
         },
-        crate::types::TelemetryEvent::ChatAddMessageEvent(inner) => {
+        crate::types::TelemetryEvent::CodeScanRemediationsEvent(inner) => {
             #[allow(unused_mut)]
-            let mut object_7 = object_3.key("chatAddMessageEvent").start_object();
-            crate::protocol_serde::shape_chat_add_message_event::ser_chat_add_message_event(&mut object_7, inner)?;
+            let mut object_7 = object_3.key("codeScanRemediationsEvent").start_object();
+            crate::protocol_serde::shape_code_scan_remediations_event::ser_code_scan_remediations_event(
+                &mut object_7,
+                inner,
+            )?;
             object_7.finish();
         },
-        crate::types::TelemetryEvent::ChatInteractWithMessageEvent(inner) => {
+        crate::types::TelemetryEvent::CodeFixGenerationEvent(inner) => {
             #[allow(unused_mut)]
-            let mut object_8 = object_3.key("chatInteractWithMessageEvent").start_object();
-            crate::protocol_serde::shape_chat_interact_with_message_event::ser_chat_interact_with_message_event(
+            let mut object_8 = object_3.key("codeFixGenerationEvent").start_object();
+            crate::protocol_serde::shape_code_fix_generation_event::ser_code_fix_generation_event(
                 &mut object_8,
                 inner,
             )?;
             object_8.finish();
         },
-        crate::types::TelemetryEvent::ChatUserModificationEvent(inner) => {
+        crate::types::TelemetryEvent::CodeFixAcceptanceEvent(inner) => {
             #[allow(unused_mut)]
-            let mut object_9 = object_3.key("chatUserModificationEvent").start_object();
-            crate::protocol_serde::shape_chat_user_modification_event::ser_chat_user_modification_event(
+            let mut object_9 = object_3.key("codeFixAcceptanceEvent").start_object();
+            crate::protocol_serde::shape_code_fix_acceptance_event::ser_code_fix_acceptance_event(
                 &mut object_9,
                 inner,
             )?;
             object_9.finish();
         },
-        crate::types::TelemetryEvent::TerminalUserInteractionEvent(inner) => {
+        crate::types::TelemetryEvent::MetricData(inner) => {
             #[allow(unused_mut)]
-            let mut object_10 = object_3.key("terminalUserInteractionEvent").start_object();
-            crate::protocol_serde::shape_terminal_user_interaction_event::ser_terminal_user_interaction_event(
-                &mut object_10,
+            let mut object_10 = object_3.key("metricData").start_object();
+            crate::protocol_serde::shape_metric_data::ser_metric_data(&mut object_10, inner)?;
+            object_10.finish();
+        },
+        crate::types::TelemetryEvent::ChatAddMessageEvent(inner) => {
+            #[allow(unused_mut)]
+            let mut object_11 = object_3.key("chatAddMessageEvent").start_object();
+            crate::protocol_serde::shape_chat_add_message_event::ser_chat_add_message_event(&mut object_11, inner)?;
+            object_11.finish();
+        },
+        crate::types::TelemetryEvent::ChatInteractWithMessageEvent(inner) => {
+            #[allow(unused_mut)]
+            let mut object_12 = object_3.key("chatInteractWithMessageEvent").start_object();
+            crate::protocol_serde::shape_chat_interact_with_message_event::ser_chat_interact_with_message_event(
+                &mut object_12,
                 inner,
             )?;
-            object_10.finish();
+            object_12.finish();
+        },
+        crate::types::TelemetryEvent::ChatUserModificationEvent(inner) => {
+            #[allow(unused_mut)]
+            let mut object_13 = object_3.key("chatUserModificationEvent").start_object();
+            crate::protocol_serde::shape_chat_user_modification_event::ser_chat_user_modification_event(
+                &mut object_13,
+                inner,
+            )?;
+            object_13.finish();
+        },
+        crate::types::TelemetryEvent::TerminalUserInteractionEvent(inner) => {
+            #[allow(unused_mut)]
+            let mut object_14 = object_3.key("terminalUserInteractionEvent").start_object();
+            crate::protocol_serde::shape_terminal_user_interaction_event::ser_terminal_user_interaction_event(
+                &mut object_14,
+                inner,
+            )?;
+            object_14.finish();
         },
         crate::types::TelemetryEvent::FeatureDevEvent(inner) => {
             #[allow(unused_mut)]
-            let mut object_11 = object_3.key("featureDevEvent").start_object();
-            crate::protocol_serde::shape_feature_dev_event::ser_feature_dev_event(&mut object_11, inner)?;
-            object_11.finish();
+            let mut object_15 = object_3.key("featureDevEvent").start_object();
+            crate::protocol_serde::shape_feature_dev_event::ser_feature_dev_event(&mut object_15, inner)?;
+            object_15.finish();
+        },
+        crate::types::TelemetryEvent::FeatureDevCodeGenerationEvent(inner) => {
+            #[allow(unused_mut)]
+            let mut object_16 = object_3.key("featureDevCodeGenerationEvent").start_object();
+            crate::protocol_serde::shape_feature_dev_code_generation_event::ser_feature_dev_code_generation_event(
+                &mut object_16,
+                inner,
+            )?;
+            object_16.finish();
+        },
+        crate::types::TelemetryEvent::FeatureDevCodeAcceptanceEvent(inner) => {
+            #[allow(unused_mut)]
+            let mut object_17 = object_3.key("featureDevCodeAcceptanceEvent").start_object();
+            crate::protocol_serde::shape_feature_dev_code_acceptance_event::ser_feature_dev_code_acceptance_event(
+                &mut object_17,
+                inner,
+            )?;
+            object_17.finish();
+        },
+        crate::types::TelemetryEvent::InlineChatEvent(inner) => {
+            #[allow(unused_mut)]
+            let mut object_18 = object_3.key("inlineChatEvent").start_object();
+            crate::protocol_serde::shape_inline_chat_event::ser_inline_chat_event(&mut object_18, inner)?;
+            object_18.finish();
+        },
+        crate::types::TelemetryEvent::TransformEvent(inner) => {
+            #[allow(unused_mut)]
+            let mut object_19 = object_3.key("transformEvent").start_object();
+            crate::protocol_serde::shape_transform_event::ser_transform_event(&mut object_19, inner)?;
+            object_19.finish();
+        },
+        crate::types::TelemetryEvent::DocGenerationEvent(inner) => {
+            #[allow(unused_mut)]
+            let mut object_20 = object_3.key("docGenerationEvent").start_object();
+            crate::protocol_serde::shape_doc_generation_event::ser_doc_generation_event(&mut object_20, inner)?;
+            object_20.finish();
+        },
+        crate::types::TelemetryEvent::TestGenerationEvent(inner) => {
+            #[allow(unused_mut)]
+            let mut object_21 = object_3.key("testGenerationEvent").start_object();
+            crate::protocol_serde::shape_test_generation_event::ser_test_generation_event(&mut object_21, inner)?;
+            object_21.finish();
         },
         crate::types::TelemetryEvent::Unknown => {
             return Err(::aws_smithy_types::error::operation::SerializationError::unknown_variant("TelemetryEvent"));

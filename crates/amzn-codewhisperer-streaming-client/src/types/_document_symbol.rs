@@ -100,7 +100,7 @@ impl DocumentSymbolBuilder {
     /// Consumes the builder and constructs a [`DocumentSymbol`](crate::types::DocumentSymbol).
     /// This method will fail if any of the following fields are not set:
     /// - [`name`](crate::types::builders::DocumentSymbolBuilder::name)
-    /// - [`r#type`](crate::types::builders::DocumentSymbolBuilder::r#type)
+    /// - [`r#type`](crate::types::builders::DocumentSymbolBuilder::type)
     pub fn build(
         self,
     ) -> ::std::result::Result<crate::types::DocumentSymbol, ::aws_smithy_types::error::operation::BuildError> {

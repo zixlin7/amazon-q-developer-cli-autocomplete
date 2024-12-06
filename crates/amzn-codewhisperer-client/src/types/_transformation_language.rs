@@ -12,10 +12,13 @@
 /// ```text
 /// # let transformationlanguage = unimplemented!();
 /// match transformationlanguage {
+///     TransformationLanguage::Cobol => { /* ... */ },
 ///     TransformationLanguage::CSharp => { /* ... */ },
 ///     TransformationLanguage::Java11 => { /* ... */ },
 ///     TransformationLanguage::Java17 => { /* ... */ },
 ///     TransformationLanguage::Java8 => { /* ... */ },
+///     TransformationLanguage::Jcl => { /* ... */ },
+///     TransformationLanguage::PlI => { /* ... */ },
 ///     other @ _ if other.as_str() == "NewFeature" => { /* handles a case for `NewFeature` */ },
 ///     _ => { /* ... */ },
 /// }
@@ -50,6 +53,8 @@
 )]
 pub enum TransformationLanguage {
     #[allow(missing_docs)] // documentation missing in model
+    Cobol,
+    #[allow(missing_docs)] // documentation missing in model
     CSharp,
     #[allow(missing_docs)] // documentation missing in model
     Java11,
@@ -57,6 +62,10 @@ pub enum TransformationLanguage {
     Java17,
     #[allow(missing_docs)] // documentation missing in model
     Java8,
+    #[allow(missing_docs)] // documentation missing in model
+    Jcl,
+    #[allow(missing_docs)] // documentation missing in model
+    PlI,
     /// `Unknown` contains new variants that have been added since this code was generated.
     #[deprecated(
         note = "Don't directly match on `Unknown`. See the docs on this enum for the correct way to handle unknown variants."
@@ -66,10 +75,13 @@ pub enum TransformationLanguage {
 impl ::std::convert::From<&str> for TransformationLanguage {
     fn from(s: &str) -> Self {
         match s {
+            "COBOL" => TransformationLanguage::Cobol,
             "C_SHARP" => TransformationLanguage::CSharp,
             "JAVA_11" => TransformationLanguage::Java11,
             "JAVA_17" => TransformationLanguage::Java17,
             "JAVA_8" => TransformationLanguage::Java8,
+            "JCL" => TransformationLanguage::Jcl,
+            "PL_I" => TransformationLanguage::PlI,
             other => TransformationLanguage::Unknown(crate::primitives::sealed_enum_unknown::UnknownVariantValue(
                 other.to_owned(),
             )),
@@ -87,17 +99,20 @@ impl TransformationLanguage {
     /// Returns the `&str` value of the enum member.
     pub fn as_str(&self) -> &str {
         match self {
+            TransformationLanguage::Cobol => "COBOL",
             TransformationLanguage::CSharp => "C_SHARP",
             TransformationLanguage::Java11 => "JAVA_11",
             TransformationLanguage::Java17 => "JAVA_17",
             TransformationLanguage::Java8 => "JAVA_8",
+            TransformationLanguage::Jcl => "JCL",
+            TransformationLanguage::PlI => "PL_I",
             TransformationLanguage::Unknown(value) => value.as_str(),
         }
     }
 
     /// Returns all the `&str` representations of the enum members.
     pub const fn values() -> &'static [&'static str] {
-        &["C_SHARP", "JAVA_11", "JAVA_17", "JAVA_8"]
+        &["COBOL", "C_SHARP", "JAVA_11", "JAVA_17", "JAVA_8", "JCL", "PL_I"]
     }
 }
 impl ::std::convert::AsRef<str> for TransformationLanguage {
@@ -120,10 +135,13 @@ impl TransformationLanguage {
 impl ::std::fmt::Display for TransformationLanguage {
     fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
         match self {
+            TransformationLanguage::Cobol => write!(f, "COBOL"),
             TransformationLanguage::CSharp => write!(f, "C_SHARP"),
             TransformationLanguage::Java11 => write!(f, "JAVA_11"),
             TransformationLanguage::Java17 => write!(f, "JAVA_17"),
             TransformationLanguage::Java8 => write!(f, "JAVA_8"),
+            TransformationLanguage::Jcl => write!(f, "JCL"),
+            TransformationLanguage::PlI => write!(f, "PL_I"),
             TransformationLanguage::Unknown(value) => write!(f, "{}", value),
         }
     }

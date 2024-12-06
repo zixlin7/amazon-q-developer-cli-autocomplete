@@ -12,6 +12,7 @@ impl super::Client {
     ///   - [`artifact_type(ArtifactType)`](crate::operation::create_upload_url::builders::CreateUploadUrlFluentBuilder::artifact_type) / [`set_artifact_type(Option<ArtifactType>)`](crate::operation::create_upload_url::builders::CreateUploadUrlFluentBuilder::set_artifact_type):<br>required: **false**<br>(undocumented)<br>
     ///   - [`upload_intent(UploadIntent)`](crate::operation::create_upload_url::builders::CreateUploadUrlFluentBuilder::upload_intent) / [`set_upload_intent(Option<UploadIntent>)`](crate::operation::create_upload_url::builders::CreateUploadUrlFluentBuilder::set_upload_intent):<br>required: **false**<br>Upload Intent<br>
     ///   - [`upload_context(UploadContext)`](crate::operation::create_upload_url::builders::CreateUploadUrlFluentBuilder::upload_context) / [`set_upload_context(Option<UploadContext>)`](crate::operation::create_upload_url::builders::CreateUploadUrlFluentBuilder::set_upload_context):<br>required: **false**<br>(undocumented)<br>
+    ///   - [`upload_id(impl Into<String>)`](crate::operation::create_upload_url::builders::CreateUploadUrlFluentBuilder::upload_id) / [`set_upload_id(Option<String>)`](crate::operation::create_upload_url::builders::CreateUploadUrlFluentBuilder::set_upload_id):<br>required: **false**<br>Upload ID returned by CreateUploadUrl API<br>
     /// - On success, responds with
     ///   [`CreateUploadUrlOutput`](crate::operation::create_upload_url::CreateUploadUrlOutput) with
     ///   field(s):

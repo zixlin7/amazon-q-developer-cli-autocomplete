@@ -6,7 +6,15 @@
 pub struct ThrottlingError {
     #[allow(missing_docs)] // documentation missing in model
     pub message: ::std::string::String,
+    /// Reason for ThrottlingException
+    pub reason: ::std::option::Option<crate::types::ThrottlingExceptionReason>,
     pub(crate) meta: ::aws_smithy_types::error::ErrorMetadata,
+}
+impl ThrottlingError {
+    /// Reason for ThrottlingException
+    pub fn reason(&self) -> ::std::option::Option<&crate::types::ThrottlingExceptionReason> {
+        self.reason.as_ref()
+    }
 }
 impl ThrottlingError {
     /// Returns `Some(ErrorKind)` if the error is retryable. Otherwise, returns `None`.
@@ -53,6 +61,7 @@ impl ThrottlingError {
 #[non_exhaustive]
 pub struct ThrottlingErrorBuilder {
     pub(crate) message: ::std::option::Option<::std::string::String>,
+    pub(crate) reason: ::std::option::Option<crate::types::ThrottlingExceptionReason>,
     meta: std::option::Option<::aws_smithy_types::error::ErrorMetadata>,
 }
 impl ThrottlingErrorBuilder {
@@ -72,6 +81,23 @@ impl ThrottlingErrorBuilder {
     #[allow(missing_docs)] // documentation missing in model
     pub fn get_message(&self) -> &::std::option::Option<::std::string::String> {
         &self.message
+    }
+
+    /// Reason for ThrottlingException
+    pub fn reason(mut self, input: crate::types::ThrottlingExceptionReason) -> Self {
+        self.reason = ::std::option::Option::Some(input);
+        self
+    }
+
+    /// Reason for ThrottlingException
+    pub fn set_reason(mut self, input: ::std::option::Option<crate::types::ThrottlingExceptionReason>) -> Self {
+        self.reason = input;
+        self
+    }
+
+    /// Reason for ThrottlingException
+    pub fn get_reason(&self) -> &::std::option::Option<crate::types::ThrottlingExceptionReason> {
+        &self.reason
     }
 
     /// Sets error metadata
@@ -101,6 +127,7 @@ impl ThrottlingErrorBuilder {
                     "message was not specified but it is required when building ThrottlingError",
                 )
             })?,
+            reason: self.reason,
             meta: self.meta.unwrap_or_default(),
         })
     }

@@ -47,28 +47,75 @@ impl ::aws_smithy_eventstream::frame::UnmarshallMessage for GenerateCodeFromComm
                         ));
                     },
                 };
-                if response_headers.smithy_type.as_str() == "error" {
-                    let mut builder = crate::types::error::builders::InternalServerErrorBuilder::default();
-                    builder = crate::protocol_serde::shape_internal_server_error::de_internal_server_error_json_err(
-                        &message.payload()[..],
-                        builder,
-                    )
-                    .map_err(|err| {
-                        ::aws_smithy_eventstream::error::Error::unmarshalling(format!(
-                            "failed to unmarshall error: {}",
-                            err
-                        ))
-                    })?;
-                    builder.set_meta(Some(generic));
-                    return Ok(::aws_smithy_eventstream::frame::UnmarshalledMessage::Error(
-                        crate::types::error::GenerateCodeFromCommandsResponseStreamError::InternalServerError(
-                            crate::serde_util::internal_server_error_correct_errors(builder)
-                                .build()
-                                .map_err(|err| {
-                                    ::aws_smithy_eventstream::error::Error::unmarshalling(format!("{}", err))
-                                })?,
-                        ),
-                    ));
+                match response_headers.smithy_type.as_str() {
+                    "Error" => {
+                        let mut builder = crate::types::error::builders::InternalServerErrorBuilder::default();
+                        builder =
+                            crate::protocol_serde::shape_internal_server_error::de_internal_server_error_json_err(
+                                &message.payload()[..],
+                                builder,
+                            )
+                            .map_err(|err| {
+                                ::aws_smithy_eventstream::error::Error::unmarshalling(format!(
+                                    "failed to unmarshall Error: {}",
+                                    err
+                                ))
+                            })?;
+                        builder.set_meta(Some(generic));
+                        return Ok(::aws_smithy_eventstream::frame::UnmarshalledMessage::Error(
+                            crate::types::error::GenerateCodeFromCommandsResponseStreamError::InternalServerError(
+                                crate::serde_util::internal_server_error_correct_errors(builder)
+                                    .build()
+                                    .map_err(|err| {
+                                        ::aws_smithy_eventstream::error::Error::unmarshalling(format!("{}", err))
+                                    })?,
+                            ),
+                        ));
+                    },
+                    "QuotaLevelExceededError" => {
+                        let mut builder = crate::types::error::builders::ServiceQuotaExceededErrorBuilder::default();
+                        builder = crate::protocol_serde::shape_service_quota_exceeded_error::de_service_quota_exceeded_error_json_err(
+                            &message.payload()[..],
+                            builder,
+                        )
+                        .map_err(|err| {
+                            ::aws_smithy_eventstream::error::Error::unmarshalling(format!("failed to unmarshall QuotaLevelExceededError: {}", err))
+                        })?;
+                        builder.set_meta(Some(generic));
+                        return Ok(::aws_smithy_eventstream::frame::UnmarshalledMessage::Error(
+                            crate::types::error::GenerateCodeFromCommandsResponseStreamError::ServiceQuotaExceededError(
+                                crate::serde_util::service_quota_exceeded_error_correct_errors(builder)
+                                    .build()
+                                    .map_err(|err| {
+                                        ::aws_smithy_eventstream::error::Error::unmarshalling(format!("{}", err))
+                                    })?,
+                            ),
+                        ));
+                    },
+                    "ValidationError" => {
+                        let mut builder = crate::types::error::builders::ValidationErrorBuilder::default();
+                        builder = crate::protocol_serde::shape_validation_error::de_validation_error_json_err(
+                            &message.payload()[..],
+                            builder,
+                        )
+                        .map_err(|err| {
+                            ::aws_smithy_eventstream::error::Error::unmarshalling(format!(
+                                "failed to unmarshall ValidationError: {}",
+                                err
+                            ))
+                        })?;
+                        builder.set_meta(Some(generic));
+                        return Ok(::aws_smithy_eventstream::frame::UnmarshalledMessage::Error(
+                            crate::types::error::GenerateCodeFromCommandsResponseStreamError::ValidationError(
+                                crate::serde_util::validation_error_correct_errors(builder)
+                                    .build()
+                                    .map_err(|err| {
+                                        ::aws_smithy_eventstream::error::Error::unmarshalling(format!("{}", err))
+                                    })?,
+                            ),
+                        ));
+                    },
+                    _ => {},
                 }
                 Ok(::aws_smithy_eventstream::frame::UnmarshalledMessage::Error(
                     crate::types::error::GenerateCodeFromCommandsResponseStreamError::generic(generic),
@@ -137,6 +184,11 @@ impl ::aws_smithy_eventstream::frame::UnmarshallMessage for ChatResponseStreamUn
                         crate::types::ChatResponseStream::AssistantResponseEvent(parsed),
                     ))
                 },
+                "dryRunSucceedEvent" => Ok(::aws_smithy_eventstream::frame::UnmarshalledMessage::Event(
+                    crate::types::ChatResponseStream::DryRunSucceedEvent(
+                        crate::types::DryRunSucceedEvent::builder().build(),
+                    ),
+                )),
                 "codeReferenceEvent" => {
                     let parsed = crate::protocol_serde::shape_code_reference_event::de_code_reference_event_payload(
                         &message.payload()[..],
@@ -201,6 +253,19 @@ impl ::aws_smithy_eventstream::frame::UnmarshallMessage for ChatResponseStreamUn
                             })?;
                     Ok(::aws_smithy_eventstream::frame::UnmarshalledMessage::Event(
                         crate::types::ChatResponseStream::IntentsEvent(parsed),
+                    ))
+                },
+                "interactionComponentsEvent" => {
+                    let parsed =
+                        crate::protocol_serde::shape_interaction_components_event::de_interaction_components_event_payload(&message.payload()[..])
+                            .map_err(|err| {
+                                ::aws_smithy_eventstream::error::Error::unmarshalling(format!(
+                                    "failed to unmarshall InteractionComponentsEvent: {}",
+                                    err
+                                ))
+                            })?;
+                    Ok(::aws_smithy_eventstream::frame::UnmarshalledMessage::Event(
+                        crate::types::ChatResponseStream::InteractionComponentsEvent(parsed),
                     ))
                 },
                 "invalidStateEvent" => {

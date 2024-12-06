@@ -14,6 +14,7 @@
 /// match exportintent {
 ///     ExportIntent::TaskAssist => { /* ... */ },
 ///     ExportIntent::Transformation => { /* ... */ },
+///     ExportIntent::UnitTests => { /* ... */ },
 ///     other @ _ if other.as_str() == "NewFeature" => { /* handles a case for `NewFeature` */ },
 ///     _ => { /* ... */ },
 /// }
@@ -51,6 +52,8 @@ pub enum ExportIntent {
     TaskAssist,
     /// Code Transformation
     Transformation,
+    /// Unit Test
+    UnitTests,
     /// `Unknown` contains new variants that have been added since this code was generated.
     #[deprecated(
         note = "Don't directly match on `Unknown`. See the docs on this enum for the correct way to handle unknown variants."
@@ -62,6 +65,7 @@ impl ::std::convert::From<&str> for ExportIntent {
         match s {
             "TASK_ASSIST" => ExportIntent::TaskAssist,
             "TRANSFORMATION" => ExportIntent::Transformation,
+            "UNIT_TESTS" => ExportIntent::UnitTests,
             other => ExportIntent::Unknown(crate::primitives::sealed_enum_unknown::UnknownVariantValue(
                 other.to_owned(),
             )),
@@ -81,13 +85,14 @@ impl ExportIntent {
         match self {
             ExportIntent::TaskAssist => "TASK_ASSIST",
             ExportIntent::Transformation => "TRANSFORMATION",
+            ExportIntent::UnitTests => "UNIT_TESTS",
             ExportIntent::Unknown(value) => value.as_str(),
         }
     }
 
     /// Returns all the `&str` representations of the enum members.
     pub const fn values() -> &'static [&'static str] {
-        &["TASK_ASSIST", "TRANSFORMATION"]
+        &["TASK_ASSIST", "TRANSFORMATION", "UNIT_TESTS"]
     }
 }
 impl ::std::convert::AsRef<str> for ExportIntent {
@@ -112,6 +117,7 @@ impl ::std::fmt::Display for ExportIntent {
         match self {
             ExportIntent::TaskAssist => write!(f, "TASK_ASSIST"),
             ExportIntent::Transformation => write!(f, "TRANSFORMATION"),
+            ExportIntent::UnitTests => write!(f, "UNIT_TESTS"),
             ExportIntent::Unknown(value) => write!(f, "{}", value),
         }
     }

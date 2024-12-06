@@ -76,11 +76,17 @@ pub mod types;
 
 mod auth_plugin;
 
+pub(crate) mod client_idempotency_token;
+
+mod idempotency_token;
+
 pub(crate) mod protocol_serde;
 
 mod serialization_settings;
 
 mod lens;
+
+mod sdk_feature_tracker;
 
 mod serde_util;
 

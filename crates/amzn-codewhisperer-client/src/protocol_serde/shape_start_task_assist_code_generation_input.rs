@@ -27,5 +27,20 @@ pub fn ser_start_task_assist_code_generation_input_input(
         }
         array_6.finish();
     }
+    if let Some(var_9) = &input.code_generation_id {
+        object.key("codeGenerationId").string(var_9.as_str());
+    }
+    if let Some(var_10) = &input.current_code_generation_id {
+        object.key("currentCodeGenerationId").string(var_10.as_str());
+    }
+    if let Some(var_11) = &input.intent {
+        object.key("intent").string(var_11.as_str());
+    }
+    if let Some(var_12) = &input.intent_context {
+        #[allow(unused_mut)]
+        let mut object_13 = object.key("intentContext").start_object();
+        crate::protocol_serde::shape_intent_context::ser_intent_context(&mut object_13, var_12)?;
+        object_13.finish();
+    }
     Ok(())
 }

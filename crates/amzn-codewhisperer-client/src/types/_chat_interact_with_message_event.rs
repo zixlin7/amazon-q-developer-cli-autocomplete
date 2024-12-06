@@ -21,6 +21,8 @@ pub struct ChatInteractWithMessageEvent {
     pub accepted_snippet_has_reference: ::std::option::Option<bool>,
     #[allow(missing_docs)] // documentation missing in model
     pub has_project_level_context: ::std::option::Option<bool>,
+    /// User Intent
+    pub user_intent: ::std::option::Option<crate::types::UserIntent>,
 }
 impl ChatInteractWithMessageEvent {
     /// ID which represents a multi-turn conversation
@@ -69,6 +71,11 @@ impl ChatInteractWithMessageEvent {
     pub fn has_project_level_context(&self) -> ::std::option::Option<bool> {
         self.has_project_level_context
     }
+
+    /// User Intent
+    pub fn user_intent(&self) -> ::std::option::Option<&crate::types::UserIntent> {
+        self.user_intent.as_ref()
+    }
 }
 impl ChatInteractWithMessageEvent {
     /// Creates a new builder-style object to manufacture
@@ -91,6 +98,7 @@ pub struct ChatInteractWithMessageEventBuilder {
     pub(crate) accepted_line_count: ::std::option::Option<i32>,
     pub(crate) accepted_snippet_has_reference: ::std::option::Option<bool>,
     pub(crate) has_project_level_context: ::std::option::Option<bool>,
+    pub(crate) user_intent: ::std::option::Option<crate::types::UserIntent>,
 }
 impl ChatInteractWithMessageEventBuilder {
     /// ID which represents a multi-turn conversation
@@ -251,6 +259,23 @@ impl ChatInteractWithMessageEventBuilder {
         &self.has_project_level_context
     }
 
+    /// User Intent
+    pub fn user_intent(mut self, input: crate::types::UserIntent) -> Self {
+        self.user_intent = ::std::option::Option::Some(input);
+        self
+    }
+
+    /// User Intent
+    pub fn set_user_intent(mut self, input: ::std::option::Option<crate::types::UserIntent>) -> Self {
+        self.user_intent = input;
+        self
+    }
+
+    /// User Intent
+    pub fn get_user_intent(&self) -> &::std::option::Option<crate::types::UserIntent> {
+        &self.user_intent
+    }
+
     /// Consumes the builder and constructs a
     /// [`ChatInteractWithMessageEvent`](crate::types::ChatInteractWithMessageEvent).
     /// This method will fail if any of the following fields are not set:
@@ -282,6 +307,7 @@ impl ChatInteractWithMessageEventBuilder {
             accepted_line_count: self.accepted_line_count,
             accepted_snippet_has_reference: self.accepted_snippet_has_reference,
             has_project_level_context: self.has_project_level_context,
+            user_intent: self.user_intent,
         })
     }
 }

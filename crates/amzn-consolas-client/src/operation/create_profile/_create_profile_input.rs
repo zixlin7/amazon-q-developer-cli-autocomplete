@@ -19,6 +19,8 @@ pub struct CreateProfileInput {
     pub tags: ::std::option::Option<::std::vec::Vec<crate::types::Tag>>,
     #[allow(missing_docs)] // documentation missing in model
     pub resource_policy: ::std::option::Option<crate::types::ResourcePolicy>,
+    #[allow(missing_docs)] // documentation missing in model
+    pub opt_in_features: ::std::option::Option<crate::types::OptInFeatures>,
 }
 impl CreateProfileInput {
     #[allow(missing_docs)] // documentation missing in model
@@ -66,6 +68,11 @@ impl CreateProfileInput {
     pub fn resource_policy(&self) -> ::std::option::Option<&crate::types::ResourcePolicy> {
         self.resource_policy.as_ref()
     }
+
+    #[allow(missing_docs)] // documentation missing in model
+    pub fn opt_in_features(&self) -> ::std::option::Option<&crate::types::OptInFeatures> {
+        self.opt_in_features.as_ref()
+    }
 }
 impl CreateProfileInput {
     /// Creates a new builder-style object to manufacture
@@ -87,6 +94,7 @@ pub struct CreateProfileInputBuilder {
     pub(crate) kms_key_arn: ::std::option::Option<::std::string::String>,
     pub(crate) tags: ::std::option::Option<::std::vec::Vec<crate::types::Tag>>,
     pub(crate) resource_policy: ::std::option::Option<crate::types::ResourcePolicy>,
+    pub(crate) opt_in_features: ::std::option::Option<crate::types::OptInFeatures>,
 }
 impl CreateProfileInputBuilder {
     #[allow(missing_docs)] // documentation missing in model
@@ -247,6 +255,23 @@ impl CreateProfileInputBuilder {
         &self.resource_policy
     }
 
+    #[allow(missing_docs)] // documentation missing in model
+    pub fn opt_in_features(mut self, input: crate::types::OptInFeatures) -> Self {
+        self.opt_in_features = ::std::option::Option::Some(input);
+        self
+    }
+
+    #[allow(missing_docs)] // documentation missing in model
+    pub fn set_opt_in_features(mut self, input: ::std::option::Option<crate::types::OptInFeatures>) -> Self {
+        self.opt_in_features = input;
+        self
+    }
+
+    #[allow(missing_docs)] // documentation missing in model
+    pub fn get_opt_in_features(&self) -> &::std::option::Option<crate::types::OptInFeatures> {
+        &self.opt_in_features
+    }
+
     /// Consumes the builder and constructs a
     /// [`CreateProfileInput`](crate::operation::create_profile::CreateProfileInput).
     pub fn build(
@@ -264,6 +289,7 @@ impl CreateProfileInputBuilder {
             kms_key_arn: self.kms_key_arn,
             tags: self.tags,
             resource_policy: self.resource_policy,
+            opt_in_features: self.opt_in_features,
         })
     }
 }

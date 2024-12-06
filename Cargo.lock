@@ -119,7 +119,7 @@ checksum = "45862d1c77f2228b9e10bc609d5bc203d86ebc9b87ad8d5d5167a6c9abf739d9"
 
 [[package]]
 name = "amzn-codewhisperer-client"
-version = "0.1.1100"
+version = "0.1.4521"
 dependencies = [
  "aws-credential-types",
  "aws-runtime",
@@ -138,7 +138,7 @@ dependencies = [
 
 [[package]]
 name = "amzn-codewhisperer-streaming-client"
-version = "0.1.1100"
+version = "0.1.4521"
 dependencies = [
  "aws-credential-types",
  "aws-runtime",
@@ -157,7 +157,7 @@ dependencies = [
 
 [[package]]
 name = "amzn-consolas-client"
-version = "0.1.1100"
+version = "0.1.4521"
 dependencies = [
  "aws-credential-types",
  "aws-runtime",
@@ -176,7 +176,7 @@ dependencies = [
 
 [[package]]
 name = "amzn-qdeveloper-client"
-version = "0.1.1100"
+version = "0.1.4521"
 dependencies = [
  "aws-credential-types",
  "aws-runtime",
@@ -188,13 +188,14 @@ dependencies = [
  "aws-smithy-types",
  "aws-types",
  "bytes",
+ "fastrand",
  "http 0.2.12",
  "tracing",
 ]
 
 [[package]]
 name = "amzn-qdeveloper-streaming-client"
-version = "0.1.1100"
+version = "0.1.4521"
 dependencies = [
  "aws-credential-types",
  "aws-runtime",

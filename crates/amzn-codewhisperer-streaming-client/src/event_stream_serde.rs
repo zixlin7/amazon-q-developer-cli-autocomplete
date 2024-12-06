@@ -153,6 +153,11 @@ impl ::aws_smithy_eventstream::frame::UnmarshallMessage for ChatResponseStreamUn
                         crate::types::ChatResponseStream::AssistantResponseEvent(parsed),
                     ))
                 },
+                "dryRunSucceedEvent" => Ok(::aws_smithy_eventstream::frame::UnmarshalledMessage::Event(
+                    crate::types::ChatResponseStream::DryRunSucceedEvent(
+                        crate::types::DryRunSucceedEvent::builder().build(),
+                    ),
+                )),
                 "codeReferenceEvent" => {
                     let parsed = crate::protocol_serde::shape_code_reference_event::de_code_reference_event_payload(
                         &message.payload()[..],
@@ -217,6 +222,19 @@ impl ::aws_smithy_eventstream::frame::UnmarshallMessage for ChatResponseStreamUn
                             })?;
                     Ok(::aws_smithy_eventstream::frame::UnmarshalledMessage::Event(
                         crate::types::ChatResponseStream::IntentsEvent(parsed),
+                    ))
+                },
+                "interactionComponentsEvent" => {
+                    let parsed =
+                        crate::protocol_serde::shape_interaction_components_event::de_interaction_components_event_payload(&message.payload()[..])
+                            .map_err(|err| {
+                                ::aws_smithy_eventstream::error::Error::unmarshalling(format!(
+                                    "failed to unmarshall InteractionComponentsEvent: {}",
+                                    err
+                                ))
+                            })?;
+                    Ok(::aws_smithy_eventstream::frame::UnmarshalledMessage::Event(
+                        crate::types::ChatResponseStream::InteractionComponentsEvent(parsed),
                     ))
                 },
                 "invalidStateEvent" => {

@@ -62,5 +62,17 @@ pub fn ser_user_trigger_decision_event(
             ::aws_smithy_types::Number::NegInt((input.number_of_recommendations).into()),
         );
     }
+    if let Some(var_4) = &input.perceived_latency_milliseconds {
+        object.key("perceivedLatencyMilliseconds").number(
+            #[allow(clippy::useless_conversion)]
+            ::aws_smithy_types::Number::Float((*var_4).into()),
+        );
+    }
+    if input.accepted_character_count != 0 {
+        object.key("acceptedCharacterCount").number(
+            #[allow(clippy::useless_conversion)]
+            ::aws_smithy_types::Number::NegInt((input.accepted_character_count).into()),
+        );
+    }
     Ok(())
 }

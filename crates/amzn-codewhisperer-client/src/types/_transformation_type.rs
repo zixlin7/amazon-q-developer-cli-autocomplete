@@ -12,6 +12,7 @@
 /// ```text
 /// # let transformationtype = unimplemented!();
 /// match transformationtype {
+///     TransformationType::DocumentGeneration => { /* ... */ },
 ///     TransformationType::LanguageUpgrade => { /* ... */ },
 ///     other @ _ if other.as_str() == "NewFeature" => { /* handles a case for `NewFeature` */ },
 ///     _ => { /* ... */ },
@@ -47,6 +48,8 @@
 )]
 pub enum TransformationType {
     #[allow(missing_docs)] // documentation missing in model
+    DocumentGeneration,
+    #[allow(missing_docs)] // documentation missing in model
     LanguageUpgrade,
     /// `Unknown` contains new variants that have been added since this code was generated.
     #[deprecated(
@@ -57,6 +60,7 @@ pub enum TransformationType {
 impl ::std::convert::From<&str> for TransformationType {
     fn from(s: &str) -> Self {
         match s {
+            "DOCUMENT_GENERATION" => TransformationType::DocumentGeneration,
             "LANGUAGE_UPGRADE" => TransformationType::LanguageUpgrade,
             other => TransformationType::Unknown(crate::primitives::sealed_enum_unknown::UnknownVariantValue(
                 other.to_owned(),
@@ -75,6 +79,7 @@ impl TransformationType {
     /// Returns the `&str` value of the enum member.
     pub fn as_str(&self) -> &str {
         match self {
+            TransformationType::DocumentGeneration => "DOCUMENT_GENERATION",
             TransformationType::LanguageUpgrade => "LANGUAGE_UPGRADE",
             TransformationType::Unknown(value) => value.as_str(),
         }
@@ -82,7 +87,7 @@ impl TransformationType {
 
     /// Returns all the `&str` representations of the enum members.
     pub const fn values() -> &'static [&'static str] {
-        &["LANGUAGE_UPGRADE"]
+        &["DOCUMENT_GENERATION", "LANGUAGE_UPGRADE"]
     }
 }
 impl ::std::convert::AsRef<str> for TransformationType {
@@ -105,6 +110,7 @@ impl TransformationType {
 impl ::std::fmt::Display for TransformationType {
     fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
         match self {
+            TransformationType::DocumentGeneration => write!(f, "DOCUMENT_GENERATION"),
             TransformationType::LanguageUpgrade => write!(f, "LANGUAGE_UPGRADE"),
             TransformationType::Unknown(value) => write!(f, "{}", value),
         }

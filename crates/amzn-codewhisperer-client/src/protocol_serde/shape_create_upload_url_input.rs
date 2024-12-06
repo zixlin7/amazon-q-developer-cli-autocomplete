@@ -30,5 +30,8 @@ pub fn ser_create_upload_url_input_input(
         crate::protocol_serde::shape_upload_context::ser_upload_context(&mut object_8, var_7)?;
         object_8.finish();
     }
+    if let Some(var_9) = &input.upload_id {
+        object.key("uploadId").string(var_9.as_str());
+    }
     Ok(())
 }

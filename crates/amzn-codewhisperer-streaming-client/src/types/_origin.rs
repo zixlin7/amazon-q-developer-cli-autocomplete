@@ -19,6 +19,7 @@
 ///     Origin::Marketing => { /* ... */ },
 ///     Origin::Md => { /* ... */ },
 ///     Origin::Mobile => { /* ... */ },
+///     Origin::SageMaker => { /* ... */ },
 ///     Origin::ServiceInternal => { /* ... */ },
 ///     Origin::UnifiedSearch => { /* ... */ },
 ///     Origin::UnknownValue => { /* ... */ },
@@ -71,6 +72,8 @@ pub enum Origin {
     Md,
     /// AWS Mobile Application (ACMA)
     Mobile,
+    /// Amazon SageMaker's Rome Chat.
+    SageMaker,
     /// Internal Service Traffic (Integ Tests, Canaries, etc.). This is the default when no Origin
     /// header present in request.
     ServiceInternal,
@@ -96,6 +99,7 @@ impl ::std::convert::From<&str> for Origin {
             "MARKETING" => Origin::Marketing,
             "MD" => Origin::Md,
             "MOBILE" => Origin::Mobile,
+            "SAGE_MAKER" => Origin::SageMaker,
             "SERVICE_INTERNAL" => Origin::ServiceInternal,
             "UNIFIED_SEARCH" => Origin::UnifiedSearch,
             "UNKNOWN" => Origin::UnknownValue,
@@ -123,6 +127,7 @@ impl Origin {
             Origin::Marketing => "MARKETING",
             Origin::Md => "MD",
             Origin::Mobile => "MOBILE",
+            Origin::SageMaker => "SAGE_MAKER",
             Origin::ServiceInternal => "SERVICE_INTERNAL",
             Origin::UnifiedSearch => "UNIFIED_SEARCH",
             Origin::UnknownValue => "UNKNOWN",
@@ -140,6 +145,7 @@ impl Origin {
             "MARKETING",
             "MD",
             "MOBILE",
+            "SAGE_MAKER",
             "SERVICE_INTERNAL",
             "UNIFIED_SEARCH",
             "UNKNOWN",
@@ -173,6 +179,7 @@ impl ::std::fmt::Display for Origin {
             Origin::Marketing => write!(f, "MARKETING"),
             Origin::Md => write!(f, "MD"),
             Origin::Mobile => write!(f, "MOBILE"),
+            Origin::SageMaker => write!(f, "SAGE_MAKER"),
             Origin::ServiceInternal => write!(f, "SERVICE_INTERNAL"),
             Origin::UnifiedSearch => write!(f, "UNIFIED_SEARCH"),
             Origin::UnknownValue => write!(f, "UNKNOWN"),

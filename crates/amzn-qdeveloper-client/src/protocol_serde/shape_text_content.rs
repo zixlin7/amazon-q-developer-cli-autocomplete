@@ -32,6 +32,11 @@ where
                                     crate::protocol_serde::shape_nelly_url_list::de_nelly_url_list(tokens)?,
                                 );
                             },
+                            "licenses" => {
+                                builder = builder.set_licenses(
+                                    crate::protocol_serde::shape_nelly_license_list::de_nelly_license_list(tokens)?,
+                                );
+                            },
                             _ => ::aws_smithy_json::deserialize::token::skip_value(tokens)?,
                         }
                     },

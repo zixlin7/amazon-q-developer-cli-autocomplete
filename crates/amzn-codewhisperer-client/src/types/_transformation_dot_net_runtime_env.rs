@@ -16,26 +16,8 @@
 ///     TransformationDotNetRuntimeEnv::Net60 => { /* ... */ },
 ///     TransformationDotNetRuntimeEnv::Net70 => { /* ... */ },
 ///     TransformationDotNetRuntimeEnv::Net80 => { /* ... */ },
-///     TransformationDotNetRuntimeEnv::NetCoreApp10 => { /* ... */ },
-///     TransformationDotNetRuntimeEnv::NetCoreApp11 => { /* ... */ },
-///     TransformationDotNetRuntimeEnv::NetCoreApp20 => { /* ... */ },
-///     TransformationDotNetRuntimeEnv::NetCoreApp21 => { /* ... */ },
-///     TransformationDotNetRuntimeEnv::NetCoreApp22 => { /* ... */ },
-///     TransformationDotNetRuntimeEnv::NetCoreApp30 => { /* ... */ },
-///     TransformationDotNetRuntimeEnv::NetCoreApp31 => { /* ... */ },
-///     TransformationDotNetRuntimeEnv::NetFrameworkV35 => { /* ... */ },
-///     TransformationDotNetRuntimeEnv::NetFrameworkV40 => { /* ... */ },
-///     TransformationDotNetRuntimeEnv::NetFrameworkV45 => { /* ... */ },
-///     TransformationDotNetRuntimeEnv::NetFrameworkV451 => { /* ... */ },
-///     TransformationDotNetRuntimeEnv::NetFrameworkV452 => { /* ... */ },
-///     TransformationDotNetRuntimeEnv::NetFrameworkV46 => { /* ... */ },
-///     TransformationDotNetRuntimeEnv::NetFrameworkV461 => { /* ... */ },
-///     TransformationDotNetRuntimeEnv::NetFrameworkV462 => { /* ... */ },
-///     TransformationDotNetRuntimeEnv::NetFrameworkV47 => { /* ... */ },
-///     TransformationDotNetRuntimeEnv::NetFrameworkV471 => { /* ... */ },
-///     TransformationDotNetRuntimeEnv::NetFrameworkV472 => { /* ... */ },
-///     TransformationDotNetRuntimeEnv::NetFrameworkV48 => { /* ... */ },
-///     TransformationDotNetRuntimeEnv::NetFrameworkV481 => { /* ... */ },
+///     TransformationDotNetRuntimeEnv::Net90 => { /* ... */ },
+///     TransformationDotNetRuntimeEnv::NetStandard20 => { /* ... */ },
 ///     other @ _ if other.as_str() == "NewFeature" => { /* handles a case for `NewFeature` */ },
 ///     _ => { /* ... */ },
 /// }
@@ -78,45 +60,9 @@ pub enum TransformationDotNetRuntimeEnv {
     #[allow(missing_docs)] // documentation missing in model
     Net80,
     #[allow(missing_docs)] // documentation missing in model
-    NetCoreApp10,
+    Net90,
     #[allow(missing_docs)] // documentation missing in model
-    NetCoreApp11,
-    #[allow(missing_docs)] // documentation missing in model
-    NetCoreApp20,
-    #[allow(missing_docs)] // documentation missing in model
-    NetCoreApp21,
-    #[allow(missing_docs)] // documentation missing in model
-    NetCoreApp22,
-    #[allow(missing_docs)] // documentation missing in model
-    NetCoreApp30,
-    #[allow(missing_docs)] // documentation missing in model
-    NetCoreApp31,
-    #[allow(missing_docs)] // documentation missing in model
-    NetFrameworkV35,
-    #[allow(missing_docs)] // documentation missing in model
-    NetFrameworkV40,
-    #[allow(missing_docs)] // documentation missing in model
-    NetFrameworkV45,
-    #[allow(missing_docs)] // documentation missing in model
-    NetFrameworkV451,
-    #[allow(missing_docs)] // documentation missing in model
-    NetFrameworkV452,
-    #[allow(missing_docs)] // documentation missing in model
-    NetFrameworkV46,
-    #[allow(missing_docs)] // documentation missing in model
-    NetFrameworkV461,
-    #[allow(missing_docs)] // documentation missing in model
-    NetFrameworkV462,
-    #[allow(missing_docs)] // documentation missing in model
-    NetFrameworkV47,
-    #[allow(missing_docs)] // documentation missing in model
-    NetFrameworkV471,
-    #[allow(missing_docs)] // documentation missing in model
-    NetFrameworkV472,
-    #[allow(missing_docs)] // documentation missing in model
-    NetFrameworkV48,
-    #[allow(missing_docs)] // documentation missing in model
-    NetFrameworkV481,
+    NetStandard20,
     /// `Unknown` contains new variants that have been added since this code was generated.
     #[deprecated(
         note = "Don't directly match on `Unknown`. See the docs on this enum for the correct way to handle unknown variants."
@@ -130,26 +76,8 @@ impl ::std::convert::From<&str> for TransformationDotNetRuntimeEnv {
             "NET_6_0" => TransformationDotNetRuntimeEnv::Net60,
             "NET_7_0" => TransformationDotNetRuntimeEnv::Net70,
             "NET_8_0" => TransformationDotNetRuntimeEnv::Net80,
-            "NET_CORE_APP_1_0" => TransformationDotNetRuntimeEnv::NetCoreApp10,
-            "NET_CORE_APP_1_1" => TransformationDotNetRuntimeEnv::NetCoreApp11,
-            "NET_CORE_APP_2_0" => TransformationDotNetRuntimeEnv::NetCoreApp20,
-            "NET_CORE_APP_2_1" => TransformationDotNetRuntimeEnv::NetCoreApp21,
-            "NET_CORE_APP_2_2" => TransformationDotNetRuntimeEnv::NetCoreApp22,
-            "NET_CORE_APP_3_0" => TransformationDotNetRuntimeEnv::NetCoreApp30,
-            "NET_CORE_APP_3_1" => TransformationDotNetRuntimeEnv::NetCoreApp31,
-            "NET_FRAMEWORK_V_3_5" => TransformationDotNetRuntimeEnv::NetFrameworkV35,
-            "NET_FRAMEWORK_V_4_0" => TransformationDotNetRuntimeEnv::NetFrameworkV40,
-            "NET_FRAMEWORK_V_4_5" => TransformationDotNetRuntimeEnv::NetFrameworkV45,
-            "NET_FRAMEWORK_V_4_5_1" => TransformationDotNetRuntimeEnv::NetFrameworkV451,
-            "NET_FRAMEWORK_V_4_5_2" => TransformationDotNetRuntimeEnv::NetFrameworkV452,
-            "NET_FRAMEWORK_V_4_6" => TransformationDotNetRuntimeEnv::NetFrameworkV46,
-            "NET_FRAMEWORK_V_4_6_1" => TransformationDotNetRuntimeEnv::NetFrameworkV461,
-            "NET_FRAMEWORK_V_4_6_2" => TransformationDotNetRuntimeEnv::NetFrameworkV462,
-            "NET_FRAMEWORK_V_4_7" => TransformationDotNetRuntimeEnv::NetFrameworkV47,
-            "NET_FRAMEWORK_V_4_7_1" => TransformationDotNetRuntimeEnv::NetFrameworkV471,
-            "NET_FRAMEWORK_V_4_7_2" => TransformationDotNetRuntimeEnv::NetFrameworkV472,
-            "NET_FRAMEWORK_V_4_8" => TransformationDotNetRuntimeEnv::NetFrameworkV48,
-            "NET_FRAMEWORK_V_4_8_1" => TransformationDotNetRuntimeEnv::NetFrameworkV481,
+            "NET_9_0" => TransformationDotNetRuntimeEnv::Net90,
+            "NET_STANDARD_2_0" => TransformationDotNetRuntimeEnv::NetStandard20,
             other => TransformationDotNetRuntimeEnv::Unknown(
                 crate::primitives::sealed_enum_unknown::UnknownVariantValue(other.to_owned()),
             ),
@@ -171,26 +99,8 @@ impl TransformationDotNetRuntimeEnv {
             TransformationDotNetRuntimeEnv::Net60 => "NET_6_0",
             TransformationDotNetRuntimeEnv::Net70 => "NET_7_0",
             TransformationDotNetRuntimeEnv::Net80 => "NET_8_0",
-            TransformationDotNetRuntimeEnv::NetCoreApp10 => "NET_CORE_APP_1_0",
-            TransformationDotNetRuntimeEnv::NetCoreApp11 => "NET_CORE_APP_1_1",
-            TransformationDotNetRuntimeEnv::NetCoreApp20 => "NET_CORE_APP_2_0",
-            TransformationDotNetRuntimeEnv::NetCoreApp21 => "NET_CORE_APP_2_1",
-            TransformationDotNetRuntimeEnv::NetCoreApp22 => "NET_CORE_APP_2_2",
-            TransformationDotNetRuntimeEnv::NetCoreApp30 => "NET_CORE_APP_3_0",
-            TransformationDotNetRuntimeEnv::NetCoreApp31 => "NET_CORE_APP_3_1",
-            TransformationDotNetRuntimeEnv::NetFrameworkV35 => "NET_FRAMEWORK_V_3_5",
-            TransformationDotNetRuntimeEnv::NetFrameworkV40 => "NET_FRAMEWORK_V_4_0",
-            TransformationDotNetRuntimeEnv::NetFrameworkV45 => "NET_FRAMEWORK_V_4_5",
-            TransformationDotNetRuntimeEnv::NetFrameworkV451 => "NET_FRAMEWORK_V_4_5_1",
-            TransformationDotNetRuntimeEnv::NetFrameworkV452 => "NET_FRAMEWORK_V_4_5_2",
-            TransformationDotNetRuntimeEnv::NetFrameworkV46 => "NET_FRAMEWORK_V_4_6",
-            TransformationDotNetRuntimeEnv::NetFrameworkV461 => "NET_FRAMEWORK_V_4_6_1",
-            TransformationDotNetRuntimeEnv::NetFrameworkV462 => "NET_FRAMEWORK_V_4_6_2",
-            TransformationDotNetRuntimeEnv::NetFrameworkV47 => "NET_FRAMEWORK_V_4_7",
-            TransformationDotNetRuntimeEnv::NetFrameworkV471 => "NET_FRAMEWORK_V_4_7_1",
-            TransformationDotNetRuntimeEnv::NetFrameworkV472 => "NET_FRAMEWORK_V_4_7_2",
-            TransformationDotNetRuntimeEnv::NetFrameworkV48 => "NET_FRAMEWORK_V_4_8",
-            TransformationDotNetRuntimeEnv::NetFrameworkV481 => "NET_FRAMEWORK_V_4_8_1",
+            TransformationDotNetRuntimeEnv::Net90 => "NET_9_0",
+            TransformationDotNetRuntimeEnv::NetStandard20 => "NET_STANDARD_2_0",
             TransformationDotNetRuntimeEnv::Unknown(value) => value.as_str(),
         }
     }
@@ -202,26 +112,8 @@ impl TransformationDotNetRuntimeEnv {
             "NET_6_0",
             "NET_7_0",
             "NET_8_0",
-            "NET_CORE_APP_1_0",
-            "NET_CORE_APP_1_1",
-            "NET_CORE_APP_2_0",
-            "NET_CORE_APP_2_1",
-            "NET_CORE_APP_2_2",
-            "NET_CORE_APP_3_0",
-            "NET_CORE_APP_3_1",
-            "NET_FRAMEWORK_V_3_5",
-            "NET_FRAMEWORK_V_4_0",
-            "NET_FRAMEWORK_V_4_5",
-            "NET_FRAMEWORK_V_4_5_1",
-            "NET_FRAMEWORK_V_4_5_2",
-            "NET_FRAMEWORK_V_4_6",
-            "NET_FRAMEWORK_V_4_6_1",
-            "NET_FRAMEWORK_V_4_6_2",
-            "NET_FRAMEWORK_V_4_7",
-            "NET_FRAMEWORK_V_4_7_1",
-            "NET_FRAMEWORK_V_4_7_2",
-            "NET_FRAMEWORK_V_4_8",
-            "NET_FRAMEWORK_V_4_8_1",
+            "NET_9_0",
+            "NET_STANDARD_2_0",
         ]
     }
 }
@@ -249,26 +141,8 @@ impl ::std::fmt::Display for TransformationDotNetRuntimeEnv {
             TransformationDotNetRuntimeEnv::Net60 => write!(f, "NET_6_0"),
             TransformationDotNetRuntimeEnv::Net70 => write!(f, "NET_7_0"),
             TransformationDotNetRuntimeEnv::Net80 => write!(f, "NET_8_0"),
-            TransformationDotNetRuntimeEnv::NetCoreApp10 => write!(f, "NET_CORE_APP_1_0"),
-            TransformationDotNetRuntimeEnv::NetCoreApp11 => write!(f, "NET_CORE_APP_1_1"),
-            TransformationDotNetRuntimeEnv::NetCoreApp20 => write!(f, "NET_CORE_APP_2_0"),
-            TransformationDotNetRuntimeEnv::NetCoreApp21 => write!(f, "NET_CORE_APP_2_1"),
-            TransformationDotNetRuntimeEnv::NetCoreApp22 => write!(f, "NET_CORE_APP_2_2"),
-            TransformationDotNetRuntimeEnv::NetCoreApp30 => write!(f, "NET_CORE_APP_3_0"),
-            TransformationDotNetRuntimeEnv::NetCoreApp31 => write!(f, "NET_CORE_APP_3_1"),
-            TransformationDotNetRuntimeEnv::NetFrameworkV35 => write!(f, "NET_FRAMEWORK_V_3_5"),
-            TransformationDotNetRuntimeEnv::NetFrameworkV40 => write!(f, "NET_FRAMEWORK_V_4_0"),
-            TransformationDotNetRuntimeEnv::NetFrameworkV45 => write!(f, "NET_FRAMEWORK_V_4_5"),
-            TransformationDotNetRuntimeEnv::NetFrameworkV451 => write!(f, "NET_FRAMEWORK_V_4_5_1"),
-            TransformationDotNetRuntimeEnv::NetFrameworkV452 => write!(f, "NET_FRAMEWORK_V_4_5_2"),
-            TransformationDotNetRuntimeEnv::NetFrameworkV46 => write!(f, "NET_FRAMEWORK_V_4_6"),
-            TransformationDotNetRuntimeEnv::NetFrameworkV461 => write!(f, "NET_FRAMEWORK_V_4_6_1"),
-            TransformationDotNetRuntimeEnv::NetFrameworkV462 => write!(f, "NET_FRAMEWORK_V_4_6_2"),
-            TransformationDotNetRuntimeEnv::NetFrameworkV47 => write!(f, "NET_FRAMEWORK_V_4_7"),
-            TransformationDotNetRuntimeEnv::NetFrameworkV471 => write!(f, "NET_FRAMEWORK_V_4_7_1"),
-            TransformationDotNetRuntimeEnv::NetFrameworkV472 => write!(f, "NET_FRAMEWORK_V_4_7_2"),
-            TransformationDotNetRuntimeEnv::NetFrameworkV48 => write!(f, "NET_FRAMEWORK_V_4_8"),
-            TransformationDotNetRuntimeEnv::NetFrameworkV481 => write!(f, "NET_FRAMEWORK_V_4_8_1"),
+            TransformationDotNetRuntimeEnv::Net90 => write!(f, "NET_9_0"),
+            TransformationDotNetRuntimeEnv::NetStandard20 => write!(f, "NET_STANDARD_2_0"),
             TransformationDotNetRuntimeEnv::Unknown(value) => write!(f, "{}", value),
         }
     }

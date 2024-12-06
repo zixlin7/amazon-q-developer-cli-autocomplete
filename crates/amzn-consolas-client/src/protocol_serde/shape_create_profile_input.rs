@@ -54,5 +54,11 @@ pub fn ser_create_profile_input_input(
         crate::protocol_serde::shape_resource_policy::ser_resource_policy(&mut object_16, var_15)?;
         object_16.finish();
     }
+    if let Some(var_17) = &input.opt_in_features {
+        #[allow(unused_mut)]
+        let mut object_18 = object.key("optInFeatures").start_object();
+        crate::protocol_serde::shape_opt_in_features::ser_opt_in_features(&mut object_18, var_17)?;
+        object_18.finish();
+    }
     Ok(())
 }

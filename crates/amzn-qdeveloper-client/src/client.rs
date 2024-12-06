@@ -76,9 +76,13 @@ impl Client {
     }
 }
 
+mod associate_connector_resource;
+
 mod create_assignment;
 
 mod create_extension;
+
+mod create_plugin;
 
 mod create_resolution;
 
@@ -113,21 +117,47 @@ mod delete_assignment;
 
 mod delete_extension;
 
+mod delete_plugin;
+
+mod get_connector;
+
 mod get_conversation;
 
 mod get_extension;
 
 mod get_identity_metadata;
 
+mod get_plugin;
+
+mod get_task;
+
 mod get_troubleshooting_results;
 
+mod get_user_settings;
+
+mod invoke_task;
+
 mod list_conversations;
+
+mod list_dashboard_metrics;
 
 mod list_extension_providers;
 
 mod list_extensions;
 
+mod list_plugin_providers;
+
+mod list_plugins;
+
+mod list_tags_for_resource;
+
+mod list_tasks;
+
 mod pass_request;
+
+mod reject_connector;
+
+mod send_event;
 
 mod send_message;
 
@@ -137,4 +167,12 @@ mod start_troubleshooting_analysis;
 
 mod start_troubleshooting_resolution_explanation;
 
+mod tag_resource;
+
+mod untag_resource;
+
 mod update_troubleshooting_command_result;
+
+mod update_user_settings;
+
+mod use_plugin;

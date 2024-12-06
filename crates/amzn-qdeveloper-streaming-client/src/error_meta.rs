@@ -109,18 +109,21 @@ where
 impl From<crate::operation::generate_code_from_commands::GenerateCodeFromCommandsError> for Error {
     fn from(err: crate::operation::generate_code_from_commands::GenerateCodeFromCommandsError) -> Self {
         match err {
+            crate::operation::generate_code_from_commands::GenerateCodeFromCommandsError::ServiceQuotaExceededError(
+                inner,
+            ) => Error::ServiceQuotaExceededError(inner),
             crate::operation::generate_code_from_commands::GenerateCodeFromCommandsError::ThrottlingError(inner) => {
                 Error::ThrottlingError(inner)
             },
             crate::operation::generate_code_from_commands::GenerateCodeFromCommandsError::ValidationError(inner) => {
                 Error::ValidationError(inner)
             },
-            crate::operation::generate_code_from_commands::GenerateCodeFromCommandsError::InternalServerError(
-                inner,
-            ) => Error::InternalServerError(inner),
             crate::operation::generate_code_from_commands::GenerateCodeFromCommandsError::AccessDeniedError(inner) => {
                 Error::AccessDeniedError(inner)
             },
+            crate::operation::generate_code_from_commands::GenerateCodeFromCommandsError::InternalServerError(
+                inner,
+            ) => Error::InternalServerError(inner),
             crate::operation::generate_code_from_commands::GenerateCodeFromCommandsError::Unhandled(inner) => {
                 Error::Unhandled(inner)
             },
@@ -150,20 +153,20 @@ impl From<crate::operation::send_message::SendMessageError> for Error {
             crate::operation::send_message::SendMessageError::ServiceQuotaExceededError(inner) => {
                 Error::ServiceQuotaExceededError(inner)
             },
+            crate::operation::send_message::SendMessageError::ThrottlingError(inner) => Error::ThrottlingError(inner),
             crate::operation::send_message::SendMessageError::DryRunOperationError(inner) => {
                 Error::DryRunOperationError(inner)
             },
-            crate::operation::send_message::SendMessageError::ThrottlingError(inner) => Error::ThrottlingError(inner),
-            crate::operation::send_message::SendMessageError::ConflictError(inner) => Error::ConflictError(inner),
             crate::operation::send_message::SendMessageError::ValidationError(inner) => Error::ValidationError(inner),
+            crate::operation::send_message::SendMessageError::AccessDeniedError(inner) => {
+                Error::AccessDeniedError(inner)
+            },
+            crate::operation::send_message::SendMessageError::ConflictError(inner) => Error::ConflictError(inner),
             crate::operation::send_message::SendMessageError::InternalServerError(inner) => {
                 Error::InternalServerError(inner)
             },
             crate::operation::send_message::SendMessageError::ResourceNotFoundError(inner) => {
                 Error::ResourceNotFoundError(inner)
-            },
-            crate::operation::send_message::SendMessageError::AccessDeniedError(inner) => {
-                Error::AccessDeniedError(inner)
             },
             crate::operation::send_message::SendMessageError::Unhandled(inner) => Error::Unhandled(inner),
         }
@@ -199,6 +202,12 @@ impl From<crate::types::error::GenerateCodeFromCommandsResponseStreamError> for 
         match err {
             crate::types::error::GenerateCodeFromCommandsResponseStreamError::InternalServerError(inner) => {
                 Error::InternalServerError(inner)
+            },
+            crate::types::error::GenerateCodeFromCommandsResponseStreamError::ServiceQuotaExceededError(inner) => {
+                Error::ServiceQuotaExceededError(inner)
+            },
+            crate::types::error::GenerateCodeFromCommandsResponseStreamError::ValidationError(inner) => {
+                Error::ValidationError(inner)
             },
             crate::types::error::GenerateCodeFromCommandsResponseStreamError::Unhandled(inner) => {
                 Error::Unhandled(inner)

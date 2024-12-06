@@ -23,6 +23,12 @@ pub struct Profile {
     pub resource_policy: ::std::option::Option<crate::types::ResourcePolicy>,
     #[allow(missing_docs)] // documentation missing in model
     pub profile_type: ::std::option::Option<crate::types::ProfileType>,
+    #[allow(missing_docs)] // documentation missing in model
+    pub opt_in_features: ::std::option::Option<crate::types::OptInFeatures>,
+    #[allow(missing_docs)] // documentation missing in model
+    pub permission_update_required: ::std::option::Option<bool>,
+    #[allow(missing_docs)] // documentation missing in model
+    pub application_properties: ::std::option::Option<::std::vec::Vec<crate::types::ApplicationProperties>>,
 }
 impl Profile {
     #[allow(missing_docs)] // documentation missing in model
@@ -78,6 +84,23 @@ impl Profile {
     pub fn profile_type(&self) -> ::std::option::Option<&crate::types::ProfileType> {
         self.profile_type.as_ref()
     }
+
+    #[allow(missing_docs)] // documentation missing in model
+    pub fn opt_in_features(&self) -> ::std::option::Option<&crate::types::OptInFeatures> {
+        self.opt_in_features.as_ref()
+    }
+
+    #[allow(missing_docs)] // documentation missing in model
+    pub fn permission_update_required(&self) -> ::std::option::Option<bool> {
+        self.permission_update_required
+    }
+
+    #[allow(missing_docs)] // documentation missing in model
+    /// If no value was sent for this field, a default will be set. If you want to determine if no
+    /// value was sent, use `.application_properties.is_none()`.
+    pub fn application_properties(&self) -> &[crate::types::ApplicationProperties] {
+        self.application_properties.as_deref().unwrap_or_default()
+    }
 }
 impl Profile {
     /// Creates a new builder-style object to manufacture [`Profile`](crate::types::Profile).
@@ -100,6 +123,9 @@ pub struct ProfileBuilder {
     pub(crate) error_details: ::std::option::Option<::std::string::String>,
     pub(crate) resource_policy: ::std::option::Option<crate::types::ResourcePolicy>,
     pub(crate) profile_type: ::std::option::Option<crate::types::ProfileType>,
+    pub(crate) opt_in_features: ::std::option::Option<crate::types::OptInFeatures>,
+    pub(crate) permission_update_required: ::std::option::Option<bool>,
+    pub(crate) application_properties: ::std::option::Option<::std::vec::Vec<crate::types::ApplicationProperties>>,
 }
 impl ProfileBuilder {
     #[allow(missing_docs)] // documentation missing in model
@@ -290,6 +316,67 @@ impl ProfileBuilder {
         &self.profile_type
     }
 
+    #[allow(missing_docs)] // documentation missing in model
+    pub fn opt_in_features(mut self, input: crate::types::OptInFeatures) -> Self {
+        self.opt_in_features = ::std::option::Option::Some(input);
+        self
+    }
+
+    #[allow(missing_docs)] // documentation missing in model
+    pub fn set_opt_in_features(mut self, input: ::std::option::Option<crate::types::OptInFeatures>) -> Self {
+        self.opt_in_features = input;
+        self
+    }
+
+    #[allow(missing_docs)] // documentation missing in model
+    pub fn get_opt_in_features(&self) -> &::std::option::Option<crate::types::OptInFeatures> {
+        &self.opt_in_features
+    }
+
+    #[allow(missing_docs)] // documentation missing in model
+    pub fn permission_update_required(mut self, input: bool) -> Self {
+        self.permission_update_required = ::std::option::Option::Some(input);
+        self
+    }
+
+    #[allow(missing_docs)] // documentation missing in model
+    pub fn set_permission_update_required(mut self, input: ::std::option::Option<bool>) -> Self {
+        self.permission_update_required = input;
+        self
+    }
+
+    #[allow(missing_docs)] // documentation missing in model
+    pub fn get_permission_update_required(&self) -> &::std::option::Option<bool> {
+        &self.permission_update_required
+    }
+
+    /// Appends an item to `application_properties`.
+    ///
+    /// To override the contents of this collection use
+    /// [`set_application_properties`](Self::set_application_properties).
+    pub fn application_properties(mut self, input: crate::types::ApplicationProperties) -> Self {
+        let mut v = self.application_properties.unwrap_or_default();
+        v.push(input);
+        self.application_properties = ::std::option::Option::Some(v);
+        self
+    }
+
+    #[allow(missing_docs)] // documentation missing in model
+    pub fn set_application_properties(
+        mut self,
+        input: ::std::option::Option<::std::vec::Vec<crate::types::ApplicationProperties>>,
+    ) -> Self {
+        self.application_properties = input;
+        self
+    }
+
+    #[allow(missing_docs)] // documentation missing in model
+    pub fn get_application_properties(
+        &self,
+    ) -> &::std::option::Option<::std::vec::Vec<crate::types::ApplicationProperties>> {
+        &self.application_properties
+    }
+
     /// Consumes the builder and constructs a [`Profile`](crate::types::Profile).
     /// This method will fail if any of the following fields are not set:
     /// - [`arn`](crate::types::builders::ProfileBuilder::arn)
@@ -324,6 +411,9 @@ impl ProfileBuilder {
             error_details: self.error_details,
             resource_policy: self.resource_policy,
             profile_type: self.profile_type,
+            opt_in_features: self.opt_in_features,
+            permission_update_required: self.permission_update_required,
+            application_properties: self.application_properties,
         })
     }
 }

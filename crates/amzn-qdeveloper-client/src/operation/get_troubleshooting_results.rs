@@ -302,6 +302,9 @@ pub enum GetTroubleshootingResultsError {
     /// This exception is thrown when the user does not have sufficient access to perform this
     /// action.
     AccessDeniedError(crate::types::error::AccessDeniedError),
+    /// This exception is thrown when the action to perform could not be completed because the
+    /// resource is in a conflicting state.
+    ConflictError(crate::types::error::ConflictError),
     /// This exception is thrown when the input fails to satisfy the constraints specified by the
     /// service.
     ValidationError(crate::types::error::ValidationError),
@@ -350,6 +353,7 @@ impl GetTroubleshootingResultsError {
             Self::ResourceNotFoundError(e) => ::aws_smithy_types::error::metadata::ProvideErrorMetadata::meta(e),
             Self::InternalServerError(e) => ::aws_smithy_types::error::metadata::ProvideErrorMetadata::meta(e),
             Self::AccessDeniedError(e) => ::aws_smithy_types::error::metadata::ProvideErrorMetadata::meta(e),
+            Self::ConflictError(e) => ::aws_smithy_types::error::metadata::ProvideErrorMetadata::meta(e),
             Self::ValidationError(e) => ::aws_smithy_types::error::metadata::ProvideErrorMetadata::meta(e),
             Self::ServiceQuotaExceededError(e) => ::aws_smithy_types::error::metadata::ProvideErrorMetadata::meta(e),
             Self::ThrottlingError(e) => ::aws_smithy_types::error::metadata::ProvideErrorMetadata::meta(e),
@@ -370,6 +374,11 @@ impl GetTroubleshootingResultsError {
     /// Returns `true` if the error kind is `GetTroubleshootingResultsError::AccessDeniedError`.
     pub fn is_access_denied_error(&self) -> bool {
         matches!(self, Self::AccessDeniedError(_))
+    }
+
+    /// Returns `true` if the error kind is `GetTroubleshootingResultsError::ConflictError`.
+    pub fn is_conflict_error(&self) -> bool {
+        matches!(self, Self::ConflictError(_))
     }
 
     /// Returns `true` if the error kind is `GetTroubleshootingResultsError::ValidationError`.
@@ -394,6 +403,7 @@ impl ::std::error::Error for GetTroubleshootingResultsError {
             Self::ResourceNotFoundError(_inner) => ::std::option::Option::Some(_inner),
             Self::InternalServerError(_inner) => ::std::option::Option::Some(_inner),
             Self::AccessDeniedError(_inner) => ::std::option::Option::Some(_inner),
+            Self::ConflictError(_inner) => ::std::option::Option::Some(_inner),
             Self::ValidationError(_inner) => ::std::option::Option::Some(_inner),
             Self::ServiceQuotaExceededError(_inner) => ::std::option::Option::Some(_inner),
             Self::ThrottlingError(_inner) => ::std::option::Option::Some(_inner),
@@ -407,6 +417,7 @@ impl ::std::fmt::Display for GetTroubleshootingResultsError {
             Self::ResourceNotFoundError(_inner) => _inner.fmt(f),
             Self::InternalServerError(_inner) => _inner.fmt(f),
             Self::AccessDeniedError(_inner) => _inner.fmt(f),
+            Self::ConflictError(_inner) => _inner.fmt(f),
             Self::ValidationError(_inner) => _inner.fmt(f),
             Self::ServiceQuotaExceededError(_inner) => _inner.fmt(f),
             Self::ThrottlingError(_inner) => _inner.fmt(f),
@@ -445,6 +456,7 @@ impl ::aws_smithy_types::error::metadata::ProvideErrorMetadata for GetTroublesho
                 ::aws_smithy_types::error::metadata::ProvideErrorMetadata::meta(_inner)
             },
             Self::AccessDeniedError(_inner) => ::aws_smithy_types::error::metadata::ProvideErrorMetadata::meta(_inner),
+            Self::ConflictError(_inner) => ::aws_smithy_types::error::metadata::ProvideErrorMetadata::meta(_inner),
             Self::ValidationError(_inner) => ::aws_smithy_types::error::metadata::ProvideErrorMetadata::meta(_inner),
             Self::ServiceQuotaExceededError(_inner) => {
                 ::aws_smithy_types::error::metadata::ProvideErrorMetadata::meta(_inner)

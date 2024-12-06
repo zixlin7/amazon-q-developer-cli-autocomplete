@@ -19,8 +19,14 @@ pub mod generate_completions;
 /// Types for the `GetCodeAnalysis` operation.
 pub mod get_code_analysis;
 
+/// Types for the `GetCodeFixJob` operation.
+pub mod get_code_fix_job;
+
 /// Types for the `GetTaskAssistCodeGeneration` operation.
 pub mod get_task_assist_code_generation;
+
+/// Types for the `GetTestGeneration` operation.
+pub mod get_test_generation;
 
 /// Types for the `GetTransformation` operation.
 pub mod get_transformation;
@@ -46,8 +52,14 @@ pub mod send_telemetry_event;
 /// Types for the `StartCodeAnalysis` operation.
 pub mod start_code_analysis;
 
+/// Types for the `StartCodeFixJob` operation.
+pub mod start_code_fix_job;
+
 /// Types for the `StartTaskAssistCodeGeneration` operation.
 pub mod start_task_assist_code_generation;
+
+/// Types for the `StartTestGeneration` operation.
+pub mod start_test_generation;
 
 /// Types for the `StartTransformation` operation.
 pub mod start_transformation;

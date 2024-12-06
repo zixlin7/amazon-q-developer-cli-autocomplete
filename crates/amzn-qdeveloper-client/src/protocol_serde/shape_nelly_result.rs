@@ -42,6 +42,11 @@ where
                                 builder = builder
                                     .set_intents(crate::protocol_serde::shape_intent_map::de_intent_map(tokens)?);
                             },
+                            "interactionComponents" => {
+                                builder = builder.set_interaction_components(
+                                crate::protocol_serde::shape_interaction_component_list::de_interaction_component_list(tokens)?,
+                            );
+                            },
                             _ => ::aws_smithy_json::deserialize::token::skip_value(tokens)?,
                         }
                     },

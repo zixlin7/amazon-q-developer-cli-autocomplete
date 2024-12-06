@@ -226,6 +226,11 @@ pub(crate) fn de_get_customization(
                         crate::protocol_serde::shape_evaluation_metrics::de_evaluation_metrics(tokens)?,
                     );
                 },
+                "includeRepos" => {
+                    builder = builder.set_include_repos(
+                        crate::protocol_serde::shape_repository_list::de_repository_list(tokens)?,
+                    );
+                },
                 _ => ::aws_smithy_json::deserialize::token::skip_value(tokens)?,
             },
             other => {

@@ -6,7 +6,6 @@ impl super::Client {
     ///
     /// - The fluent builder is configurable:
     ///   - [`extension_provider(impl Into<String>)`](crate::operation::create_extension::builders::CreateExtensionFluentBuilder::extension_provider) / [`set_extension_provider(Option<String>)`](crate::operation::create_extension::builders::CreateExtensionFluentBuilder::set_extension_provider):<br>required: **true**<br>(undocumented)<br>
-    ///   - [`profile_arn(impl Into<String>)`](crate::operation::create_extension::builders::CreateExtensionFluentBuilder::profile_arn) / [`set_profile_arn(Option<String>)`](crate::operation::create_extension::builders::CreateExtensionFluentBuilder::set_profile_arn):<br>required: **true**<br>(undocumented)<br>
     ///   - [`extension_credential(ExtensionCredential)`](crate::operation::create_extension::builders::CreateExtensionFluentBuilder::extension_credential) / [`set_extension_credential(Option<ExtensionCredential>)`](crate::operation::create_extension::builders::CreateExtensionFluentBuilder::set_extension_credential):<br>required: **false**<br>(undocumented)<br>
     ///   - [`extension_properties(impl Into<String>, impl
     ///     Into<String>)`](crate::operation::create_extension::builders::CreateExtensionFluentBuilder::extension_properties)

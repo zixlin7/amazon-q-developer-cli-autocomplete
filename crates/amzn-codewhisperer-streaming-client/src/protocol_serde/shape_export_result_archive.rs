@@ -47,18 +47,48 @@ pub fn de_export_result_archive_http_error(
 
     let _error_message = generic.message().map(|msg| msg.to_owned());
     Err(match error_code {
-        "ThrottlingException" => crate::operation::export_result_archive::ExportResultArchiveError::ThrottlingError({
+        "ThrottlingError" => crate::operation::export_result_archive::ExportResultArchiveError::ThrottlingError({
             #[allow(unused_mut)]
             let mut tmp = {
                 #[allow(unused_mut)]
                 let mut output = crate::types::error::builders::ThrottlingErrorBuilder::default();
-                output = crate::protocol_serde::shape_throttling_exception::de_throttling_exception_json_err(
+                output =
+                    crate::protocol_serde::shape_throttling_error::de_throttling_error_json_err(_response_body, output)
+                        .map_err(crate::operation::export_result_archive::ExportResultArchiveError::unhandled)?;
+                let output = output.meta(generic);
+                crate::serde_util::throttling_error_correct_errors(output)
+                    .build()
+                    .map_err(crate::operation::export_result_archive::ExportResultArchiveError::unhandled)?
+            };
+            tmp
+        }),
+        "ValidationError" => crate::operation::export_result_archive::ExportResultArchiveError::ValidationError({
+            #[allow(unused_mut)]
+            let mut tmp = {
+                #[allow(unused_mut)]
+                let mut output = crate::types::error::builders::ValidationErrorBuilder::default();
+                output =
+                    crate::protocol_serde::shape_validation_error::de_validation_error_json_err(_response_body, output)
+                        .map_err(crate::operation::export_result_archive::ExportResultArchiveError::unhandled)?;
+                let output = output.meta(generic);
+                crate::serde_util::validation_error_correct_errors(output)
+                    .build()
+                    .map_err(crate::operation::export_result_archive::ExportResultArchiveError::unhandled)?
+            };
+            tmp
+        }),
+        "AccessDeniedError" => crate::operation::export_result_archive::ExportResultArchiveError::AccessDeniedError({
+            #[allow(unused_mut)]
+            let mut tmp = {
+                #[allow(unused_mut)]
+                let mut output = crate::types::error::builders::AccessDeniedErrorBuilder::default();
+                output = crate::protocol_serde::shape_access_denied_error::de_access_denied_error_json_err(
                     _response_body,
                     output,
                 )
                 .map_err(crate::operation::export_result_archive::ExportResultArchiveError::unhandled)?;
                 let output = output.meta(generic);
-                crate::serde_util::throttling_exception_correct_errors(output)
+                crate::serde_util::access_denied_error_correct_errors(output)
                     .build()
                     .map_err(crate::operation::export_result_archive::ExportResultArchiveError::unhandled)?
             };
@@ -76,23 +106,6 @@ pub fn de_export_result_archive_http_error(
                 .map_err(crate::operation::export_result_archive::ExportResultArchiveError::unhandled)?;
                 let output = output.meta(generic);
                 crate::serde_util::conflict_exception_correct_errors(output)
-                    .build()
-                    .map_err(crate::operation::export_result_archive::ExportResultArchiveError::unhandled)?
-            };
-            tmp
-        }),
-        "ValidationException" => crate::operation::export_result_archive::ExportResultArchiveError::ValidationError({
-            #[allow(unused_mut)]
-            let mut tmp = {
-                #[allow(unused_mut)]
-                let mut output = crate::types::error::builders::ValidationErrorBuilder::default();
-                output = crate::protocol_serde::shape_validation_exception::de_validation_exception_json_err(
-                    _response_body,
-                    output,
-                )
-                .map_err(crate::operation::export_result_archive::ExportResultArchiveError::unhandled)?;
-                let output = output.meta(generic);
-                crate::serde_util::validation_exception_correct_errors(output)
                     .build()
                     .map_err(crate::operation::export_result_archive::ExportResultArchiveError::unhandled)?
             };
@@ -127,25 +140,6 @@ pub fn de_export_result_archive_http_error(
                     .map_err(crate::operation::export_result_archive::ExportResultArchiveError::unhandled)?;
                     let output = output.meta(generic);
                     crate::serde_util::resource_not_found_exception_correct_errors(output)
-                        .build()
-                        .map_err(crate::operation::export_result_archive::ExportResultArchiveError::unhandled)?
-                };
-                tmp
-            })
-        },
-        "AccessDeniedException" => {
-            crate::operation::export_result_archive::ExportResultArchiveError::AccessDeniedError({
-                #[allow(unused_mut)]
-                let mut tmp = {
-                    #[allow(unused_mut)]
-                    let mut output = crate::types::error::builders::AccessDeniedErrorBuilder::default();
-                    output = crate::protocol_serde::shape_access_denied_exception::de_access_denied_exception_json_err(
-                        _response_body,
-                        output,
-                    )
-                    .map_err(crate::operation::export_result_archive::ExportResultArchiveError::unhandled)?;
-                    let output = output.meta(generic);
-                    crate::serde_util::access_denied_exception_correct_errors(output)
                         .build()
                         .map_err(crate::operation::export_result_archive::ExportResultArchiveError::unhandled)?
                 };

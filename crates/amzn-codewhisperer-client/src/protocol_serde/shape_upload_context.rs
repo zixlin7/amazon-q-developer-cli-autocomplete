@@ -31,6 +31,12 @@ pub fn ser_upload_context(
             )?;
             object_3.finish();
         },
+        crate::types::UploadContext::CodeFixUploadContext(inner) => {
+            #[allow(unused_mut)]
+            let mut object_4 = object_8.key("codeFixUploadContext").start_object();
+            crate::protocol_serde::shape_code_fix_upload_context::ser_code_fix_upload_context(&mut object_4, inner)?;
+            object_4.finish();
+        },
         crate::types::UploadContext::Unknown => {
             return Err(::aws_smithy_types::error::operation::SerializationError::unknown_variant("UploadContext"));
         },

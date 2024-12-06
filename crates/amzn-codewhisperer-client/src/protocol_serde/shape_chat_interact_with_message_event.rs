@@ -36,5 +36,8 @@ pub fn ser_chat_interact_with_message_event(
     if let Some(var_7) = &input.has_project_level_context {
         object.key("hasProjectLevelContext").boolean(*var_7);
     }
+    if let Some(var_8) = &input.user_intent {
+        object.key("userIntent").string(var_8.as_str());
+    }
     Ok(())
 }

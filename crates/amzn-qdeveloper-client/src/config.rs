@@ -223,6 +223,24 @@ impl Builder {
         self
     }
 
+    /// Sets the idempotency token provider to use for service calls that require tokens.
+    pub fn idempotency_token_provider(
+        mut self,
+        idempotency_token_provider: impl ::std::convert::Into<crate::idempotency_token::IdempotencyTokenProvider>,
+    ) -> Self {
+        self.set_idempotency_token_provider(::std::option::Option::Some(idempotency_token_provider.into()));
+        self
+    }
+
+    /// Sets the idempotency token provider to use for service calls that require tokens.
+    pub fn set_idempotency_token_provider(
+        &mut self,
+        idempotency_token_provider: ::std::option::Option<crate::idempotency_token::IdempotencyTokenProvider>,
+    ) -> &mut Self {
+        self.config.store_or_unset(idempotency_token_provider);
+        self
+    }
+
     /// Sets the HTTP client to use when making requests.
     ///
     /// # Examples
@@ -336,9 +354,7 @@ impl Builder {
     ///
     /// # Examples
     /// Create a custom endpoint resolver that resolves a different endpoing per-stage, e.g. staging
-    /// vs. production.
-    ///
-    /// ```no_run
+    /// vs. production. ```no_run
     /// use amzn_qdeveloper_client::config::endpoint::{
     ///     Endpoint,
     ///     EndpointFuture,
@@ -1119,9 +1135,7 @@ impl Builder {
     /// # Examples
     ///
     /// Set the behavior major version to `latest`. This is equivalent to enabling the
-    /// `behavior-version-latest` cargo feature.
-    ///
-    /// ```no_run
+    /// `behavior-version-latest` cargo feature. ```no_run
     /// use amzn_qdeveloper_client::config::BehaviorVersion;
     ///
     /// let config = amzn_qdeveloper_client::Config::builder()
@@ -1130,7 +1144,7 @@ impl Builder {
     ///     .build();
     /// let client = amzn_qdeveloper_client::Client::from_conf(config);
     /// ```
-    ///
+    /// 
     /// Customizing behavior major version:
     /// ```no_run
     /// use amzn_qdeveloper_client::config::BehaviorVersion;
@@ -1156,9 +1170,7 @@ impl Builder {
     /// # Examples
     ///
     /// Set the behavior major version to `latest`. This is equivalent to enabling the
-    /// `behavior-version-latest` cargo feature.
-    ///
-    /// ```no_run
+    /// `behavior-version-latest` cargo feature. ```no_run
     /// use amzn_qdeveloper_client::config::BehaviorVersion;
     ///
     /// let config = amzn_qdeveloper_client::Config::builder()
@@ -1167,7 +1179,7 @@ impl Builder {
     ///     .build();
     /// let client = amzn_qdeveloper_client::Client::from_conf(config);
     /// ```
-    ///
+    /// 
     /// Customizing behavior major version:
     /// ```no_run
     /// use amzn_qdeveloper_client::config::BehaviorVersion;
@@ -1207,6 +1219,7 @@ impl Builder {
     #[allow(unused_mut)]
     /// Apply test defaults to the builder
     pub fn apply_test_defaults(&mut self) -> &mut Self {
+        self.set_idempotency_token_provider(Some("00000000-0000-4000-8000-000000000000".into()));
         self.set_time_source(::std::option::Option::Some(
             ::aws_smithy_async::time::SharedTimeSource::new(::aws_smithy_async::time::StaticTimeSource::new(
                 ::std::time::UNIX_EPOCH + ::std::time::Duration::from_secs(1234567890),
@@ -1262,7 +1275,11 @@ pub(crate) struct ServiceRuntimePlugin {
 
 impl ServiceRuntimePlugin {
     pub fn new(_service_config: crate::config::Config) -> Self {
-        let config = { None };
+        let config = {
+            let mut cfg = ::aws_smithy_types::config_bag::Layer::new("AmazonQDeveloperService");
+            cfg.store_put(crate::idempotency_token::default_provider());
+            ::std::option::Option::Some(cfg.freeze())
+        };
         let mut runtime_components =
             ::aws_smithy_runtime_api::client::runtime_components::RuntimeComponentsBuilder::new("ServiceRuntimePlugin");
         runtime_components.push_interceptor(

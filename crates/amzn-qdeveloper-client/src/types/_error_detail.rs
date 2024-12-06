@@ -25,7 +25,7 @@ impl ::std::fmt::Debug for ErrorDetail {
     fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
         let mut formatter = f.debug_struct("ErrorDetail");
         formatter.field("error_text", &"*** Sensitive Data Redacted ***");
-        formatter.field("context", &self.context);
+        formatter.field("context", &"*** Sensitive Data Redacted ***");
         formatter.finish()
     }
 }
@@ -105,7 +105,7 @@ impl ::std::fmt::Debug for ErrorDetailBuilder {
     fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
         let mut formatter = f.debug_struct("ErrorDetailBuilder");
         formatter.field("error_text", &"*** Sensitive Data Redacted ***");
-        formatter.field("context", &self.context);
+        formatter.field("context", &"*** Sensitive Data Redacted ***");
         formatter.finish()
     }
 }

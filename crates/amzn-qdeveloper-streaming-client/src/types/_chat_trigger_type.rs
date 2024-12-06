@@ -13,6 +13,7 @@
 /// # let chattriggertype = unimplemented!();
 /// match chattriggertype {
 ///     ChatTriggerType::Diagnostic => { /* ... */ },
+///     ChatTriggerType::InlineChat => { /* ... */ },
 ///     ChatTriggerType::Manual => { /* ... */ },
 ///     other @ _ if other.as_str() == "NewFeature" => { /* handles a case for `NewFeature` */ },
 ///     _ => { /* ... */ },
@@ -49,6 +50,8 @@
 pub enum ChatTriggerType {
     /// Indicates the Chat was triggered in response to a IDE diagnostic
     Diagnostic,
+    /// Indicates the Chat was triggered in response to an inline chat event
+    InlineChat,
     /// Indicates the Chat was triggered due to an explicit chat request by an end-user
     Manual,
     /// `Unknown` contains new variants that have been added since this code was generated.
@@ -61,6 +64,7 @@ impl ::std::convert::From<&str> for ChatTriggerType {
     fn from(s: &str) -> Self {
         match s {
             "DIAGNOSTIC" => ChatTriggerType::Diagnostic,
+            "INLINE_CHAT" => ChatTriggerType::InlineChat,
             "MANUAL" => ChatTriggerType::Manual,
             other => ChatTriggerType::Unknown(crate::primitives::sealed_enum_unknown::UnknownVariantValue(
                 other.to_owned(),
@@ -80,6 +84,7 @@ impl ChatTriggerType {
     pub fn as_str(&self) -> &str {
         match self {
             ChatTriggerType::Diagnostic => "DIAGNOSTIC",
+            ChatTriggerType::InlineChat => "INLINE_CHAT",
             ChatTriggerType::Manual => "MANUAL",
             ChatTriggerType::Unknown(value) => value.as_str(),
         }
@@ -87,7 +92,7 @@ impl ChatTriggerType {
 
     /// Returns all the `&str` representations of the enum members.
     pub const fn values() -> &'static [&'static str] {
-        &["DIAGNOSTIC", "MANUAL"]
+        &["DIAGNOSTIC", "INLINE_CHAT", "MANUAL"]
     }
 }
 impl ::std::convert::AsRef<str> for ChatTriggerType {
@@ -111,6 +116,7 @@ impl ::std::fmt::Display for ChatTriggerType {
     fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
         match self {
             ChatTriggerType::Diagnostic => write!(f, "DIAGNOSTIC"),
+            ChatTriggerType::InlineChat => write!(f, "INLINE_CHAT"),
             ChatTriggerType::Manual => write!(f, "MANUAL"),
             ChatTriggerType::Unknown(value) => write!(f, "{}", value),
         }

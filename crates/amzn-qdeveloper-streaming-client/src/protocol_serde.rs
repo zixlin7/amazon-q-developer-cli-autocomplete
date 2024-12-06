@@ -33,7 +33,7 @@ pub(crate) fn or_empty_doc(data: &[u8]) -> &[u8] {
     if data.is_empty() { b"{}" } else { data }
 }
 
-pub(crate) mod shape_access_denied_exception;
+pub(crate) mod shape_access_denied_error;
 
 pub(crate) mod shape_conflict_exception;
 
@@ -51,16 +51,15 @@ pub(crate) mod shape_send_message_input;
 
 pub(crate) mod shape_send_message_output;
 
-pub(crate) mod shape_service_quota_exceeded_exception;
+pub(crate) mod shape_service_quota_exceeded_error;
 
-pub(crate) mod shape_throttling_exception;
+pub(crate) mod shape_throttling_error;
 
-pub(crate) mod shape_validation_exception;
+pub(crate) mod shape_validation_error;
 
 pub fn parse_event_stream_error_metadata(
     payload: &::bytes::Bytes,
 ) -> Result<::aws_smithy_types::error::metadata::Builder, ::aws_smithy_json::deserialize::error::DeserializeError> {
-    // Note: HeaderMap::new() doesn't allocate
     crate::json_errors::parse_error_metadata(payload, &::aws_smithy_runtime_api::http::Headers::new())
 }
 
@@ -80,6 +79,8 @@ pub(crate) mod shape_followup_prompt_event;
 
 pub(crate) mod shape_intents_event;
 
+pub(crate) mod shape_interaction_components_event;
+
 pub(crate) mod shape_invalid_state_event;
 
 pub(crate) mod shape_message_metadata_event;
@@ -93,6 +94,8 @@ pub(crate) mod shape_user_input_message;
 pub(crate) mod shape_followup_prompt;
 
 pub(crate) mod shape_intent_map;
+
+pub(crate) mod shape_interaction_component_entry_list;
 
 pub(crate) mod shape_reference;
 
@@ -118,6 +121,8 @@ pub(crate) mod shape_git_state;
 
 pub(crate) mod shape_intent_data;
 
+pub(crate) mod shape_interaction_component_entry;
+
 pub(crate) mod shape_shell_state;
 
 pub(crate) mod shape_span;
@@ -130,6 +135,8 @@ pub(crate) mod shape_environment_variable;
 
 pub(crate) mod shape_intent_data_type;
 
+pub(crate) mod shape_interaction_component;
+
 pub(crate) mod shape_relevant_text_document;
 
 pub(crate) mod shape_runtime_diagnostic;
@@ -140,10 +147,80 @@ pub(crate) mod shape_text_document;
 
 pub(crate) mod shape_text_document_diagnostic;
 
+pub(crate) mod shape_action;
+
+pub(crate) mod shape_alert;
+
 pub(crate) mod shape_document_symbol;
+
+pub(crate) mod shape_infrastructure_update;
 
 pub(crate) mod shape_position;
 
 pub(crate) mod shape_programming_language;
 
+pub(crate) mod shape_progress;
+
 pub(crate) mod shape_range;
+
+pub(crate) mod shape_resource;
+
+pub(crate) mod shape_resource_list;
+
+pub(crate) mod shape_section;
+
+pub(crate) mod shape_step;
+
+pub(crate) mod shape_suggestions;
+
+pub(crate) mod shape_task_details;
+
+pub(crate) mod shape_task_reference;
+
+pub(crate) mod shape_text;
+
+pub(crate) mod shape_alert_component_list;
+
+pub(crate) mod shape_infrastructure_update_transition;
+
+pub(crate) mod shape_module_link;
+
+pub(crate) mod shape_progress_component_list;
+
+pub(crate) mod shape_resources;
+
+pub(crate) mod shape_section_component_list;
+
+pub(crate) mod shape_step_component_list;
+
+pub(crate) mod shape_suggestion_list;
+
+pub(crate) mod shape_task_action_list;
+
+pub(crate) mod shape_task_component_list;
+
+pub(crate) mod shape_task_overview;
+
+pub(crate) mod shape_web_link;
+
+pub(crate) mod shape_alert_component;
+
+pub(crate) mod shape_cloud_watch_troubleshooting_link;
+
+pub(crate) mod shape_progress_component;
+
+pub(crate) mod shape_section_component;
+
+pub(crate) mod shape_step_component;
+
+pub(crate) mod shape_suggestion;
+
+pub(crate) mod shape_task_action;
+
+pub(crate) mod shape_task_component;
+
+pub(crate) mod shape_task_action_confirmation;
+
+pub(crate) mod shape_task_action_note;
+
+pub(crate) mod shape_task_action_payload;

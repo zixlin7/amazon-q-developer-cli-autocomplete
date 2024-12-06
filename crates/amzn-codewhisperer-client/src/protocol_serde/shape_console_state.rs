@@ -6,5 +6,20 @@ pub fn ser_console_state(
     if let Some(var_1) = &input.region {
         object.key("region").string(var_1.as_str());
     }
+    if let Some(var_2) = &input.console_url {
+        object.key("consoleUrl").string(var_2.as_str());
+    }
+    if let Some(var_3) = &input.service_id {
+        object.key("serviceId").string(var_3.as_str());
+    }
+    if let Some(var_4) = &input.service_console_page {
+        object.key("serviceConsolePage").string(var_4.as_str());
+    }
+    if let Some(var_5) = &input.service_subconsole_page {
+        object.key("serviceSubconsolePage").string(var_5.as_str());
+    }
+    if let Some(var_6) = &input.task_name {
+        object.key("taskName").string(var_6.as_str());
+    }
     Ok(())
 }

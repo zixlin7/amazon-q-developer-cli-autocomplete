@@ -13,6 +13,7 @@
 /// # let validationexceptionreason = unimplemented!();
 /// match validationexceptionreason {
 ///     ValidationExceptionReason::BadRequest => { /* ... */ },
+///     ValidationExceptionReason::CmkException => { /* ... */ },
 ///     ValidationExceptionReason::ContentLengthExceedsThreshold => { /* ... */ },
 ///     ValidationExceptionReason::InvalidConversationId => { /* ... */ },
 ///     ValidationExceptionReason::InvalidInput => { /* ... */ },
@@ -54,6 +55,8 @@ pub enum ValidationExceptionReason {
     #[allow(missing_docs)] // documentation missing in model
     BadRequest,
     #[allow(missing_docs)] // documentation missing in model
+    CmkException,
+    #[allow(missing_docs)] // documentation missing in model
     ContentLengthExceedsThreshold,
     #[allow(missing_docs)] // documentation missing in model
     InvalidConversationId,
@@ -73,6 +76,7 @@ impl ::std::convert::From<&str> for ValidationExceptionReason {
     fn from(s: &str) -> Self {
         match s {
             "BAD_REQUEST" => ValidationExceptionReason::BadRequest,
+            "CMK_EXCEPTION" => ValidationExceptionReason::CmkException,
             "CONTENT_LENGTH_EXCEEDS_THRESHOLD" => ValidationExceptionReason::ContentLengthExceedsThreshold,
             "INVALID_CONVERSATION_ID" => ValidationExceptionReason::InvalidConversationId,
             "INVALID_INPUT" => ValidationExceptionReason::InvalidInput,
@@ -96,6 +100,7 @@ impl ValidationExceptionReason {
     pub fn as_str(&self) -> &str {
         match self {
             ValidationExceptionReason::BadRequest => "BAD_REQUEST",
+            ValidationExceptionReason::CmkException => "CMK_EXCEPTION",
             ValidationExceptionReason::ContentLengthExceedsThreshold => "CONTENT_LENGTH_EXCEEDS_THRESHOLD",
             ValidationExceptionReason::InvalidConversationId => "INVALID_CONVERSATION_ID",
             ValidationExceptionReason::InvalidInput => "INVALID_INPUT",
@@ -109,6 +114,7 @@ impl ValidationExceptionReason {
     pub const fn values() -> &'static [&'static str] {
         &[
             "BAD_REQUEST",
+            "CMK_EXCEPTION",
             "CONTENT_LENGTH_EXCEEDS_THRESHOLD",
             "INVALID_CONVERSATION_ID",
             "INVALID_INPUT",
@@ -138,6 +144,7 @@ impl ::std::fmt::Display for ValidationExceptionReason {
     fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
         match self {
             ValidationExceptionReason::BadRequest => write!(f, "BAD_REQUEST"),
+            ValidationExceptionReason::CmkException => write!(f, "CMK_EXCEPTION"),
             ValidationExceptionReason::ContentLengthExceedsThreshold => write!(f, "CONTENT_LENGTH_EXCEEDS_THRESHOLD"),
             ValidationExceptionReason::InvalidConversationId => write!(f, "INVALID_CONVERSATION_ID"),
             ValidationExceptionReason::InvalidInput => write!(f, "INVALID_INPUT"),

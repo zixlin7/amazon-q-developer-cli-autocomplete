@@ -11,6 +11,7 @@ impl super::Client {
     ///   - [`profile_arn(impl Into<String>)`](crate::operation::create_customization::builders::CreateCustomizationFluentBuilder::profile_arn) / [`set_profile_arn(Option<String>)`](crate::operation::create_customization::builders::CreateCustomizationFluentBuilder::set_profile_arn):<br>required: **true**<br>(undocumented)<br>
     ///   - [`tags(Tag)`](crate::operation::create_customization::builders::CreateCustomizationFluentBuilder::tags) / [`set_tags(Option<Vec::<Tag>>)`](crate::operation::create_customization::builders::CreateCustomizationFluentBuilder::set_tags):<br>required: **false**<br>(undocumented)<br>
     ///   - [`client_token(impl Into<String>)`](crate::operation::create_customization::builders::CreateCustomizationFluentBuilder::client_token) / [`set_client_token(Option<String>)`](crate::operation::create_customization::builders::CreateCustomizationFluentBuilder::set_client_token):<br>required: **false**<br>(undocumented)<br>
+    ///   - [`include_repos(impl Into<String>)`](crate::operation::create_customization::builders::CreateCustomizationFluentBuilder::include_repos) / [`set_include_repos(Option<Vec::<String>>)`](crate::operation::create_customization::builders::CreateCustomizationFluentBuilder::set_include_repos):<br>required: **false**<br>(undocumented)<br>
     /// - On success, responds with
     ///   [`CreateCustomizationOutput`](crate::operation::create_customization::CreateCustomizationOutput)
     ///   with field(s):

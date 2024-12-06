@@ -32,5 +32,17 @@ pub fn ser_user_modification_event(
             .key("timestamp")
             .date_time(&input.timestamp, ::aws_smithy_types::date_time::Format::EpochSeconds)?;
     }
+    {
+        object.key("acceptedCharacterCount").number(
+            #[allow(clippy::useless_conversion)]
+            ::aws_smithy_types::Number::NegInt((input.accepted_character_count).into()),
+        );
+    }
+    {
+        object.key("unmodifiedAcceptedCharacterCount").number(
+            #[allow(clippy::useless_conversion)]
+            ::aws_smithy_types::Number::NegInt((input.unmodified_accepted_character_count).into()),
+        );
+    }
     Ok(())
 }

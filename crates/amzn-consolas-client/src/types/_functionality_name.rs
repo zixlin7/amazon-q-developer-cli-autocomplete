@@ -18,6 +18,7 @@
 ///     FunctionalityName::Conversations => { /* ... */ },
 ///     FunctionalityName::TaskAssist => { /* ... */ },
 ///     FunctionalityName::Transformations => { /* ... */ },
+///     FunctionalityName::TransformationsWebApp => { /* ... */ },
 ///     other @ _ if other.as_str() == "NewFeature" => { /* handles a case for `NewFeature` */ },
 ///     _ => { /* ... */ },
 /// }
@@ -63,6 +64,8 @@ pub enum FunctionalityName {
     TaskAssist,
     #[allow(missing_docs)] // documentation missing in model
     Transformations,
+    #[allow(missing_docs)] // documentation missing in model
+    TransformationsWebApp,
     /// `Unknown` contains new variants that have been added since this code was generated.
     #[deprecated(
         note = "Don't directly match on `Unknown`. See the docs on this enum for the correct way to handle unknown variants."
@@ -78,6 +81,7 @@ impl ::std::convert::From<&str> for FunctionalityName {
             "CONVERSATIONS" => FunctionalityName::Conversations,
             "TASK_ASSIST" => FunctionalityName::TaskAssist,
             "TRANSFORMATIONS" => FunctionalityName::Transformations,
+            "TRANSFORMATIONS_WEBAPP" => FunctionalityName::TransformationsWebApp,
             other => FunctionalityName::Unknown(crate::primitives::sealed_enum_unknown::UnknownVariantValue(
                 other.to_owned(),
             )),
@@ -101,6 +105,7 @@ impl FunctionalityName {
             FunctionalityName::Conversations => "CONVERSATIONS",
             FunctionalityName::TaskAssist => "TASK_ASSIST",
             FunctionalityName::Transformations => "TRANSFORMATIONS",
+            FunctionalityName::TransformationsWebApp => "TRANSFORMATIONS_WEBAPP",
             FunctionalityName::Unknown(value) => value.as_str(),
         }
     }
@@ -114,6 +119,7 @@ impl FunctionalityName {
             "CONVERSATIONS",
             "TASK_ASSIST",
             "TRANSFORMATIONS",
+            "TRANSFORMATIONS_WEBAPP",
         ]
     }
 }
@@ -143,6 +149,7 @@ impl ::std::fmt::Display for FunctionalityName {
             FunctionalityName::Conversations => write!(f, "CONVERSATIONS"),
             FunctionalityName::TaskAssist => write!(f, "TASK_ASSIST"),
             FunctionalityName::Transformations => write!(f, "TRANSFORMATIONS"),
+            FunctionalityName::TransformationsWebApp => write!(f, "TRANSFORMATIONS_WEBAPP"),
             FunctionalityName::Unknown(value) => write!(f, "{}", value),
         }
     }

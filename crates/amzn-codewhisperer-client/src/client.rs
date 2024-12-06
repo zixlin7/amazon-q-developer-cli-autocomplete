@@ -91,7 +91,11 @@ mod generate_completions;
 
 mod get_code_analysis;
 
+mod get_code_fix_job;
+
 mod get_task_assist_code_generation;
+
+mod get_test_generation;
 
 mod get_transformation;
 
@@ -109,7 +113,11 @@ mod send_telemetry_event;
 
 mod start_code_analysis;
 
+mod start_code_fix_job;
+
 mod start_task_assist_code_generation;
+
+mod start_test_generation;
 
 mod start_transformation;
 

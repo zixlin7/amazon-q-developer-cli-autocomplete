@@ -24,5 +24,14 @@ pub fn ser_update_customization_input_input(
             ::aws_smithy_types::Number::NegInt((*var_6).into()),
         );
     }
+    if let Some(var_7) = &input.include_repos {
+        let mut array_8 = object.key("includeRepos").start_array();
+        for item_9 in var_7 {
+            {
+                array_8.value().string(item_9.as_str());
+            }
+        }
+        array_8.finish();
+    }
     Ok(())
 }

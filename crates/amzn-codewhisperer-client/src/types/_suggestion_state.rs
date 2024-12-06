@@ -15,6 +15,7 @@
 ///     SuggestionState::Accept => { /* ... */ },
 ///     SuggestionState::Discard => { /* ... */ },
 ///     SuggestionState::Empty => { /* ... */ },
+///     SuggestionState::Merge => { /* ... */ },
 ///     SuggestionState::Reject => { /* ... */ },
 ///     other @ _ if other.as_str() == "NewFeature" => { /* handles a case for `NewFeature` */ },
 ///     _ => { /* ... */ },
@@ -56,6 +57,8 @@ pub enum SuggestionState {
     #[allow(missing_docs)] // documentation missing in model
     Empty,
     #[allow(missing_docs)] // documentation missing in model
+    Merge,
+    #[allow(missing_docs)] // documentation missing in model
     Reject,
     /// `Unknown` contains new variants that have been added since this code was generated.
     #[deprecated(
@@ -69,6 +72,7 @@ impl ::std::convert::From<&str> for SuggestionState {
             "ACCEPT" => SuggestionState::Accept,
             "DISCARD" => SuggestionState::Discard,
             "EMPTY" => SuggestionState::Empty,
+            "MERGE" => SuggestionState::Merge,
             "REJECT" => SuggestionState::Reject,
             other => SuggestionState::Unknown(crate::primitives::sealed_enum_unknown::UnknownVariantValue(
                 other.to_owned(),
@@ -90,6 +94,7 @@ impl SuggestionState {
             SuggestionState::Accept => "ACCEPT",
             SuggestionState::Discard => "DISCARD",
             SuggestionState::Empty => "EMPTY",
+            SuggestionState::Merge => "MERGE",
             SuggestionState::Reject => "REJECT",
             SuggestionState::Unknown(value) => value.as_str(),
         }
@@ -97,7 +102,7 @@ impl SuggestionState {
 
     /// Returns all the `&str` representations of the enum members.
     pub const fn values() -> &'static [&'static str] {
-        &["ACCEPT", "DISCARD", "EMPTY", "REJECT"]
+        &["ACCEPT", "DISCARD", "EMPTY", "MERGE", "REJECT"]
     }
 }
 impl ::std::convert::AsRef<str> for SuggestionState {
@@ -123,6 +128,7 @@ impl ::std::fmt::Display for SuggestionState {
             SuggestionState::Accept => write!(f, "ACCEPT"),
             SuggestionState::Discard => write!(f, "DISCARD"),
             SuggestionState::Empty => write!(f, "EMPTY"),
+            SuggestionState::Merge => write!(f, "MERGE"),
             SuggestionState::Reject => write!(f, "REJECT"),
             SuggestionState::Unknown(value) => write!(f, "{}", value),
         }

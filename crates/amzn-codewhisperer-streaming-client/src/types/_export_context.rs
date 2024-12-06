@@ -6,6 +6,8 @@
 pub enum ExportContext {
     /// Transformation export context
     TransformationExportContext(crate::types::TransformationExportContext),
+    /// Unit test generation export context
+    UnitTestGenerationExportContext(crate::types::UnitTestGenerationExportContext),
     /// The `Unknown` variant represents cases where new union variant was received. Consider
     /// upgrading the SDK to the latest available version. An unknown enum variant
     ///
@@ -18,7 +20,6 @@ pub enum ExportContext {
     Unknown,
 }
 impl ExportContext {
-    #[allow(irrefutable_let_patterns)]
     /// Tries to convert the enum instance into
     /// [`TransformationExportContext`](crate::types::ExportContext::TransformationExportContext),
     /// extracting the inner
@@ -38,6 +39,27 @@ impl ExportContext {
     /// [`TransformationExportContext`](crate::types::ExportContext::TransformationExportContext).
     pub fn is_transformation_export_context(&self) -> bool {
         self.as_transformation_export_context().is_ok()
+    }
+
+    /// Tries to convert the enum instance into
+    /// [`UnitTestGenerationExportContext`](crate::types::ExportContext::UnitTestGenerationExportContext),
+    /// extracting the inner
+    /// [`UnitTestGenerationExportContext`](crate::types::UnitTestGenerationExportContext).
+    /// Returns `Err(&Self)` if it can't be converted.
+    pub fn as_unit_test_generation_export_context(
+        &self,
+    ) -> ::std::result::Result<&crate::types::UnitTestGenerationExportContext, &Self> {
+        if let ExportContext::UnitTestGenerationExportContext(val) = &self {
+            ::std::result::Result::Ok(val)
+        } else {
+            ::std::result::Result::Err(self)
+        }
+    }
+
+    /// Returns true if this is a
+    /// [`UnitTestGenerationExportContext`](crate::types::ExportContext::UnitTestGenerationExportContext).
+    pub fn is_unit_test_generation_export_context(&self) -> bool {
+        self.as_unit_test_generation_export_context().is_ok()
     }
 
     /// Returns true if the enum instance is the `Unknown` variant.

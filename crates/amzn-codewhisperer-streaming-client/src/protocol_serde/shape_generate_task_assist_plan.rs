@@ -52,38 +52,73 @@ pub fn de_generate_task_assist_plan_http_error(
 
     let _error_message = generic.message().map(|msg| msg.to_owned());
     Err(match error_code {
-        "ServiceQuotaExceededException" => {
+        "ServiceQuotaExceededError" => {
             crate::operation::generate_task_assist_plan::GenerateTaskAssistPlanError::ServiceQuotaExceededError({
                 #[allow(unused_mut)]
                 let mut tmp = {
                     #[allow(unused_mut)]
                     let mut output = crate::types::error::builders::ServiceQuotaExceededErrorBuilder::default();
-                    output = crate::protocol_serde::shape_service_quota_exceeded_exception::de_service_quota_exceeded_exception_json_err(
-                    _response_body,
-                    output,
-                )
-                .map_err(crate::operation::generate_task_assist_plan::GenerateTaskAssistPlanError::unhandled)?;
+                    output = crate::protocol_serde::shape_service_quota_exceeded_error::de_service_quota_exceeded_error_json_err(_response_body, output)
+                    .map_err(crate::operation::generate_task_assist_plan::GenerateTaskAssistPlanError::unhandled)?;
                     let output = output.meta(generic);
-                    crate::serde_util::service_quota_exceeded_exception_correct_errors(output)
+                    crate::serde_util::service_quota_exceeded_error_correct_errors(output)
                         .build()
                         .map_err(crate::operation::generate_task_assist_plan::GenerateTaskAssistPlanError::unhandled)?
                 };
                 tmp
             })
         },
-        "ThrottlingException" => {
+        "ThrottlingError" => {
             crate::operation::generate_task_assist_plan::GenerateTaskAssistPlanError::ThrottlingError({
                 #[allow(unused_mut)]
                 let mut tmp = {
                     #[allow(unused_mut)]
                     let mut output = crate::types::error::builders::ThrottlingErrorBuilder::default();
-                    output = crate::protocol_serde::shape_throttling_exception::de_throttling_exception_json_err(
+                    output = crate::protocol_serde::shape_throttling_error::de_throttling_error_json_err(
                         _response_body,
                         output,
                     )
                     .map_err(crate::operation::generate_task_assist_plan::GenerateTaskAssistPlanError::unhandled)?;
                     let output = output.meta(generic);
-                    crate::serde_util::throttling_exception_correct_errors(output)
+                    crate::serde_util::throttling_error_correct_errors(output)
+                        .build()
+                        .map_err(crate::operation::generate_task_assist_plan::GenerateTaskAssistPlanError::unhandled)?
+                };
+                tmp
+            })
+        },
+        "ValidationError" => {
+            crate::operation::generate_task_assist_plan::GenerateTaskAssistPlanError::ValidationError({
+                #[allow(unused_mut)]
+                let mut tmp = {
+                    #[allow(unused_mut)]
+                    let mut output = crate::types::error::builders::ValidationErrorBuilder::default();
+                    output = crate::protocol_serde::shape_validation_error::de_validation_error_json_err(
+                        _response_body,
+                        output,
+                    )
+                    .map_err(crate::operation::generate_task_assist_plan::GenerateTaskAssistPlanError::unhandled)?;
+                    let output = output.meta(generic);
+                    crate::serde_util::validation_error_correct_errors(output)
+                        .build()
+                        .map_err(crate::operation::generate_task_assist_plan::GenerateTaskAssistPlanError::unhandled)?
+                };
+                tmp
+            })
+        },
+        "AccessDeniedError" => {
+            crate::operation::generate_task_assist_plan::GenerateTaskAssistPlanError::AccessDeniedError({
+                #[allow(unused_mut)]
+                let mut tmp = {
+                    #[allow(unused_mut)]
+                    let mut output = crate::types::error::builders::AccessDeniedErrorBuilder::default();
+                    output = crate::protocol_serde::shape_access_denied_error::de_access_denied_error_json_err(
+                        _response_body,
+                        output,
+                    )
+                    .map_err(crate::operation::generate_task_assist_plan::GenerateTaskAssistPlanError::unhandled)?;
+                    let output = output.meta(generic);
+                    crate::serde_util::access_denied_error_correct_errors(output)
                         .build()
                         .map_err(crate::operation::generate_task_assist_plan::GenerateTaskAssistPlanError::unhandled)?
                 };
@@ -103,25 +138,6 @@ pub fn de_generate_task_assist_plan_http_error(
                     .map_err(crate::operation::generate_task_assist_plan::GenerateTaskAssistPlanError::unhandled)?;
                     let output = output.meta(generic);
                     crate::serde_util::conflict_exception_correct_errors(output)
-                        .build()
-                        .map_err(crate::operation::generate_task_assist_plan::GenerateTaskAssistPlanError::unhandled)?
-                };
-                tmp
-            })
-        },
-        "ValidationException" => {
-            crate::operation::generate_task_assist_plan::GenerateTaskAssistPlanError::ValidationError({
-                #[allow(unused_mut)]
-                let mut tmp = {
-                    #[allow(unused_mut)]
-                    let mut output = crate::types::error::builders::ValidationErrorBuilder::default();
-                    output = crate::protocol_serde::shape_validation_exception::de_validation_exception_json_err(
-                        _response_body,
-                        output,
-                    )
-                    .map_err(crate::operation::generate_task_assist_plan::GenerateTaskAssistPlanError::unhandled)?;
-                    let output = output.meta(generic);
-                    crate::serde_util::validation_exception_correct_errors(output)
                         .build()
                         .map_err(crate::operation::generate_task_assist_plan::GenerateTaskAssistPlanError::unhandled)?
                 };
@@ -157,25 +173,6 @@ pub fn de_generate_task_assist_plan_http_error(
                     .map_err(crate::operation::generate_task_assist_plan::GenerateTaskAssistPlanError::unhandled)?;
                     let output = output.meta(generic);
                     crate::serde_util::resource_not_found_exception_correct_errors(output)
-                        .build()
-                        .map_err(crate::operation::generate_task_assist_plan::GenerateTaskAssistPlanError::unhandled)?
-                };
-                tmp
-            })
-        },
-        "AccessDeniedException" => {
-            crate::operation::generate_task_assist_plan::GenerateTaskAssistPlanError::AccessDeniedError({
-                #[allow(unused_mut)]
-                let mut tmp = {
-                    #[allow(unused_mut)]
-                    let mut output = crate::types::error::builders::AccessDeniedErrorBuilder::default();
-                    output = crate::protocol_serde::shape_access_denied_exception::de_access_denied_exception_json_err(
-                        _response_body,
-                        output,
-                    )
-                    .map_err(crate::operation::generate_task_assist_plan::GenerateTaskAssistPlanError::unhandled)?;
-                    let output = output.meta(generic);
-                    crate::serde_util::access_denied_exception_correct_errors(output)
                         .build()
                         .map_err(crate::operation::generate_task_assist_plan::GenerateTaskAssistPlanError::unhandled)?
                 };

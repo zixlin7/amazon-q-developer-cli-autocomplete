@@ -12,15 +12,35 @@ pub enum TelemetryEvent {
     #[allow(missing_docs)] // documentation missing in model
     CodeCoverageEvent(crate::types::CodeCoverageEvent),
     #[allow(missing_docs)] // documentation missing in model
+    CodeFixAcceptanceEvent(crate::types::CodeFixAcceptanceEvent),
+    #[allow(missing_docs)] // documentation missing in model
+    CodeFixGenerationEvent(crate::types::CodeFixGenerationEvent),
+    /// Published when a security scan or code review starts
     CodeScanEvent(crate::types::CodeScanEvent),
+    /// Published when a security scan or code review fails
+    CodeScanFailedEvent(crate::types::CodeScanFailedEvent),
     #[allow(missing_docs)] // documentation missing in model
     CodeScanRemediationsEvent(crate::types::CodeScanRemediationsEvent),
+    /// Published when a security scan or code review completes successfully
+    CodeScanSucceededEvent(crate::types::CodeScanSucceededEvent),
+    #[allow(missing_docs)] // documentation missing in model
+    DocGenerationEvent(crate::types::DocGenerationEvent),
+    #[allow(missing_docs)] // documentation missing in model
+    FeatureDevCodeAcceptanceEvent(crate::types::FeatureDevCodeAcceptanceEvent),
+    #[allow(missing_docs)] // documentation missing in model
+    FeatureDevCodeGenerationEvent(crate::types::FeatureDevCodeGenerationEvent),
     #[allow(missing_docs)] // documentation missing in model
     FeatureDevEvent(crate::types::FeatureDevEvent),
+    #[allow(missing_docs)] // documentation missing in model
+    InlineChatEvent(crate::types::InlineChatEvent),
     #[allow(missing_docs)] // documentation missing in model
     MetricData(crate::types::MetricData),
     #[allow(missing_docs)] // documentation missing in model
     TerminalUserInteractionEvent(crate::types::TerminalUserInteractionEvent),
+    #[allow(missing_docs)] // documentation missing in model
+    TestGenerationEvent(crate::types::TestGenerationEvent),
+    #[allow(missing_docs)] // documentation missing in model
+    TransformEvent(crate::types::TransformEvent),
     #[allow(missing_docs)] // documentation missing in model
     UserModificationEvent(crate::types::UserModificationEvent),
     #[allow(missing_docs)] // documentation missing in model
@@ -115,6 +135,42 @@ impl TelemetryEvent {
     }
 
     /// Tries to convert the enum instance into
+    /// [`CodeFixAcceptanceEvent`](crate::types::TelemetryEvent::CodeFixAcceptanceEvent), extracting
+    /// the inner [`CodeFixAcceptanceEvent`](crate::types::CodeFixAcceptanceEvent).
+    /// Returns `Err(&Self)` if it can't be converted.
+    pub fn as_code_fix_acceptance_event(&self) -> ::std::result::Result<&crate::types::CodeFixAcceptanceEvent, &Self> {
+        if let TelemetryEvent::CodeFixAcceptanceEvent(val) = &self {
+            ::std::result::Result::Ok(val)
+        } else {
+            ::std::result::Result::Err(self)
+        }
+    }
+
+    /// Returns true if this is a
+    /// [`CodeFixAcceptanceEvent`](crate::types::TelemetryEvent::CodeFixAcceptanceEvent).
+    pub fn is_code_fix_acceptance_event(&self) -> bool {
+        self.as_code_fix_acceptance_event().is_ok()
+    }
+
+    /// Tries to convert the enum instance into
+    /// [`CodeFixGenerationEvent`](crate::types::TelemetryEvent::CodeFixGenerationEvent), extracting
+    /// the inner [`CodeFixGenerationEvent`](crate::types::CodeFixGenerationEvent).
+    /// Returns `Err(&Self)` if it can't be converted.
+    pub fn as_code_fix_generation_event(&self) -> ::std::result::Result<&crate::types::CodeFixGenerationEvent, &Self> {
+        if let TelemetryEvent::CodeFixGenerationEvent(val) = &self {
+            ::std::result::Result::Ok(val)
+        } else {
+            ::std::result::Result::Err(self)
+        }
+    }
+
+    /// Returns true if this is a
+    /// [`CodeFixGenerationEvent`](crate::types::TelemetryEvent::CodeFixGenerationEvent).
+    pub fn is_code_fix_generation_event(&self) -> bool {
+        self.as_code_fix_generation_event().is_ok()
+    }
+
+    /// Tries to convert the enum instance into
     /// [`CodeScanEvent`](crate::types::TelemetryEvent::CodeScanEvent), extracting the inner
     /// [`CodeScanEvent`](crate::types::CodeScanEvent). Returns `Err(&Self)` if it can't be
     /// converted.
@@ -129,6 +185,24 @@ impl TelemetryEvent {
     /// Returns true if this is a [`CodeScanEvent`](crate::types::TelemetryEvent::CodeScanEvent).
     pub fn is_code_scan_event(&self) -> bool {
         self.as_code_scan_event().is_ok()
+    }
+
+    /// Tries to convert the enum instance into
+    /// [`CodeScanFailedEvent`](crate::types::TelemetryEvent::CodeScanFailedEvent), extracting the
+    /// inner [`CodeScanFailedEvent`](crate::types::CodeScanFailedEvent). Returns `Err(&Self)`
+    /// if it can't be converted.
+    pub fn as_code_scan_failed_event(&self) -> ::std::result::Result<&crate::types::CodeScanFailedEvent, &Self> {
+        if let TelemetryEvent::CodeScanFailedEvent(val) = &self {
+            ::std::result::Result::Ok(val)
+        } else {
+            ::std::result::Result::Err(self)
+        }
+    }
+
+    /// Returns true if this is a
+    /// [`CodeScanFailedEvent`](crate::types::TelemetryEvent::CodeScanFailedEvent).
+    pub fn is_code_scan_failed_event(&self) -> bool {
+        self.as_code_scan_failed_event().is_ok()
     }
 
     /// Tries to convert the enum instance into
@@ -152,6 +226,84 @@ impl TelemetryEvent {
     }
 
     /// Tries to convert the enum instance into
+    /// [`CodeScanSucceededEvent`](crate::types::TelemetryEvent::CodeScanSucceededEvent), extracting
+    /// the inner [`CodeScanSucceededEvent`](crate::types::CodeScanSucceededEvent).
+    /// Returns `Err(&Self)` if it can't be converted.
+    pub fn as_code_scan_succeeded_event(&self) -> ::std::result::Result<&crate::types::CodeScanSucceededEvent, &Self> {
+        if let TelemetryEvent::CodeScanSucceededEvent(val) = &self {
+            ::std::result::Result::Ok(val)
+        } else {
+            ::std::result::Result::Err(self)
+        }
+    }
+
+    /// Returns true if this is a
+    /// [`CodeScanSucceededEvent`](crate::types::TelemetryEvent::CodeScanSucceededEvent).
+    pub fn is_code_scan_succeeded_event(&self) -> bool {
+        self.as_code_scan_succeeded_event().is_ok()
+    }
+
+    /// Tries to convert the enum instance into
+    /// [`DocGenerationEvent`](crate::types::TelemetryEvent::DocGenerationEvent), extracting the
+    /// inner [`DocGenerationEvent`](crate::types::DocGenerationEvent). Returns `Err(&Self)` if
+    /// it can't be converted.
+    pub fn as_doc_generation_event(&self) -> ::std::result::Result<&crate::types::DocGenerationEvent, &Self> {
+        if let TelemetryEvent::DocGenerationEvent(val) = &self {
+            ::std::result::Result::Ok(val)
+        } else {
+            ::std::result::Result::Err(self)
+        }
+    }
+
+    /// Returns true if this is a
+    /// [`DocGenerationEvent`](crate::types::TelemetryEvent::DocGenerationEvent).
+    pub fn is_doc_generation_event(&self) -> bool {
+        self.as_doc_generation_event().is_ok()
+    }
+
+    /// Tries to convert the enum instance into
+    /// [`FeatureDevCodeAcceptanceEvent`](crate::types::TelemetryEvent::FeatureDevCodeAcceptanceEvent),
+    /// extracting the inner
+    /// [`FeatureDevCodeAcceptanceEvent`](crate::types::FeatureDevCodeAcceptanceEvent).
+    /// Returns `Err(&Self)` if it can't be converted.
+    pub fn as_feature_dev_code_acceptance_event(
+        &self,
+    ) -> ::std::result::Result<&crate::types::FeatureDevCodeAcceptanceEvent, &Self> {
+        if let TelemetryEvent::FeatureDevCodeAcceptanceEvent(val) = &self {
+            ::std::result::Result::Ok(val)
+        } else {
+            ::std::result::Result::Err(self)
+        }
+    }
+
+    /// Returns true if this is a
+    /// [`FeatureDevCodeAcceptanceEvent`](crate::types::TelemetryEvent::FeatureDevCodeAcceptanceEvent).
+    pub fn is_feature_dev_code_acceptance_event(&self) -> bool {
+        self.as_feature_dev_code_acceptance_event().is_ok()
+    }
+
+    /// Tries to convert the enum instance into
+    /// [`FeatureDevCodeGenerationEvent`](crate::types::TelemetryEvent::FeatureDevCodeGenerationEvent),
+    /// extracting the inner
+    /// [`FeatureDevCodeGenerationEvent`](crate::types::FeatureDevCodeGenerationEvent).
+    /// Returns `Err(&Self)` if it can't be converted.
+    pub fn as_feature_dev_code_generation_event(
+        &self,
+    ) -> ::std::result::Result<&crate::types::FeatureDevCodeGenerationEvent, &Self> {
+        if let TelemetryEvent::FeatureDevCodeGenerationEvent(val) = &self {
+            ::std::result::Result::Ok(val)
+        } else {
+            ::std::result::Result::Err(self)
+        }
+    }
+
+    /// Returns true if this is a
+    /// [`FeatureDevCodeGenerationEvent`](crate::types::TelemetryEvent::FeatureDevCodeGenerationEvent).
+    pub fn is_feature_dev_code_generation_event(&self) -> bool {
+        self.as_feature_dev_code_generation_event().is_ok()
+    }
+
+    /// Tries to convert the enum instance into
     /// [`FeatureDevEvent`](crate::types::TelemetryEvent::FeatureDevEvent), extracting the inner
     /// [`FeatureDevEvent`](crate::types::FeatureDevEvent). Returns `Err(&Self)` if it can't be
     /// converted.
@@ -167,6 +319,24 @@ impl TelemetryEvent {
     /// [`FeatureDevEvent`](crate::types::TelemetryEvent::FeatureDevEvent).
     pub fn is_feature_dev_event(&self) -> bool {
         self.as_feature_dev_event().is_ok()
+    }
+
+    /// Tries to convert the enum instance into
+    /// [`InlineChatEvent`](crate::types::TelemetryEvent::InlineChatEvent), extracting the inner
+    /// [`InlineChatEvent`](crate::types::InlineChatEvent). Returns `Err(&Self)` if it can't be
+    /// converted.
+    pub fn as_inline_chat_event(&self) -> ::std::result::Result<&crate::types::InlineChatEvent, &Self> {
+        if let TelemetryEvent::InlineChatEvent(val) = &self {
+            ::std::result::Result::Ok(val)
+        } else {
+            ::std::result::Result::Err(self)
+        }
+    }
+
+    /// Returns true if this is a
+    /// [`InlineChatEvent`](crate::types::TelemetryEvent::InlineChatEvent).
+    pub fn is_inline_chat_event(&self) -> bool {
+        self.as_inline_chat_event().is_ok()
     }
 
     /// Tries to convert the enum instance into
@@ -204,6 +374,41 @@ impl TelemetryEvent {
     /// [`TerminalUserInteractionEvent`](crate::types::TelemetryEvent::TerminalUserInteractionEvent).
     pub fn is_terminal_user_interaction_event(&self) -> bool {
         self.as_terminal_user_interaction_event().is_ok()
+    }
+
+    /// Tries to convert the enum instance into
+    /// [`TestGenerationEvent`](crate::types::TelemetryEvent::TestGenerationEvent), extracting the
+    /// inner [`TestGenerationEvent`](crate::types::TestGenerationEvent). Returns `Err(&Self)`
+    /// if it can't be converted.
+    pub fn as_test_generation_event(&self) -> ::std::result::Result<&crate::types::TestGenerationEvent, &Self> {
+        if let TelemetryEvent::TestGenerationEvent(val) = &self {
+            ::std::result::Result::Ok(val)
+        } else {
+            ::std::result::Result::Err(self)
+        }
+    }
+
+    /// Returns true if this is a
+    /// [`TestGenerationEvent`](crate::types::TelemetryEvent::TestGenerationEvent).
+    pub fn is_test_generation_event(&self) -> bool {
+        self.as_test_generation_event().is_ok()
+    }
+
+    /// Tries to convert the enum instance into
+    /// [`TransformEvent`](crate::types::TelemetryEvent::TransformEvent), extracting the inner
+    /// [`TransformEvent`](crate::types::TransformEvent). Returns `Err(&Self)` if it can't be
+    /// converted.
+    pub fn as_transform_event(&self) -> ::std::result::Result<&crate::types::TransformEvent, &Self> {
+        if let TelemetryEvent::TransformEvent(val) = &self {
+            ::std::result::Result::Ok(val)
+        } else {
+            ::std::result::Result::Err(self)
+        }
+    }
+
+    /// Returns true if this is a [`TransformEvent`](crate::types::TelemetryEvent::TransformEvent).
+    pub fn is_transform_event(&self) -> bool {
+        self.as_transform_event().is_ok()
     }
 
     /// Tries to convert the enum instance into

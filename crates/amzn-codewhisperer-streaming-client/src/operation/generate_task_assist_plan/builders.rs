@@ -21,7 +21,7 @@ impl crate::operation::generate_task_assist_plan::builders::GenerateTaskAssistPl
 }
 /// Fluent builder constructing a request to `GenerateTaskAssistPlan`.
 ///
-/// API to generate task assit plan.
+/// API to generate task assist plan.
 #[derive(::std::clone::Clone, ::std::fmt::Debug)]
 pub struct GenerateTaskAssistPlanFluentBuilder {
     handle: ::std::sync::Arc<crate::client::Handle>,

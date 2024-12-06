@@ -21,6 +21,15 @@ pub fn ser_transformation_project_state(
         )?;
         object_5.finish();
     }
+    if let Some(var_6) = &input.project_artifact {
+        #[allow(unused_mut)]
+        let mut object_7 = object.key("projectArtifact").start_object();
+        crate::protocol_serde::shape_transformation_project_artifact_descriptor::ser_transformation_project_artifact_descriptor(
+            &mut object_7,
+            var_6,
+        )?;
+        object_7.finish();
+    }
     Ok(())
 }
 
@@ -64,6 +73,11 @@ where
                                 builder = builder.set_platform_config(
                                 crate::protocol_serde::shape_transformation_platform_config::de_transformation_platform_config(tokens)?,
                             );
+                            },
+                            "projectArtifact" => {
+                                builder = builder.set_project_artifact(
+                                    crate::protocol_serde::shape_transformation_project_artifact_descriptor::de_transformation_project_artifact_descriptor(tokens)?
+                                );
                             },
                             _ => ::aws_smithy_json::deserialize::token::skip_value(tokens)?,
                         }

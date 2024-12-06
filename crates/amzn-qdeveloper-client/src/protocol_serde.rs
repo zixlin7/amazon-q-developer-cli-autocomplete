@@ -25,9 +25,13 @@ pub fn parse_http_error_metadata(
     crate::json_errors::parse_error_metadata(response_body, response_headers)
 }
 
+pub(crate) mod shape_associate_connector_resource;
+
 pub(crate) mod shape_create_assignment;
 
 pub(crate) mod shape_create_extension;
+
+pub(crate) mod shape_create_plugin;
 
 pub(crate) mod shape_create_resolution;
 
@@ -35,21 +39,47 @@ pub(crate) mod shape_delete_assignment;
 
 pub(crate) mod shape_delete_extension;
 
+pub(crate) mod shape_delete_plugin;
+
+pub(crate) mod shape_get_connector;
+
 pub(crate) mod shape_get_conversation;
 
 pub(crate) mod shape_get_extension;
 
 pub(crate) mod shape_get_identity_metadata;
 
+pub(crate) mod shape_get_plugin;
+
+pub(crate) mod shape_get_task;
+
 pub(crate) mod shape_get_troubleshooting_results;
 
+pub(crate) mod shape_get_user_settings;
+
+pub(crate) mod shape_invoke_task;
+
 pub(crate) mod shape_list_conversations;
+
+pub(crate) mod shape_list_dashboard_metrics;
 
 pub(crate) mod shape_list_extension_providers;
 
 pub(crate) mod shape_list_extensions;
 
+pub(crate) mod shape_list_plugin_providers;
+
+pub(crate) mod shape_list_plugins;
+
+pub(crate) mod shape_list_tags_for_resource;
+
+pub(crate) mod shape_list_tasks;
+
 pub(crate) mod shape_pass_request;
+
+pub(crate) mod shape_reject_connector;
+
+pub(crate) mod shape_send_event;
 
 pub(crate) mod shape_send_message;
 
@@ -59,7 +89,15 @@ pub(crate) mod shape_start_troubleshooting_analysis;
 
 pub(crate) mod shape_start_troubleshooting_resolution_explanation;
 
+pub(crate) mod shape_tag_resource;
+
+pub(crate) mod shape_untag_resource;
+
 pub(crate) mod shape_update_troubleshooting_command_result;
+
+pub(crate) mod shape_update_user_settings;
+
+pub(crate) mod shape_use_plugin;
 
 pub(crate) fn or_empty_doc(data: &[u8]) -> &[u8] {
     if data.is_empty() { b"{}" } else { data }
@@ -67,11 +105,15 @@ pub(crate) fn or_empty_doc(data: &[u8]) -> &[u8] {
 
 pub(crate) mod shape_access_denied_exception;
 
+pub(crate) mod shape_associate_connector_resource_input;
+
 pub(crate) mod shape_conflict_exception;
 
 pub(crate) mod shape_create_assignment_input;
 
 pub(crate) mod shape_create_extension_input;
+
+pub(crate) mod shape_create_plugin_input;
 
 pub(crate) mod shape_create_resolution_input;
 
@@ -79,25 +121,49 @@ pub(crate) mod shape_delete_assignment_input;
 
 pub(crate) mod shape_delete_extension_input;
 
+pub(crate) mod shape_delete_plugin_input;
+
 pub(crate) mod shape_dry_run_operation_exception;
+
+pub(crate) mod shape_get_connector_input;
 
 pub(crate) mod shape_get_conversation_input;
 
 pub(crate) mod shape_get_extension_input;
 
+pub(crate) mod shape_get_plugin_input;
+
+pub(crate) mod shape_get_task_input;
+
 pub(crate) mod shape_get_troubleshooting_results_input;
 
 pub(crate) mod shape_internal_server_exception;
 
+pub(crate) mod shape_invoke_task_input;
+
 pub(crate) mod shape_list_conversations_input;
+
+pub(crate) mod shape_list_dashboard_metrics_input;
 
 pub(crate) mod shape_list_extension_providers_input;
 
 pub(crate) mod shape_list_extensions_input;
 
+pub(crate) mod shape_list_plugin_providers_input;
+
+pub(crate) mod shape_list_plugins_input;
+
+pub(crate) mod shape_list_tags_for_resource_input;
+
+pub(crate) mod shape_list_tasks_input;
+
 pub(crate) mod shape_pass_request_input;
 
+pub(crate) mod shape_reject_connector_input;
+
 pub(crate) mod shape_resource_not_found_exception;
+
+pub(crate) mod shape_send_event_input;
 
 pub(crate) mod shape_send_message_input;
 
@@ -109,13 +175,29 @@ pub(crate) mod shape_start_troubleshooting_analysis_input;
 
 pub(crate) mod shape_start_troubleshooting_resolution_explanation_input;
 
+pub(crate) mod shape_tag_resource_input;
+
 pub(crate) mod shape_throttling_exception;
+
+pub(crate) mod shape_untag_resource_input;
 
 pub(crate) mod shape_update_troubleshooting_command_result_input;
 
+pub(crate) mod shape_update_user_settings_input;
+
+pub(crate) mod shape_use_plugin_input;
+
 pub(crate) mod shape_validation_exception;
 
+pub(crate) mod shape_account_connection;
+
+pub(crate) mod shape_connector_configuration;
+
+pub(crate) mod shape_connector_resource;
+
 pub(crate) mod shape_conversation_metadata_list;
+
+pub(crate) mod shape_dashboard_metric_list;
 
 pub(crate) mod shape_encrypted_tools_fas_creds_list;
 
@@ -139,9 +221,27 @@ pub(crate) mod shape_nelly_result;
 
 pub(crate) mod shape_organization_metadata;
 
+pub(crate) mod shape_plugin_credential;
+
+pub(crate) mod shape_plugin_properties;
+
+pub(crate) mod shape_plugin_providers;
+
+pub(crate) mod shape_plugins;
+
 pub(crate) mod shape_resolution_suggestions;
 
 pub(crate) mod shape_subscription_metadata;
+
+pub(crate) mod shape_tag;
+
+pub(crate) mod shape_tag_list;
+
+pub(crate) mod shape_task_details;
+
+pub(crate) mod shape_task_filter;
+
+pub(crate) mod shape_task_summary_list;
 
 pub(crate) mod shape_tool;
 
@@ -149,11 +249,15 @@ pub(crate) mod shape_user_context;
 
 pub(crate) mod shape_user_settings;
 
+pub(crate) mod shape_aws_account_connection;
+
 pub(crate) mod shape_configuration_id;
 
 pub(crate) mod shape_console_context;
 
 pub(crate) mod shape_conversation_metadata;
+
+pub(crate) mod shape_dashboard_metric;
 
 pub(crate) mod shape_encrypted_tool_fas_creds;
 
@@ -167,39 +271,147 @@ pub(crate) mod shape_get_troubleshooting_command;
 
 pub(crate) mod shape_intent_map;
 
+pub(crate) mod shape_interaction_component_list;
+
 pub(crate) mod shape_message;
 
 pub(crate) mod shape_nelly_content;
 
+pub(crate) mod shape_plugin;
+
+pub(crate) mod shape_plugin_provider_metadata;
+
 pub(crate) mod shape_resolution_suggestion;
+
+pub(crate) mod shape_task_action_list;
+
+pub(crate) mod shape_task_component_list;
+
+pub(crate) mod shape_task_overview;
+
+pub(crate) mod shape_task_summary;
+
+pub(crate) mod shape_chat_metrics;
+
+pub(crate) mod shape_code_fix_metrics;
+
+pub(crate) mod shape_code_review_metrics;
 
 pub(crate) mod shape_detailed_resolutions;
 
+pub(crate) mod shape_dev_metrics;
+
+pub(crate) mod shape_dimensions;
+
+pub(crate) mod shape_doc_metrics;
+
 pub(crate) mod shape_get_session_command_parameters;
+
+pub(crate) mod shape_inline_chat_metrics;
+
+pub(crate) mod shape_inline_metrics;
 
 pub(crate) mod shape_intent_data;
 
+pub(crate) mod shape_interaction_component;
+
+pub(crate) mod shape_task_action;
+
+pub(crate) mod shape_task_component;
+
+pub(crate) mod shape_test_metrics;
+
 pub(crate) mod shape_text_content;
+
+pub(crate) mod shape_transform_metrics;
+
+pub(crate) mod shape_user_activity_metrics;
+
+pub(crate) mod shape_action;
+
+pub(crate) mod shape_alert;
 
 pub(crate) mod shape_detailed_resolution;
 
 pub(crate) mod shape_get_session_command_parameter;
 
+pub(crate) mod shape_infrastructure_update;
+
 pub(crate) mod shape_intent_data_type;
+
+pub(crate) mod shape_monostate;
+
+pub(crate) mod shape_nelly_license_list;
 
 pub(crate) mod shape_nelly_url_list;
 
+pub(crate) mod shape_programming_language;
+
+pub(crate) mod shape_progress;
+
+pub(crate) mod shape_resource;
+
+pub(crate) mod shape_resource_list;
+
+pub(crate) mod shape_section;
+
+pub(crate) mod shape_step;
+
+pub(crate) mod shape_suggestions;
+
+pub(crate) mod shape_task_action_confirmation;
+
+pub(crate) mod shape_task_action_note;
+
+pub(crate) mod shape_task_action_payload;
+
+pub(crate) mod shape_task_reference;
+
+pub(crate) mod shape_text;
+
+pub(crate) mod shape_alert_component_list;
+
+pub(crate) mod shape_infrastructure_update_transition;
+
+pub(crate) mod shape_module_link;
+
+pub(crate) mod shape_nelly_license;
+
 pub(crate) mod shape_nelly_url;
 
+pub(crate) mod shape_progress_component_list;
+
 pub(crate) mod shape_resolutions;
+
+pub(crate) mod shape_resources;
+
+pub(crate) mod shape_section_component_list;
+
+pub(crate) mod shape_step_component_list;
+
+pub(crate) mod shape_suggestion_list;
+
+pub(crate) mod shape_web_link;
+
+pub(crate) mod shape_alert_component;
 
 pub(crate) mod shape_cdk_resolution;
 
 pub(crate) mod shape_cli_resolution;
 
+pub(crate) mod shape_cloud_watch_troubleshooting_link;
+
 pub(crate) mod shape_manual_resolution_steps;
 
+pub(crate) mod shape_progress_component;
+
 pub(crate) mod shape_python_resolution;
+
+pub(crate) mod shape_section_component;
+
+pub(crate) mod shape_step_component;
+
+pub(crate) mod shape_suggestion;
 
 pub(crate) mod shape_cli_commands;
 

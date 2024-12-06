@@ -10,6 +10,7 @@ impl super::Client {
     ///   - [`client_token(impl Into<String>)`](crate::operation::update_customization::builders::UpdateCustomizationFluentBuilder::client_token) / [`set_client_token(Option<String>)`](crate::operation::update_customization::builders::UpdateCustomizationFluentBuilder::set_client_token):<br>required: **false**<br>(undocumented)<br>
     ///   - [`data_reference(DataReference)`](crate::operation::update_customization::builders::UpdateCustomizationFluentBuilder::data_reference) / [`set_data_reference(Option<DataReference>)`](crate::operation::update_customization::builders::UpdateCustomizationFluentBuilder::set_data_reference):<br>required: **false**<br>(undocumented)<br>
     ///   - [`version(i64)`](crate::operation::update_customization::builders::UpdateCustomizationFluentBuilder::version) / [`set_version(Option<i64>)`](crate::operation::update_customization::builders::UpdateCustomizationFluentBuilder::set_version):<br>required: **false**<br>(undocumented)<br>
+    ///   - [`include_repos(impl Into<String>)`](crate::operation::update_customization::builders::UpdateCustomizationFluentBuilder::include_repos) / [`set_include_repos(Option<Vec::<String>>)`](crate::operation::update_customization::builders::UpdateCustomizationFluentBuilder::set_include_repos):<br>required: **false**<br>(undocumented)<br>
     /// - On success, responds with
     ///   [`UpdateCustomizationOutput`](crate::operation::update_customization::UpdateCustomizationOutput)
     /// - On failure, responds with

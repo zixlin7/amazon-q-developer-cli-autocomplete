@@ -21,5 +21,11 @@ pub fn ser_env_state(
         }
         array_4.finish();
     }
+    if let Some(var_7) = &input.timezone_offset {
+        object.key("timezoneOffset").number(
+            #[allow(clippy::useless_conversion)]
+            ::aws_smithy_types::Number::NegInt((*var_7).into()),
+        );
+    }
     Ok(())
 }

@@ -7,7 +7,15 @@
 pub struct ConflictError {
     #[allow(missing_docs)] // documentation missing in model
     pub message: ::std::string::String,
+    /// Reason for ConflictException
+    pub reason: ::std::option::Option<crate::types::ConflictExceptionReason>,
     pub(crate) meta: ::aws_smithy_types::error::ErrorMetadata,
+}
+impl ConflictError {
+    /// Reason for ConflictException
+    pub fn reason(&self) -> ::std::option::Option<&crate::types::ConflictExceptionReason> {
+        self.reason.as_ref()
+    }
 }
 impl ConflictError {
     /// Returns the error message.
@@ -49,6 +57,7 @@ impl ConflictError {
 #[non_exhaustive]
 pub struct ConflictErrorBuilder {
     pub(crate) message: ::std::option::Option<::std::string::String>,
+    pub(crate) reason: ::std::option::Option<crate::types::ConflictExceptionReason>,
     meta: std::option::Option<::aws_smithy_types::error::ErrorMetadata>,
 }
 impl ConflictErrorBuilder {
@@ -68,6 +77,23 @@ impl ConflictErrorBuilder {
     #[allow(missing_docs)] // documentation missing in model
     pub fn get_message(&self) -> &::std::option::Option<::std::string::String> {
         &self.message
+    }
+
+    /// Reason for ConflictException
+    pub fn reason(mut self, input: crate::types::ConflictExceptionReason) -> Self {
+        self.reason = ::std::option::Option::Some(input);
+        self
+    }
+
+    /// Reason for ConflictException
+    pub fn set_reason(mut self, input: ::std::option::Option<crate::types::ConflictExceptionReason>) -> Self {
+        self.reason = input;
+        self
+    }
+
+    /// Reason for ConflictException
+    pub fn get_reason(&self) -> &::std::option::Option<crate::types::ConflictExceptionReason> {
+        &self.reason
     }
 
     /// Sets error metadata
@@ -96,6 +122,7 @@ impl ConflictErrorBuilder {
                     "message was not specified but it is required when building ConflictError",
                 )
             })?,
+            reason: self.reason,
             meta: self.meta.unwrap_or_default(),
         })
     }

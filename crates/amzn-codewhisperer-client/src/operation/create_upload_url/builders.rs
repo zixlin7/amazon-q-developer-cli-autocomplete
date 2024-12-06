@@ -239,4 +239,21 @@ impl CreateUploadUrlFluentBuilder {
     pub fn get_upload_context(&self) -> &::std::option::Option<crate::types::UploadContext> {
         self.inner.get_upload_context()
     }
+
+    /// Upload ID returned by CreateUploadUrl API
+    pub fn upload_id(mut self, input: impl ::std::convert::Into<::std::string::String>) -> Self {
+        self.inner = self.inner.upload_id(input.into());
+        self
+    }
+
+    /// Upload ID returned by CreateUploadUrl API
+    pub fn set_upload_id(mut self, input: ::std::option::Option<::std::string::String>) -> Self {
+        self.inner = self.inner.set_upload_id(input);
+        self
+    }
+
+    /// Upload ID returned by CreateUploadUrl API
+    pub fn get_upload_id(&self) -> &::std::option::Option<::std::string::String> {
+        self.inner.get_upload_id()
+    }
 }

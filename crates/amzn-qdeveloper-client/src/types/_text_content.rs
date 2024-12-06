@@ -7,6 +7,8 @@ pub struct TextContent {
     pub body: ::std::string::String,
     #[allow(missing_docs)] // documentation missing in model
     pub references: ::std::option::Option<::std::vec::Vec<crate::types::NellyUrl>>,
+    #[allow(missing_docs)] // documentation missing in model
+    pub licenses: ::std::option::Option<::std::vec::Vec<crate::types::NellyLicense>>,
 }
 impl TextContent {
     #[allow(missing_docs)] // documentation missing in model
@@ -21,12 +23,20 @@ impl TextContent {
     pub fn references(&self) -> &[crate::types::NellyUrl] {
         self.references.as_deref().unwrap_or_default()
     }
+
+    #[allow(missing_docs)] // documentation missing in model
+    /// If no value was sent for this field, a default will be set. If you want to determine if no
+    /// value was sent, use `.licenses.is_none()`.
+    pub fn licenses(&self) -> &[crate::types::NellyLicense] {
+        self.licenses.as_deref().unwrap_or_default()
+    }
 }
 impl ::std::fmt::Debug for TextContent {
     fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
         let mut formatter = f.debug_struct("TextContent");
         formatter.field("body", &"*** Sensitive Data Redacted ***");
         formatter.field("references", &self.references);
+        formatter.field("licenses", &self.licenses);
         formatter.finish()
     }
 }
@@ -44,6 +54,7 @@ impl TextContent {
 pub struct TextContentBuilder {
     pub(crate) body: ::std::option::Option<::std::string::String>,
     pub(crate) references: ::std::option::Option<::std::vec::Vec<crate::types::NellyUrl>>,
+    pub(crate) licenses: ::std::option::Option<::std::vec::Vec<crate::types::NellyLicense>>,
 }
 impl TextContentBuilder {
     #[allow(missing_docs)] // documentation missing in model
@@ -85,6 +96,27 @@ impl TextContentBuilder {
         &self.references
     }
 
+    /// Appends an item to `licenses`.
+    ///
+    /// To override the contents of this collection use [`set_licenses`](Self::set_licenses).
+    pub fn licenses(mut self, input: crate::types::NellyLicense) -> Self {
+        let mut v = self.licenses.unwrap_or_default();
+        v.push(input);
+        self.licenses = ::std::option::Option::Some(v);
+        self
+    }
+
+    #[allow(missing_docs)] // documentation missing in model
+    pub fn set_licenses(mut self, input: ::std::option::Option<::std::vec::Vec<crate::types::NellyLicense>>) -> Self {
+        self.licenses = input;
+        self
+    }
+
+    #[allow(missing_docs)] // documentation missing in model
+    pub fn get_licenses(&self) -> &::std::option::Option<::std::vec::Vec<crate::types::NellyLicense>> {
+        &self.licenses
+    }
+
     /// Consumes the builder and constructs a [`TextContent`](crate::types::TextContent).
     /// This method will fail if any of the following fields are not set:
     /// - [`body`](crate::types::builders::TextContentBuilder::body)
@@ -99,6 +131,7 @@ impl TextContentBuilder {
                 )
             })?,
             references: self.references,
+            licenses: self.licenses,
         })
     }
 }
@@ -107,6 +140,7 @@ impl ::std::fmt::Debug for TextContentBuilder {
         let mut formatter = f.debug_struct("TextContentBuilder");
         formatter.field("body", &"*** Sensitive Data Redacted ***");
         formatter.field("references", &self.references);
+        formatter.field("licenses", &self.licenses);
         formatter.finish()
     }
 }

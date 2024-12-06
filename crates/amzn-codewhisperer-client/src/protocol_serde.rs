@@ -37,7 +37,11 @@ pub(crate) mod shape_generate_completions;
 
 pub(crate) mod shape_get_code_analysis;
 
+pub(crate) mod shape_get_code_fix_job;
+
 pub(crate) mod shape_get_task_assist_code_generation;
+
+pub(crate) mod shape_get_test_generation;
 
 pub(crate) mod shape_get_transformation;
 
@@ -55,7 +59,11 @@ pub(crate) mod shape_send_telemetry_event;
 
 pub(crate) mod shape_start_code_analysis;
 
+pub(crate) mod shape_start_code_fix_job;
+
 pub(crate) mod shape_start_task_assist_code_generation;
+
+pub(crate) mod shape_start_test_generation;
 
 pub(crate) mod shape_start_transformation;
 
@@ -79,7 +87,11 @@ pub(crate) mod shape_generate_completions_input;
 
 pub(crate) mod shape_get_code_analysis_input;
 
+pub(crate) mod shape_get_code_fix_job_input;
+
 pub(crate) mod shape_get_task_assist_code_generation_input;
+
+pub(crate) mod shape_get_test_generation_input;
 
 pub(crate) mod shape_get_transformation_input;
 
@@ -103,7 +115,11 @@ pub(crate) mod shape_service_quota_exceeded_exception;
 
 pub(crate) mod shape_start_code_analysis_input;
 
+pub(crate) mod shape_start_code_fix_job_input;
+
 pub(crate) mod shape_start_task_assist_code_generation_input;
+
+pub(crate) mod shape_start_test_generation_input;
 
 pub(crate) mod shape_start_transformation_input;
 
@@ -125,17 +141,27 @@ pub(crate) mod shape_feature_evaluations_list;
 
 pub(crate) mod shape_file_context;
 
+pub(crate) mod shape_intent_context;
+
 pub(crate) mod shape_programming_language;
+
+pub(crate) mod shape_range;
 
 pub(crate) mod shape_reference_tracker_configuration;
 
 pub(crate) mod shape_request_headers;
 
+pub(crate) mod shape_suggested_fix;
+
 pub(crate) mod shape_supplemental_context;
+
+pub(crate) mod shape_target_code;
 
 pub(crate) mod shape_task_assist_plan_step;
 
 pub(crate) mod shape_telemetry_event;
+
+pub(crate) mod shape_test_generation_job;
 
 pub(crate) mod shape_transformation_job;
 
@@ -161,23 +187,51 @@ pub(crate) mod shape_code_analysis_upload_context;
 
 pub(crate) mod shape_code_coverage_event;
 
+pub(crate) mod shape_code_fix_acceptance_event;
+
+pub(crate) mod shape_code_fix_generation_event;
+
+pub(crate) mod shape_code_fix_upload_context;
+
 pub(crate) mod shape_code_scan_event;
 
+pub(crate) mod shape_code_scan_failed_event;
+
 pub(crate) mod shape_code_scan_remediations_event;
+
+pub(crate) mod shape_code_scan_succeeded_event;
 
 pub(crate) mod shape_completion;
 
 pub(crate) mod shape_customization;
 
+pub(crate) mod shape_doc_generation_event;
+
+pub(crate) mod shape_documentation_intent_context;
+
+pub(crate) mod shape_feature_dev_code_acceptance_event;
+
+pub(crate) mod shape_feature_dev_code_generation_event;
+
 pub(crate) mod shape_feature_dev_event;
 
 pub(crate) mod shape_feature_evaluation;
 
+pub(crate) mod shape_inline_chat_event;
+
 pub(crate) mod shape_metric_data;
+
+pub(crate) mod shape_position;
+
+pub(crate) mod shape_references;
 
 pub(crate) mod shape_task_assist_planning_upload_context;
 
 pub(crate) mod shape_terminal_user_interaction_event;
+
+pub(crate) mod shape_test_generation_event;
+
+pub(crate) mod shape_transform_event;
 
 pub(crate) mod shape_transformation_project_state;
 
@@ -197,9 +251,11 @@ pub(crate) mod shape_feature_value;
 
 pub(crate) mod shape_imports;
 
-pub(crate) mod shape_references;
+pub(crate) mod shape_reference;
 
 pub(crate) mod shape_transformation_platform_config;
+
+pub(crate) mod shape_transformation_project_artifact_descriptor;
 
 pub(crate) mod shape_transformation_runtime_env;
 
@@ -213,9 +269,11 @@ pub(crate) mod shape_import;
 
 pub(crate) mod shape_progress_updates;
 
-pub(crate) mod shape_reference;
+pub(crate) mod shape_span;
 
 pub(crate) mod shape_supplementary_web_link;
+
+pub(crate) mod shape_transformation_source_code_artifact_descriptor;
 
 pub(crate) mod shape_user_input_message_context;
 
@@ -232,8 +290,6 @@ pub(crate) mod shape_env_state;
 pub(crate) mod shape_git_state;
 
 pub(crate) mod shape_shell_state;
-
-pub(crate) mod shape_span;
 
 pub(crate) mod shape_transformation_progress_update;
 
@@ -255,10 +311,8 @@ pub(crate) mod shape_text_document_diagnostic;
 
 pub(crate) mod shape_transformation_download_artifacts;
 
+pub(crate) mod shape_transformation_languages;
+
 pub(crate) mod shape_document_symbol;
-
-pub(crate) mod shape_position;
-
-pub(crate) mod shape_range;
 
 pub(crate) mod shape_transformation_download_artifact;

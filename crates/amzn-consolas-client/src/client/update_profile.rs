@@ -12,6 +12,7 @@ impl super::Client {
     ///   - [`kms_key_arn(impl Into<String>)`](crate::operation::update_profile::builders::UpdateProfileFluentBuilder::kms_key_arn) / [`set_kms_key_arn(Option<String>)`](crate::operation::update_profile::builders::UpdateProfileFluentBuilder::set_kms_key_arn):<br>required: **false**<br>(undocumented)<br>
     ///   - [`resource_policy(ResourcePolicy)`](crate::operation::update_profile::builders::UpdateProfileFluentBuilder::resource_policy) / [`set_resource_policy(Option<ResourcePolicy>)`](crate::operation::update_profile::builders::UpdateProfileFluentBuilder::set_resource_policy):<br>required: **false**<br>(undocumented)<br>
     ///   - [`target_profile_type(ProfileType)`](crate::operation::update_profile::builders::UpdateProfileFluentBuilder::target_profile_type) / [`set_target_profile_type(Option<ProfileType>)`](crate::operation::update_profile::builders::UpdateProfileFluentBuilder::set_target_profile_type):<br>required: **false**<br>(undocumented)<br>
+    ///   - [`opt_in_features(OptInFeatures)`](crate::operation::update_profile::builders::UpdateProfileFluentBuilder::opt_in_features) / [`set_opt_in_features(Option<OptInFeatures>)`](crate::operation::update_profile::builders::UpdateProfileFluentBuilder::set_opt_in_features):<br>required: **false**<br>(undocumented)<br>
     /// - On success, responds with
     ///   [`UpdateProfileOutput`](crate::operation::update_profile::UpdateProfileOutput) with
     ///   field(s):

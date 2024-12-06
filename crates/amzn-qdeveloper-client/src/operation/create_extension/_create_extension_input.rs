@@ -6,8 +6,6 @@ pub struct CreateExtensionInput {
     #[allow(missing_docs)] // documentation missing in model
     pub extension_provider: ::std::option::Option<::std::string::String>,
     #[allow(missing_docs)] // documentation missing in model
-    pub profile_arn: ::std::option::Option<::std::string::String>,
-    #[allow(missing_docs)] // documentation missing in model
     pub extension_credential: ::std::option::Option<crate::types::ExtensionCredential>,
     #[allow(missing_docs)] // documentation missing in model
     pub extension_properties:
@@ -17,11 +15,6 @@ impl CreateExtensionInput {
     #[allow(missing_docs)] // documentation missing in model
     pub fn extension_provider(&self) -> ::std::option::Option<&str> {
         self.extension_provider.as_deref()
-    }
-
-    #[allow(missing_docs)] // documentation missing in model
-    pub fn profile_arn(&self) -> ::std::option::Option<&str> {
-        self.profile_arn.as_deref()
     }
 
     #[allow(missing_docs)] // documentation missing in model
@@ -40,7 +33,6 @@ impl ::std::fmt::Debug for CreateExtensionInput {
     fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
         let mut formatter = f.debug_struct("CreateExtensionInput");
         formatter.field("extension_provider", &self.extension_provider);
-        formatter.field("profile_arn", &self.profile_arn);
         formatter.field("extension_credential", &"*** Sensitive Data Redacted ***");
         formatter.field("extension_properties", &self.extension_properties);
         formatter.finish()
@@ -60,7 +52,6 @@ impl CreateExtensionInput {
 #[non_exhaustive]
 pub struct CreateExtensionInputBuilder {
     pub(crate) extension_provider: ::std::option::Option<::std::string::String>,
-    pub(crate) profile_arn: ::std::option::Option<::std::string::String>,
     pub(crate) extension_credential: ::std::option::Option<crate::types::ExtensionCredential>,
     pub(crate) extension_properties:
         ::std::option::Option<::std::collections::HashMap<::std::string::String, ::std::string::String>>,
@@ -82,24 +73,6 @@ impl CreateExtensionInputBuilder {
     #[allow(missing_docs)] // documentation missing in model
     pub fn get_extension_provider(&self) -> &::std::option::Option<::std::string::String> {
         &self.extension_provider
-    }
-
-    #[allow(missing_docs)] // documentation missing in model
-    /// This field is required.
-    pub fn profile_arn(mut self, input: impl ::std::convert::Into<::std::string::String>) -> Self {
-        self.profile_arn = ::std::option::Option::Some(input.into());
-        self
-    }
-
-    #[allow(missing_docs)] // documentation missing in model
-    pub fn set_profile_arn(mut self, input: ::std::option::Option<::std::string::String>) -> Self {
-        self.profile_arn = input;
-        self
-    }
-
-    #[allow(missing_docs)] // documentation missing in model
-    pub fn get_profile_arn(&self) -> &::std::option::Option<::std::string::String> {
-        &self.profile_arn
     }
 
     #[allow(missing_docs)] // documentation missing in model
@@ -160,7 +133,6 @@ impl CreateExtensionInputBuilder {
     > {
         ::std::result::Result::Ok(crate::operation::create_extension::CreateExtensionInput {
             extension_provider: self.extension_provider,
-            profile_arn: self.profile_arn,
             extension_credential: self.extension_credential,
             extension_properties: self.extension_properties,
         })
@@ -170,7 +142,6 @@ impl ::std::fmt::Debug for CreateExtensionInputBuilder {
     fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
         let mut formatter = f.debug_struct("CreateExtensionInputBuilder");
         formatter.field("extension_provider", &self.extension_provider);
-        formatter.field("profile_arn", &self.profile_arn);
         formatter.field("extension_credential", &"*** Sensitive Data Redacted ***");
         formatter.field("extension_properties", &self.extension_properties);
         formatter.finish()

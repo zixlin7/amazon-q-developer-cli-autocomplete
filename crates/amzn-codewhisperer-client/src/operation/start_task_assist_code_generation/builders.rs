@@ -181,4 +181,72 @@ impl StartTaskAssistCodeGenerationFluentBuilder {
     pub fn get_task_assist_plan(&self) -> &::std::option::Option<::std::vec::Vec<crate::types::TaskAssistPlanStep>> {
         self.inner.get_task_assist_plan()
     }
+
+    /// ID which represents a single code generation in a conversation
+    pub fn code_generation_id(mut self, input: impl ::std::convert::Into<::std::string::String>) -> Self {
+        self.inner = self.inner.code_generation_id(input.into());
+        self
+    }
+
+    /// ID which represents a single code generation in a conversation
+    pub fn set_code_generation_id(mut self, input: ::std::option::Option<::std::string::String>) -> Self {
+        self.inner = self.inner.set_code_generation_id(input);
+        self
+    }
+
+    /// ID which represents a single code generation in a conversation
+    pub fn get_code_generation_id(&self) -> &::std::option::Option<::std::string::String> {
+        self.inner.get_code_generation_id()
+    }
+
+    /// ID which represents a single code generation in a conversation
+    pub fn current_code_generation_id(mut self, input: impl ::std::convert::Into<::std::string::String>) -> Self {
+        self.inner = self.inner.current_code_generation_id(input.into());
+        self
+    }
+
+    /// ID which represents a single code generation in a conversation
+    pub fn set_current_code_generation_id(mut self, input: ::std::option::Option<::std::string::String>) -> Self {
+        self.inner = self.inner.set_current_code_generation_id(input);
+        self
+    }
+
+    /// ID which represents a single code generation in a conversation
+    pub fn get_current_code_generation_id(&self) -> &::std::option::Option<::std::string::String> {
+        self.inner.get_current_code_generation_id()
+    }
+
+    #[allow(missing_docs)] // documentation missing in model
+    pub fn intent(mut self, input: crate::types::Intent) -> Self {
+        self.inner = self.inner.intent(input);
+        self
+    }
+
+    #[allow(missing_docs)] // documentation missing in model
+    pub fn set_intent(mut self, input: ::std::option::Option<crate::types::Intent>) -> Self {
+        self.inner = self.inner.set_intent(input);
+        self
+    }
+
+    #[allow(missing_docs)] // documentation missing in model
+    pub fn get_intent(&self) -> &::std::option::Option<crate::types::Intent> {
+        self.inner.get_intent()
+    }
+
+    #[allow(missing_docs)] // documentation missing in model
+    pub fn intent_context(mut self, input: crate::types::IntentContext) -> Self {
+        self.inner = self.inner.intent_context(input);
+        self
+    }
+
+    #[allow(missing_docs)] // documentation missing in model
+    pub fn set_intent_context(mut self, input: ::std::option::Option<crate::types::IntentContext>) -> Self {
+        self.inner = self.inner.set_intent_context(input);
+        self
+    }
+
+    #[allow(missing_docs)] // documentation missing in model
+    pub fn get_intent_context(&self) -> &::std::option::Option<crate::types::IntentContext> {
+        self.inner.get_intent_context()
+    }
 }

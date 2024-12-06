@@ -84,6 +84,21 @@ where
                                         .transpose()?,
                                 );
                             },
+                            "optInFeatures" => {
+                                builder = builder.set_opt_in_features(
+                                    crate::protocol_serde::shape_opt_in_features::de_opt_in_features(tokens)?,
+                                );
+                            },
+                            "permissionUpdateRequired" => {
+                                builder = builder.set_permission_update_required(
+                                    ::aws_smithy_json::deserialize::token::expect_bool_or_null(tokens.next())?,
+                                );
+                            },
+                            "applicationProperties" => {
+                                builder = builder.set_application_properties(
+                                crate::protocol_serde::shape_application_properties_list::de_application_properties_list(tokens)?,
+                            );
+                            },
                             _ => ::aws_smithy_json::deserialize::token::skip_value(tokens)?,
                         }
                     },

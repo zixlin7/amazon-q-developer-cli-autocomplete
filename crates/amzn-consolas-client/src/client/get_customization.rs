@@ -20,6 +20,7 @@ impl super::Client {
     ///   - [`profile_arn(String)`](crate::operation::get_customization::GetCustomizationOutput::profile_arn): (undocumented)
     ///   - [`updated_at(DateTime)`](crate::operation::get_customization::GetCustomizationOutput::updated_at): (undocumented)
     ///   - [`evaluation_metrics(Option<EvaluationMetrics>)`](crate::operation::get_customization::GetCustomizationOutput::evaluation_metrics): (undocumented)
+    ///   - [`include_repos(Option<Vec::<String>>)`](crate::operation::get_customization::GetCustomizationOutput::include_repos): (undocumented)
     /// - On failure, responds with
     ///   [`SdkError<GetCustomizationError>`](crate::operation::get_customization::GetCustomizationError)
     pub fn get_customization(&self) -> crate::operation::get_customization::builders::GetCustomizationFluentBuilder {

@@ -13,9 +13,11 @@
 /// # let uploadintent = unimplemented!();
 /// match uploadintent {
 ///     UploadIntent::AutomaticFileSecurityScan => { /* ... */ },
+///     UploadIntent::CodeFixGeneration => { /* ... */ },
 ///     UploadIntent::FullProjectSecurityScan => { /* ... */ },
 ///     UploadIntent::TaskAssistPlanning => { /* ... */ },
 ///     UploadIntent::Transformation => { /* ... */ },
+///     UploadIntent::UnitTestsGeneration => { /* ... */ },
 ///     other @ _ if other.as_str() == "NewFeature" => { /* handles a case for `NewFeature` */ },
 ///     _ => { /* ... */ },
 /// }
@@ -51,12 +53,16 @@
 pub enum UploadIntent {
     /// Automatic File Security Scan
     AutomaticFileSecurityScan,
+    /// Code Fix Generation
+    CodeFixGeneration,
     /// Full Project Security Scan
     FullProjectSecurityScan,
     /// Code Task Assist
     TaskAssistPlanning,
     /// Code Transformation
     Transformation,
+    /// Unit Test Generation
+    UnitTestsGeneration,
     /// `Unknown` contains new variants that have been added since this code was generated.
     #[deprecated(
         note = "Don't directly match on `Unknown`. See the docs on this enum for the correct way to handle unknown variants."
@@ -67,9 +73,11 @@ impl ::std::convert::From<&str> for UploadIntent {
     fn from(s: &str) -> Self {
         match s {
             "AUTOMATIC_FILE_SECURITY_SCAN" => UploadIntent::AutomaticFileSecurityScan,
+            "CODE_FIX_GENERATION" => UploadIntent::CodeFixGeneration,
             "FULL_PROJECT_SECURITY_SCAN" => UploadIntent::FullProjectSecurityScan,
             "TASK_ASSIST_PLANNING" => UploadIntent::TaskAssistPlanning,
             "TRANSFORMATION" => UploadIntent::Transformation,
+            "UNIT_TESTS_GENERATION" => UploadIntent::UnitTestsGeneration,
             other => UploadIntent::Unknown(crate::primitives::sealed_enum_unknown::UnknownVariantValue(
                 other.to_owned(),
             )),
@@ -88,9 +96,11 @@ impl UploadIntent {
     pub fn as_str(&self) -> &str {
         match self {
             UploadIntent::AutomaticFileSecurityScan => "AUTOMATIC_FILE_SECURITY_SCAN",
+            UploadIntent::CodeFixGeneration => "CODE_FIX_GENERATION",
             UploadIntent::FullProjectSecurityScan => "FULL_PROJECT_SECURITY_SCAN",
             UploadIntent::TaskAssistPlanning => "TASK_ASSIST_PLANNING",
             UploadIntent::Transformation => "TRANSFORMATION",
+            UploadIntent::UnitTestsGeneration => "UNIT_TESTS_GENERATION",
             UploadIntent::Unknown(value) => value.as_str(),
         }
     }
@@ -99,9 +109,11 @@ impl UploadIntent {
     pub const fn values() -> &'static [&'static str] {
         &[
             "AUTOMATIC_FILE_SECURITY_SCAN",
+            "CODE_FIX_GENERATION",
             "FULL_PROJECT_SECURITY_SCAN",
             "TASK_ASSIST_PLANNING",
             "TRANSFORMATION",
+            "UNIT_TESTS_GENERATION",
         ]
     }
 }
@@ -126,9 +138,11 @@ impl ::std::fmt::Display for UploadIntent {
     fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
         match self {
             UploadIntent::AutomaticFileSecurityScan => write!(f, "AUTOMATIC_FILE_SECURITY_SCAN"),
+            UploadIntent::CodeFixGeneration => write!(f, "CODE_FIX_GENERATION"),
             UploadIntent::FullProjectSecurityScan => write!(f, "FULL_PROJECT_SECURITY_SCAN"),
             UploadIntent::TaskAssistPlanning => write!(f, "TASK_ASSIST_PLANNING"),
             UploadIntent::Transformation => write!(f, "TRANSFORMATION"),
+            UploadIntent::UnitTestsGeneration => write!(f, "UNIT_TESTS_GENERATION"),
             UploadIntent::Unknown(value) => write!(f, "{}", value),
         }
     }

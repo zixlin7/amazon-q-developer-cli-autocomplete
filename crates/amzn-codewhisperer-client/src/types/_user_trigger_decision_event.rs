@@ -27,6 +27,10 @@ pub struct UserTriggerDecisionEvent {
     pub generated_line: i32,
     #[allow(missing_docs)] // documentation missing in model
     pub number_of_recommendations: i32,
+    #[allow(missing_docs)] // documentation missing in model
+    pub perceived_latency_milliseconds: ::std::option::Option<f64>,
+    #[allow(missing_docs)] // documentation missing in model
+    pub accepted_character_count: i32,
 }
 impl UserTriggerDecisionEvent {
     #[allow(missing_docs)] // documentation missing in model
@@ -90,6 +94,16 @@ impl UserTriggerDecisionEvent {
     pub fn number_of_recommendations(&self) -> i32 {
         self.number_of_recommendations
     }
+
+    #[allow(missing_docs)] // documentation missing in model
+    pub fn perceived_latency_milliseconds(&self) -> ::std::option::Option<f64> {
+        self.perceived_latency_milliseconds
+    }
+
+    #[allow(missing_docs)] // documentation missing in model
+    pub fn accepted_character_count(&self) -> i32 {
+        self.accepted_character_count
+    }
 }
 impl UserTriggerDecisionEvent {
     /// Creates a new builder-style object to manufacture
@@ -115,6 +129,8 @@ pub struct UserTriggerDecisionEventBuilder {
     pub(crate) suggestion_reference_count: ::std::option::Option<i32>,
     pub(crate) generated_line: ::std::option::Option<i32>,
     pub(crate) number_of_recommendations: ::std::option::Option<i32>,
+    pub(crate) perceived_latency_milliseconds: ::std::option::Option<f64>,
+    pub(crate) accepted_character_count: ::std::option::Option<i32>,
 }
 impl UserTriggerDecisionEventBuilder {
     #[allow(missing_docs)] // documentation missing in model
@@ -328,6 +344,40 @@ impl UserTriggerDecisionEventBuilder {
         &self.number_of_recommendations
     }
 
+    #[allow(missing_docs)] // documentation missing in model
+    pub fn perceived_latency_milliseconds(mut self, input: f64) -> Self {
+        self.perceived_latency_milliseconds = ::std::option::Option::Some(input);
+        self
+    }
+
+    #[allow(missing_docs)] // documentation missing in model
+    pub fn set_perceived_latency_milliseconds(mut self, input: ::std::option::Option<f64>) -> Self {
+        self.perceived_latency_milliseconds = input;
+        self
+    }
+
+    #[allow(missing_docs)] // documentation missing in model
+    pub fn get_perceived_latency_milliseconds(&self) -> &::std::option::Option<f64> {
+        &self.perceived_latency_milliseconds
+    }
+
+    #[allow(missing_docs)] // documentation missing in model
+    pub fn accepted_character_count(mut self, input: i32) -> Self {
+        self.accepted_character_count = ::std::option::Option::Some(input);
+        self
+    }
+
+    #[allow(missing_docs)] // documentation missing in model
+    pub fn set_accepted_character_count(mut self, input: ::std::option::Option<i32>) -> Self {
+        self.accepted_character_count = input;
+        self
+    }
+
+    #[allow(missing_docs)] // documentation missing in model
+    pub fn get_accepted_character_count(&self) -> &::std::option::Option<i32> {
+        &self.accepted_character_count
+    }
+
     /// Consumes the builder and constructs a
     /// [`UserTriggerDecisionEvent`](crate::types::UserTriggerDecisionEvent). This method will
     /// fail if any of the following fields are not set:
@@ -390,6 +440,8 @@ impl UserTriggerDecisionEventBuilder {
             suggestion_reference_count: self.suggestion_reference_count.unwrap_or_default(),
             generated_line: self.generated_line.unwrap_or_default(),
             number_of_recommendations: self.number_of_recommendations.unwrap_or_default(),
+            perceived_latency_milliseconds: self.perceived_latency_milliseconds,
+            accepted_character_count: self.accepted_character_count.unwrap_or_default(),
         })
     }
 }

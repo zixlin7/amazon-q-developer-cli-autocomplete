@@ -16,6 +16,8 @@ pub struct NellyResult {
             ::std::collections::HashMap<::std::string::String, crate::types::IntentDataType>,
         >,
     >,
+    /// List of interaction components.
+    pub interaction_components: ::std::option::Option<::std::vec::Vec<crate::types::InteractionComponent>>,
 }
 impl NellyResult {
     /// Enumeration of the possible values for nelly chat response text
@@ -44,6 +46,14 @@ impl NellyResult {
     > {
         self.intents.as_ref()
     }
+
+    /// List of interaction components.
+    ///
+    /// If no value was sent for this field, a default will be set. If you want to determine if no
+    /// value was sent, use `.interaction_components.is_none()`.
+    pub fn interaction_components(&self) -> &[crate::types::InteractionComponent] {
+        self.interaction_components.as_deref().unwrap_or_default()
+    }
 }
 impl NellyResult {
     /// Creates a new builder-style object to manufacture
@@ -66,6 +76,7 @@ pub struct NellyResultBuilder {
             ::std::collections::HashMap<::std::string::String, crate::types::IntentDataType>,
         >,
     >,
+    pub(crate) interaction_components: ::std::option::Option<::std::vec::Vec<crate::types::InteractionComponent>>,
 }
 impl NellyResultBuilder {
     /// Enumeration of the possible values for nelly chat response text
@@ -162,9 +173,38 @@ impl NellyResultBuilder {
         &self.intents
     }
 
+    /// Appends an item to `interaction_components`.
+    ///
+    /// To override the contents of this collection use
+    /// [`set_interaction_components`](Self::set_interaction_components).
+    ///
+    /// List of interaction components.
+    pub fn interaction_components(mut self, input: crate::types::InteractionComponent) -> Self {
+        let mut v = self.interaction_components.unwrap_or_default();
+        v.push(input);
+        self.interaction_components = ::std::option::Option::Some(v);
+        self
+    }
+
+    /// List of interaction components.
+    pub fn set_interaction_components(
+        mut self,
+        input: ::std::option::Option<::std::vec::Vec<crate::types::InteractionComponent>>,
+    ) -> Self {
+        self.interaction_components = input;
+        self
+    }
+
+    /// List of interaction components.
+    pub fn get_interaction_components(
+        &self,
+    ) -> &::std::option::Option<::std::vec::Vec<crate::types::InteractionComponent>> {
+        &self.interaction_components
+    }
+
     /// Consumes the builder and constructs a [`NellyResult`](crate::types::NellyResult).
     /// This method will fail if any of the following fields are not set:
-    /// - [`r#type`](crate::types::builders::NellyResultBuilder::r#type)
+    /// - [`r#type`](crate::types::builders::NellyResultBuilder::type)
     /// - [`format`](crate::types::builders::NellyResultBuilder::format)
     /// - [`content`](crate::types::builders::NellyResultBuilder::content)
     pub fn build(
@@ -190,6 +230,7 @@ impl NellyResultBuilder {
                 )
             })?,
             intents: self.intents,
+            interaction_components: self.interaction_components,
         })
     }
 }

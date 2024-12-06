@@ -6,6 +6,8 @@ pub enum UploadContext {
     #[allow(missing_docs)] // documentation missing in model
     CodeAnalysisUploadContext(crate::types::CodeAnalysisUploadContext),
     #[allow(missing_docs)] // documentation missing in model
+    CodeFixUploadContext(crate::types::CodeFixUploadContext),
+    #[allow(missing_docs)] // documentation missing in model
     TaskAssistPlanningUploadContext(crate::types::TaskAssistPlanningUploadContext),
     #[allow(missing_docs)] // documentation missing in model
     TransformationUploadContext(crate::types::TransformationUploadContext),
@@ -39,6 +41,24 @@ impl UploadContext {
     /// [`CodeAnalysisUploadContext`](crate::types::UploadContext::CodeAnalysisUploadContext).
     pub fn is_code_analysis_upload_context(&self) -> bool {
         self.as_code_analysis_upload_context().is_ok()
+    }
+
+    /// Tries to convert the enum instance into
+    /// [`CodeFixUploadContext`](crate::types::UploadContext::CodeFixUploadContext), extracting the
+    /// inner [`CodeFixUploadContext`](crate::types::CodeFixUploadContext). Returns `Err(&Self)`
+    /// if it can't be converted.
+    pub fn as_code_fix_upload_context(&self) -> ::std::result::Result<&crate::types::CodeFixUploadContext, &Self> {
+        if let UploadContext::CodeFixUploadContext(val) = &self {
+            ::std::result::Result::Ok(val)
+        } else {
+            ::std::result::Result::Err(self)
+        }
+    }
+
+    /// Returns true if this is a
+    /// [`CodeFixUploadContext`](crate::types::UploadContext::CodeFixUploadContext).
+    pub fn is_code_fix_upload_context(&self) -> bool {
+        self.as_code_fix_upload_context().is_ok()
     }
 
     /// Tries to convert the enum instance into

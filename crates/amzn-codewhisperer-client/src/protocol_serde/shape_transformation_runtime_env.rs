@@ -10,6 +10,9 @@ pub fn ser_transformation_runtime_env(
         crate::types::TransformationRuntimeEnv::DotNet(inner) => {
             object_3.key("dotNet").string(inner.as_str());
         },
+        crate::types::TransformationRuntimeEnv::Mainframe(inner) => {
+            object_3.key("mainframe").string(inner.as_str());
+        },
         crate::types::TransformationRuntimeEnv::Unknown => {
             return Err(
                 ::aws_smithy_types::error::operation::SerializationError::unknown_variant("TransformationRuntimeEnv"),
@@ -78,6 +81,19 @@ where
                                 .ok_or_else(|| {
                                     ::aws_smithy_json::deserialize::error::DeserializeError::custom(
                                         "value for 'dotNet' cannot be null",
+                                    )
+                                })?,
+                        )),
+                        "mainframe" => Some(crate::types::TransformationRuntimeEnv::Mainframe(
+                            ::aws_smithy_json::deserialize::token::expect_string_or_null(tokens.next())?
+                                .map(|s| {
+                                    s.to_unescaped()
+                                        .map(|u| crate::types::TransformationMainframeRuntimeEnv::from(u.as_ref()))
+                                })
+                                .transpose()?
+                                .ok_or_else(|| {
+                                    ::aws_smithy_json::deserialize::error::DeserializeError::custom(
+                                        "value for 'mainframe' cannot be null",
                                     )
                                 })?,
                         )),

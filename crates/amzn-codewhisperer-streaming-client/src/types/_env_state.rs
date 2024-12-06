@@ -10,6 +10,8 @@ pub struct EnvState {
     pub current_working_directory: ::std::option::Option<::std::string::String>,
     /// The environment variables set in the current environment
     pub environment_variables: ::std::option::Option<::std::vec::Vec<crate::types::EnvironmentVariable>>,
+    /// Local timezone offset of the client. For more information, see documentation https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/getTimezoneOffset
+    pub timezone_offset: ::std::option::Option<i32>,
 }
 impl EnvState {
     /// The name of the operating system in use
@@ -29,6 +31,11 @@ impl EnvState {
     pub fn environment_variables(&self) -> &[crate::types::EnvironmentVariable] {
         self.environment_variables.as_deref().unwrap_or_default()
     }
+
+    /// Local timezone offset of the client. For more information, see documentation https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/getTimezoneOffset
+    pub fn timezone_offset(&self) -> ::std::option::Option<i32> {
+        self.timezone_offset
+    }
 }
 impl ::std::fmt::Debug for EnvState {
     fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -36,6 +43,7 @@ impl ::std::fmt::Debug for EnvState {
         formatter.field("operating_system", &self.operating_system);
         formatter.field("current_working_directory", &"*** Sensitive Data Redacted ***");
         formatter.field("environment_variables", &self.environment_variables);
+        formatter.field("timezone_offset", &self.timezone_offset);
         formatter.finish()
     }
 }
@@ -53,6 +61,7 @@ pub struct EnvStateBuilder {
     pub(crate) operating_system: ::std::option::Option<::std::string::String>,
     pub(crate) current_working_directory: ::std::option::Option<::std::string::String>,
     pub(crate) environment_variables: ::std::option::Option<::std::vec::Vec<crate::types::EnvironmentVariable>>,
+    pub(crate) timezone_offset: ::std::option::Option<i32>,
 }
 impl EnvStateBuilder {
     /// The name of the operating system in use
@@ -118,12 +127,30 @@ impl EnvStateBuilder {
         &self.environment_variables
     }
 
+    /// Local timezone offset of the client. For more information, see documentation https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/getTimezoneOffset
+    pub fn timezone_offset(mut self, input: i32) -> Self {
+        self.timezone_offset = ::std::option::Option::Some(input);
+        self
+    }
+
+    /// Local timezone offset of the client. For more information, see documentation https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/getTimezoneOffset
+    pub fn set_timezone_offset(mut self, input: ::std::option::Option<i32>) -> Self {
+        self.timezone_offset = input;
+        self
+    }
+
+    /// Local timezone offset of the client. For more information, see documentation https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/getTimezoneOffset
+    pub fn get_timezone_offset(&self) -> &::std::option::Option<i32> {
+        &self.timezone_offset
+    }
+
     /// Consumes the builder and constructs a [`EnvState`](crate::types::EnvState).
     pub fn build(self) -> crate::types::EnvState {
         crate::types::EnvState {
             operating_system: self.operating_system,
             current_working_directory: self.current_working_directory,
             environment_variables: self.environment_variables,
+            timezone_offset: self.timezone_offset,
         }
     }
 }
@@ -133,6 +160,7 @@ impl ::std::fmt::Debug for EnvStateBuilder {
         formatter.field("operating_system", &self.operating_system);
         formatter.field("current_working_directory", &"*** Sensitive Data Redacted ***");
         formatter.field("environment_variables", &self.environment_variables);
+        formatter.field("timezone_offset", &self.timezone_offset);
         formatter.finish()
     }
 }

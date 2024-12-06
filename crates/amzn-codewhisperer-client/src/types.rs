@@ -14,14 +14,21 @@ pub use crate::types::_code_analysis_scope::CodeAnalysisScope;
 pub use crate::types::_code_analysis_status::CodeAnalysisStatus;
 pub use crate::types::_code_analysis_upload_context::CodeAnalysisUploadContext;
 pub use crate::types::_code_coverage_event::CodeCoverageEvent;
+pub use crate::types::_code_fix_acceptance_event::CodeFixAcceptanceEvent;
+pub use crate::types::_code_fix_generation_event::CodeFixGenerationEvent;
+pub use crate::types::_code_fix_job_status::CodeFixJobStatus;
+pub use crate::types::_code_fix_upload_context::CodeFixUploadContext;
 pub use crate::types::_code_generation_status::CodeGenerationStatus;
 pub use crate::types::_code_generation_workflow_stage::CodeGenerationWorkflowStage;
 pub use crate::types::_code_generation_workflow_status::CodeGenerationWorkflowStatus;
 pub use crate::types::_code_scan_event::CodeScanEvent;
+pub use crate::types::_code_scan_failed_event::CodeScanFailedEvent;
 pub use crate::types::_code_scan_remediations_event::CodeScanRemediationsEvent;
 pub use crate::types::_code_scan_remediations_event_type::CodeScanRemediationsEventType;
+pub use crate::types::_code_scan_succeeded_event::CodeScanSucceededEvent;
 pub use crate::types::_completion::Completion;
 pub use crate::types::_completion_type::CompletionType;
+pub use crate::types::_conflict_exception_reason::ConflictExceptionReason;
 pub use crate::types::_console_state::ConsoleState;
 pub use crate::types::_content_checksum_type::ContentChecksumType;
 pub use crate::types::_context_truncation_scheme::ContextTruncationScheme;
@@ -31,10 +38,18 @@ pub use crate::types::_customization::Customization;
 pub use crate::types::_diagnostic::Diagnostic;
 pub use crate::types::_diagnostic_severity::DiagnosticSeverity;
 pub use crate::types::_dimension::Dimension;
+pub use crate::types::_doc_generation_event::DocGenerationEvent;
+pub use crate::types::_doc_generation_folder_level::DocGenerationFolderLevel;
+pub use crate::types::_doc_generation_interaction_type::DocGenerationInteractionType;
+pub use crate::types::_doc_generation_user_decision::DocGenerationUserDecision;
 pub use crate::types::_document_symbol::DocumentSymbol;
+pub use crate::types::_documentation_intent_context::DocumentationIntentContext;
+pub use crate::types::_documentation_type::DocumentationType;
 pub use crate::types::_editor_state::EditorState;
 pub use crate::types::_env_state::EnvState;
 pub use crate::types::_environment_variable::EnvironmentVariable;
+pub use crate::types::_feature_dev_code_acceptance_event::FeatureDevCodeAcceptanceEvent;
+pub use crate::types::_feature_dev_code_generation_event::FeatureDevCodeGenerationEvent;
 pub use crate::types::_feature_dev_event::FeatureDevEvent;
 pub use crate::types::_feature_evaluation::FeatureEvaluation;
 pub use crate::types::_feature_value::FeatureValue;
@@ -43,6 +58,10 @@ pub use crate::types::_followup_prompt::FollowupPrompt;
 pub use crate::types::_git_state::GitState;
 pub use crate::types::_ide_category::IdeCategory;
 pub use crate::types::_import::Import;
+pub use crate::types::_inline_chat_event::InlineChatEvent;
+pub use crate::types::_inline_chat_user_decision::InlineChatUserDecision;
+pub use crate::types::_intent::Intent;
+pub use crate::types::_intent_context::IntentContext;
 pub use crate::types::_metric_data::MetricData;
 pub use crate::types::_operating_system::OperatingSystem;
 pub use crate::types::_opt_out_preference::OptOutPreference;
@@ -57,31 +76,41 @@ pub use crate::types::_runtime_diagnostic::RuntimeDiagnostic;
 pub use crate::types::_shell_history_entry::ShellHistoryEntry;
 pub use crate::types::_shell_state::ShellState;
 pub use crate::types::_span::Span;
+pub use crate::types::_suggested_fix::SuggestedFix;
 pub use crate::types::_suggestion_state::SuggestionState;
 pub use crate::types::_supplemental_context::SupplementalContext;
 pub use crate::types::_supplementary_web_link::SupplementaryWebLink;
 pub use crate::types::_symbol_type::SymbolType;
+pub use crate::types::_target_code::TargetCode;
 pub use crate::types::_task_assist_plan_step::TaskAssistPlanStep;
 pub use crate::types::_task_assist_plan_step_action::TaskAssistPlanStepAction;
 pub use crate::types::_task_assist_planning_upload_context::TaskAssistPlanningUploadContext;
 pub use crate::types::_telemetry_event::TelemetryEvent;
 pub use crate::types::_terminal_user_interaction_event::TerminalUserInteractionEvent;
 pub use crate::types::_terminal_user_interaction_event_type::TerminalUserInteractionEventType;
+pub use crate::types::_test_generation_event::TestGenerationEvent;
+pub use crate::types::_test_generation_job::TestGenerationJob;
+pub use crate::types::_test_generation_job_status::TestGenerationJobStatus;
 pub use crate::types::_text_document::TextDocument;
 pub use crate::types::_text_document_diagnostic::TextDocumentDiagnostic;
+pub use crate::types::_throttling_exception_reason::ThrottlingExceptionReason;
+pub use crate::types::_transform_event::TransformEvent;
 pub use crate::types::_transformation_dot_net_runtime_env::TransformationDotNetRuntimeEnv;
 pub use crate::types::_transformation_download_artifact::TransformationDownloadArtifact;
 pub use crate::types::_transformation_download_artifact_type::TransformationDownloadArtifactType;
 pub use crate::types::_transformation_java_runtime_env::TransformationJavaRuntimeEnv;
 pub use crate::types::_transformation_job::TransformationJob;
 pub use crate::types::_transformation_language::TransformationLanguage;
+pub use crate::types::_transformation_mainframe_runtime_env::TransformationMainframeRuntimeEnv;
 pub use crate::types::_transformation_operating_system_family::TransformationOperatingSystemFamily;
 pub use crate::types::_transformation_plan::TransformationPlan;
 pub use crate::types::_transformation_platform_config::TransformationPlatformConfig;
 pub use crate::types::_transformation_progress_update::TransformationProgressUpdate;
 pub use crate::types::_transformation_progress_update_status::TransformationProgressUpdateStatus;
+pub use crate::types::_transformation_project_artifact_descriptor::TransformationProjectArtifactDescriptor;
 pub use crate::types::_transformation_project_state::TransformationProjectState;
 pub use crate::types::_transformation_runtime_env::TransformationRuntimeEnv;
+pub use crate::types::_transformation_source_code_artifact_descriptor::TransformationSourceCodeArtifactDescriptor;
 pub use crate::types::_transformation_spec::TransformationSpec;
 pub use crate::types::_transformation_status::TransformationStatus;
 pub use crate::types::_transformation_step::TransformationStep;
@@ -132,6 +161,14 @@ mod _code_analysis_upload_context;
 
 mod _code_coverage_event;
 
+mod _code_fix_acceptance_event;
+
+mod _code_fix_generation_event;
+
+mod _code_fix_job_status;
+
+mod _code_fix_upload_context;
+
 mod _code_generation_status;
 
 mod _code_generation_workflow_stage;
@@ -140,13 +177,19 @@ mod _code_generation_workflow_status;
 
 mod _code_scan_event;
 
+mod _code_scan_failed_event;
+
 mod _code_scan_remediations_event;
 
 mod _code_scan_remediations_event_type;
 
+mod _code_scan_succeeded_event;
+
 mod _completion;
 
 mod _completion_type;
+
+mod _conflict_exception_reason;
 
 mod _console_state;
 
@@ -166,13 +209,29 @@ mod _diagnostic_severity;
 
 mod _dimension;
 
+mod _doc_generation_event;
+
+mod _doc_generation_folder_level;
+
+mod _doc_generation_interaction_type;
+
+mod _doc_generation_user_decision;
+
 mod _document_symbol;
+
+mod _documentation_intent_context;
+
+mod _documentation_type;
 
 mod _editor_state;
 
 mod _env_state;
 
 mod _environment_variable;
+
+mod _feature_dev_code_acceptance_event;
+
+mod _feature_dev_code_generation_event;
 
 mod _feature_dev_event;
 
@@ -189,6 +248,14 @@ mod _git_state;
 mod _ide_category;
 
 mod _import;
+
+mod _inline_chat_event;
+
+mod _inline_chat_user_decision;
+
+mod _intent;
+
+mod _intent_context;
 
 mod _metric_data;
 
@@ -218,6 +285,8 @@ mod _shell_state;
 
 mod _span;
 
+mod _suggested_fix;
+
 mod _suggestion_state;
 
 mod _supplemental_context;
@@ -225,6 +294,8 @@ mod _supplemental_context;
 mod _supplementary_web_link;
 
 mod _symbol_type;
+
+mod _target_code;
 
 mod _task_assist_plan_step;
 
@@ -238,9 +309,19 @@ mod _terminal_user_interaction_event;
 
 mod _terminal_user_interaction_event_type;
 
+mod _test_generation_event;
+
+mod _test_generation_job;
+
+mod _test_generation_job_status;
+
 mod _text_document;
 
 mod _text_document_diagnostic;
+
+mod _throttling_exception_reason;
+
+mod _transform_event;
 
 mod _transformation_dot_net_runtime_env;
 
@@ -254,6 +335,8 @@ mod _transformation_job;
 
 mod _transformation_language;
 
+mod _transformation_mainframe_runtime_env;
+
 mod _transformation_operating_system_family;
 
 mod _transformation_plan;
@@ -264,9 +347,13 @@ mod _transformation_progress_update;
 
 mod _transformation_progress_update_status;
 
+mod _transformation_project_artifact_descriptor;
+
 mod _transformation_project_state;
 
 mod _transformation_runtime_env;
+
+mod _transformation_source_code_artifact_descriptor;
 
 mod _transformation_spec;
 

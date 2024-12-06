@@ -200,4 +200,25 @@ impl UpdateCustomizationFluentBuilder {
     pub fn get_version(&self) -> &::std::option::Option<i64> {
         self.inner.get_version()
     }
+
+    /// Appends an item to `includeRepos`.
+    ///
+    /// To override the contents of this collection use
+    /// [`set_include_repos`](Self::set_include_repos).
+    #[allow(missing_docs)] // documentation missing in model
+    pub fn include_repos(mut self, input: impl ::std::convert::Into<::std::string::String>) -> Self {
+        self.inner = self.inner.include_repos(input.into());
+        self
+    }
+
+    #[allow(missing_docs)] // documentation missing in model
+    pub fn set_include_repos(mut self, input: ::std::option::Option<::std::vec::Vec<::std::string::String>>) -> Self {
+        self.inner = self.inner.set_include_repos(input);
+        self
+    }
+
+    #[allow(missing_docs)] // documentation missing in model
+    pub fn get_include_repos(&self) -> &::std::option::Option<::std::vec::Vec<::std::string::String>> {
+        self.inner.get_include_repos()
+    }
 }

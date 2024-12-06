@@ -2,7 +2,6 @@ import {
   AuthBuilderIdStartDeviceAuthorizationResponse,
   AuthCancelPkceAuthorizationResponse,
   AuthStartPkceAuthorizationResponse,
-  // eslint-disable-next-line camelcase
   AuthStatusResponse_AuthKind,
   AuthBuilderIdPollCreateTokenResponse_PollStatus as PollStatus,
 } from "@amzn/fig-io-proto/fig";
@@ -21,11 +20,9 @@ export function status() {
   return sendAuthStatusRequest({}).then((res) => {
     let authKind: "BuilderId" | "IamIdentityCenter" | undefined;
     switch (res.authKind) {
-      // eslint-disable-next-line camelcase
       case AuthStatusResponse_AuthKind.BUILDER_ID:
         authKind = "BuilderId";
         break;
-      // eslint-disable-next-line camelcase
       case AuthStatusResponse_AuthKind.IAM_IDENTITY_CENTER:
         authKind = "IamIdentityCenter";
         break;
@@ -84,12 +81,10 @@ export async function builderIdPollCreateToken({
   interval,
 }: AuthBuilderIdStartDeviceAuthorizationResponse) {
   for (let i = 0; i < Math.ceil(expiresIn / interval); i += 1) {
-    // eslint-disable-next-line no-await-in-loop
     await new Promise((resolve) => {
       setTimeout(resolve, interval * 1000);
     });
 
-    // eslint-disable-next-line no-await-in-loop
     const pollStatus = await sendAuthBuilderIdPollCreateTokenRequest({
       authRequestId,
     });

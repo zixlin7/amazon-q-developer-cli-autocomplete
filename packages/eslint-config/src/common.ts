@@ -1,21 +1,28 @@
 import eslint from "@eslint/js";
 import tseslint from "typescript-eslint";
-// @ts-ignore
-import unicorn from "eslint-plugin-unicorn";
+import eslintPluginUnicorn from "eslint-plugin-unicorn";
 // @ts-ignore
 import eslintConfigPrettier from "eslint-config-prettier";
 import type { TSESLint } from "@typescript-eslint/utils";
 
 export const CONFIG: TSESLint.FlatConfig.ConfigArray = [
   eslint.configs.recommended,
-  ...tseslint.configs.recommended,
 
   // typescript-eslint rules
+  ...tseslint.configs.recommended,
   {
     rules: {
       "@typescript-eslint/no-unused-vars": [
-        "warn",
-        { argsIgnorePattern: "^_", varsIgnorePattern: "^_" },
+        "error",
+        {
+          args: "all",
+          argsIgnorePattern: "^_",
+          caughtErrors: "all",
+          caughtErrorsIgnorePattern: "^_",
+          destructuredArrayIgnorePattern: "^_",
+          varsIgnorePattern: "^_",
+          ignoreRestSiblings: true,
+        },
       ],
     },
   },
@@ -23,7 +30,7 @@ export const CONFIG: TSESLint.FlatConfig.ConfigArray = [
   // unicorn rules
   {
     plugins: {
-      unicorn,
+      unicorn: eslintPluginUnicorn,
     },
     rules: {
       // 'unicorn/no-useless-promise-resolve-reject': 'error',
@@ -45,7 +52,7 @@ export const CONFIG: TSESLint.FlatConfig.ConfigArray = [
       // "unicorn/prefer-code-point": "error",
       "unicorn/prefer-date-now": "error",
       // "unicorn/prefer-dom-node-text-content": "error",
-      // "unicorn/prefer-includes": "error",
+      "unicorn/prefer-includes": "error",
       "unicorn/prefer-keyboard-event-key": "error",
       "unicorn/prefer-modern-dom-apis": "error",
       "unicorn/prefer-modern-math-apis": "error",

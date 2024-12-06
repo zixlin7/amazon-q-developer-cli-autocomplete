@@ -112,21 +112,21 @@ export const useAutocompleteKeypressCallback = (
         case AutocompleteAction.INSERT_COMMON_PREFIX:
           try {
             insertCommonPrefix();
-          } catch (err) {
+          } catch (_err) {
             shake();
           }
           break;
         case AutocompleteAction.INSERT_COMMON_PREFIX_OR_NAVIGATE_DOWN:
           try {
             insertCommonPrefix();
-          } catch (err) {
+          } catch (_err) {
             navigate(1);
           }
           break;
         case AutocompleteAction.INSERT_COMMON_PREFIX_OR_INSERT_SELECTED:
           try {
             insertCommonPrefix();
-          } catch (err) {
+          } catch (_err) {
             insertTextForItem(selectedItem);
           }
           break;

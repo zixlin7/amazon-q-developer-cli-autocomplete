@@ -9,10 +9,10 @@ importers:
   .:
     devDependencies:
       '@vitest/coverage-v8':
-        specifier: ^2.1.6
+        specifier: ^2.1.8
         version: 2.1.8(vitest@2.1.8)
       '@vitest/ui':
-        specifier: ^2.1.6
+        specifier: ^2.1.8
         version: 2.1.8(vitest@2.1.8)
       husky:
         specifier: ^9.1.7
@@ -24,7 +24,7 @@ importers:
         specifier: ^4.0.8
         version: 4.0.8
       prettier:
-        specifier: ^3.4.1
+        specifier: ^3.4.2
         version: 3.4.2
       tsx:
         specifier: ^4.19.2
@@ -33,7 +33,7 @@ importers:
         specifier: ^2.3.3
         version: 2.3.3
       vitest:
-        specifier: ^2.1.6
+        specifier: ^2.1.8
         version: 2.1.8(@types/node@22.10.1)(@vitest/ui@2.1.8)(jsdom@24.1.0)(terser@5.37.0)
 
   extensions/gnome-extension:

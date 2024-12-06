@@ -157,7 +157,7 @@ export const substituteAlias = (
 
 export const expandCommand = (
   command: Command,
-  cursorIndex: number,
+  _cursorIndex: number,
   aliases: AliasMap,
 ): Command => {
   let expanded = command;
@@ -175,7 +175,7 @@ export const expandCommand = (
     const aliasValue = aliases[name.text].replace(/^'(.*)'$/g, "$1");
     try {
       expanded = substituteAlias(expanded, name, aliasValue);
-    } catch (err) {
+    } catch (_err) {
       // TODO(refactoring): add logger again
       // console.error("Error substituting alias");
     }

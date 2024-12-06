@@ -1,4 +1,4 @@
-/* eslint-disable no-var, vars-on-top */
+/* eslint-disable no-var */
 
 declare global {
   var fig:

@@ -146,7 +146,7 @@ const getTitle = (
               text: name,
             },
           ];
-        } catch (err) {
+        } catch (_err) {
           return [
             {
               id: elementId++,

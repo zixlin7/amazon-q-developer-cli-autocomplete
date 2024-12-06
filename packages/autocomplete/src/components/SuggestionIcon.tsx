@@ -127,7 +127,7 @@ const SuggestionIcon = ({
     try {
       const iconUri = new URL(icon);
       img = renderIcon(transformIconUri(iconUri), height ?? 0);
-    } catch (e) {
+    } catch (_err) {
       if (typeof height === "number") {
         height *= 0.8;
       }

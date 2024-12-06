@@ -1,10 +1,6 @@
 import logger, { Logger } from "loglevel";
 import { Settings, Debugger } from "@amzn/fig-io-api-bindings";
-import {
-  convertSubcommand,
-  initializeDefault,
-  applyMixin,
-} from "@fig/autocomplete-shared";
+import { convertSubcommand, initializeDefault } from "@fig/autocomplete-shared";
 import {
   withTimeout,
   SpecLocationSource,
@@ -191,7 +187,7 @@ export const importSpecFromLocation = async (
           `~/.fig/autocomplete/build/`,
           localLogger,
         );
-      } catch (err) {
+      } catch (_err) {
         /* empty */
       }
     }
@@ -206,33 +202,16 @@ export const importSpecFromLocation = async (
 
 export const loadFigSubcommand = async (
   specLocation: SpecLocation,
-  context?: Fig.ShellContext,
+  _context?: Fig.ShellContext,
   localLogger: Logger = logger,
 ): Promise<Fig.Subcommand> => {
   const { name } = specLocation;
   const location = (await isDiffVersionedSpec(name))
     ? { ...specLocation, diffVersionedFile: "index" }
     : specLocation;
-  const { specFile, resolvedLocation } = await importSpecFromLocation(
-    location,
-    localLogger,
-  );
-
+  const { specFile } = await importSpecFromLocation(location, localLogger);
   const subcommand = await tryResolveSpecToSubcommand(specFile, specLocation);
-  // const mixin = resolvedLocation && (await loadMixinCached(resolvedLocation));
-  const mixin = undefined;
-  return mixin
-    ? applyMixin(
-        subcommand,
-        context ?? {
-          currentProcess: "",
-          currentWorkingDirectory: "",
-          sshPrefix: "",
-          environmentVariables: {},
-        },
-        mixin,
-      )
-    : subcommand;
+  return subcommand;
 };
 
 export const loadSubcommandCached = async (

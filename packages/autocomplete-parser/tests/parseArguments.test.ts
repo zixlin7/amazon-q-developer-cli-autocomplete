@@ -740,7 +740,6 @@ describe.todo("parseArguments", () => {
       expect(result.searchTerm).toBe("");
 
       // We mutate completionObj for generateSpec so check with toEqual instead of toBe.
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const newSpec = await generateSpec!(
         ["cmd", "generateSpec", ""],
         async () => ({

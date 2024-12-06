@@ -4,6 +4,7 @@
   "author": "Fig Team",
   "license": "MIT OR Apache-2.0",
   "packageManager": "pnpm@9.11.0",
+  "type": "module",
   "engines": {
     "node": "^22.0.0"
   },
@@ -11,7 +12,7 @@
     "build": "turbo build",
     "b": "turbo build",
     "test": "vitest",
-    "test:ci": "vitest run --run",
+    "test:ci": "vitest run --run --coverage",
     "test:ui": "vitest --ui",
     "coverage": "vitest run --coverage",
     "lint": "turbo lint --parallel",
@@ -26,14 +27,14 @@
     "precommit": "lint-staged --config .lintstagedrc.mjs"
   },
   "devDependencies": {
-    "@vitest/coverage-v8": "^2.1.6",
-    "@vitest/ui": "^2.1.6",
+    "@vitest/coverage-v8": "^2.1.8",
+    "@vitest/ui": "^2.1.8",
     "husky": "^9.1.7",
     "lint-staged": "^15.2.10",
     "micromatch": "^4.0.8",
-    "prettier": "^3.4.1",
+    "prettier": "^3.4.2",
     "tsx": "^4.19.2",
     "turbo": "^2.3.3",
-    "vitest": "^2.1.6"
+    "vitest": "^2.1.8"
   }
 }

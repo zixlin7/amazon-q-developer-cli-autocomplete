@@ -209,7 +209,7 @@ export const loadHistorySource = async (
             true,
             historyLogger,
           );
-        } catch (err) {
+        } catch (_err) {
           // skip errors in parsing commands.
         }
       }

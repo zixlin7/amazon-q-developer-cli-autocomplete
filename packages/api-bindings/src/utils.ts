@@ -1,4 +1,3 @@
-/* eslint-disable no-bitwise */
 export const b64EncodeUnicode = (str: string): string =>
   // first we use encodeURIComponent to get percent-encoded UTF-8,
   // then we convert the percent encodings into raw bytes which

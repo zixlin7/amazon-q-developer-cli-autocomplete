@@ -16,7 +16,7 @@ export function subscribe<T>(
           if (name === eventName) {
             try {
               return handler(payload ? JSON.parse(payload) : null);
-            } catch (err) {
+            } catch (_err) {
               // ignore on json parse failure (invalid event).
             }
           }

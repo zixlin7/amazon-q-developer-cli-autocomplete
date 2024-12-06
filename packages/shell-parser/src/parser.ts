@@ -203,10 +203,7 @@ const parseSimpleExpansion = (
     startIndex: index,
     type: NodeType.SimpleExpansion,
   };
-  if (
-    str.length > index + 1 &&
-    "*@?-$0_".indexOf(str.charAt(index + 1)) !== -1
-  ) {
+  if (str.length > index + 1 && "*@?-$0_".includes(str.charAt(index + 1))) {
     return createNode<BaseNode<NodeType.SpecialExpansion>>(str, {
       ...node,
       type: NodeType.SpecialExpansion,

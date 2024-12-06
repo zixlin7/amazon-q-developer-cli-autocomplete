@@ -545,7 +545,7 @@ function updateState(
   if (canConsumeSubcommands(state)) {
     try {
       return updateStateForSubcommand(state, token, isFinalToken);
-    } catch (err) {
+    } catch (_err) {
       // Continue to other token types if we can't consume subcommand.
     }
   }
@@ -553,7 +553,7 @@ function updateState(
   if (canConsumeOptions(state)) {
     try {
       return updateStateForChainedOptionToken(state, token, isFinalToken);
-    } catch (err) {
+    } catch (_err) {
       // Continue to other token types if we can't consume option.
     }
   }
@@ -561,7 +561,7 @@ function updateState(
   if (preferOptionArg(state)) {
     try {
       return updateStateForOptionArg(state, token, isFinalToken);
-    } catch (err) {
+    } catch (_err) {
       // Continue to other token types if we can't consume option arg.
     }
   }
@@ -816,11 +816,9 @@ const parseArgumentsCached = async (
   for (let i = 0; i < locations.length; i += 1) {
     specPath = locations[i];
     if (isParsingHistory && specPath.type === SpecLocationSource.LOCAL) {
-      // eslint-disable-next-line no-continue
       continue;
     }
 
-    // eslint-disable-next-line no-await-in-loop
     spec = await withTimeout(
       5000,
       loadSubcommandCached(specPath, context, localLogger),
@@ -860,7 +858,6 @@ const parseArgumentsCached = async (
     token?: string,
   ) => {
     const loadSpecResult =
-      // eslint-disable-next-line no-nested-ternary
       typeof loadSpec === "function"
         ? token !== undefined
           ? await loadSpec(token, exec)
@@ -906,7 +903,6 @@ const parseArgumentsCached = async (
 
   for (let i = 1; i < tokens.length; i += 1) {
     if (state.completionObj.generateSpec) {
-      // eslint-disable-next-line no-await-in-loop
       state = await generateSpecForState(
         state,
         tokens.map((token) => token.text),
@@ -948,7 +944,6 @@ const parseArgumentsCached = async (
       const { alias } = lastArgObject.parserDirectives;
       try {
         const aliasValue =
-          // eslint-disable-next-line no-await-in-loop
           typeof alias === "string" ? alias : await alias(token, exec);
         try {
           currentCommand = substituteAlias(command, tokens[i], aliasValue);
@@ -957,7 +952,6 @@ const parseArgumentsCached = async (
           tokens = currentCommand.tokens.slice(startIndex);
           state = lastState;
           i -= 1;
-          // eslint-disable-next-line no-continue
           continue;
         } catch (err) {
           localLogger.error("Error substituting alias:", err);
@@ -987,7 +981,6 @@ const parseArgumentsCached = async (
       if (argLoadSpec) {
         loadSpec = argLoadSpec;
       } else if (isCommand || isScript) {
-        /* eslint-disable-next-line no-await-in-loop */
         const specLocation = await getSpecPath(
           token,
           context.currentWorkingDirectory,
@@ -1004,7 +997,6 @@ const parseArgumentsCached = async (
       }
     }
 
-    // eslint-disable-next-line no-await-in-loop
     if (await updateStateForLoadSpec(loadSpec, i, token)) {
       return state;
     }
@@ -1136,7 +1128,7 @@ export const parseArguments = async (
   const finalToken = tokens[tokens.length - 1].text;
   try {
     state = updateState(state, finalToken, true);
-  } catch (err) {
+  } catch (_err) {
     state = {
       ...state,
       annotations: [

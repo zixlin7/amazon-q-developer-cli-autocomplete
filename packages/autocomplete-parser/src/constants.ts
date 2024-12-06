@@ -1,28 +1,15 @@
-export const MOST_USED_SPECS = [
+const AWS_SPECS = ["aws", "q"];
+const UNIX_SPECS = [
   "cd",
   "git",
-  "npm",
   "rm",
-  "brew",
   "ls",
-  "q",
-  "code",
   "cat",
-  "node",
-  "yarn",
-  "open",
-  "docker",
   "mv",
   "ssh",
   "cp",
   "chmod",
   "source",
-  "vim",
-  "nvim",
-  "npx",
-  "python",
-  "nano",
-  "vi",
   "curl",
   "make",
   "mkdir",
@@ -30,5 +17,17 @@ export const MOST_USED_SPECS = [
   "ln",
   "grep",
   "kill",
-  "aws",
+];
+const EDITOR_SPECS = ["code", "nano", "vi", "vim", "nvim"];
+const JS_SPECS = ["node", "npm", "npx", "yarn"];
+const MACOS_SPECS = ["brew", "open"];
+const OTHER_SPECS = ["docker", "python"];
+
+export const MOST_USED_SPECS = [
+  ...AWS_SPECS,
+  ...UNIX_SPECS,
+  ...EDITOR_SPECS,
+  ...JS_SPECS,
+  ...MACOS_SPECS,
+  ...OTHER_SPECS,
 ];

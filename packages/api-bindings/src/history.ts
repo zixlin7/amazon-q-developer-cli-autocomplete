@@ -1,10 +1,8 @@
-// eslint-disable-next-line camelcase
 import { HistoryQueryRequest_Param } from "@amzn/fig-io-proto/fig";
 import { sendHistoryQueryRequest } from "./requests.js";
 
 export type Param = string | number | Uint8Array | null;
 
-// eslint-disable-next-line camelcase
 function mapParam(param: Param): HistoryQueryRequest_Param {
   if (param === null) {
     return {

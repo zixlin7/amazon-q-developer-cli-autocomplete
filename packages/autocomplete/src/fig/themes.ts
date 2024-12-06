@@ -124,7 +124,7 @@ interface ThemeDefinition {
 }
 
 export function isBuiltInTheme(theme: string): theme is BuiltinThemeName {
-  return (THEMES as ReadonlyArray<string>).indexOf(theme) !== -1;
+  return (THEMES as ReadonlyArray<string>).includes(theme);
 }
 
 const RGB_REGEX = /rgb\((\d+),(\d+),(\d+)\)/;
@@ -307,9 +307,10 @@ export async function setTheme(
 
     // All themes fallback to the dark theme if values are missing
     setCSSProperties({ ...builtInThemes.dark, ...parsedTheme }, "dark");
-  } catch (e) {
+  } catch (err) {
     logger.info(
       "There was an error parsing the theme. Using default dark theme",
+      err,
     );
     setCSSProperties(builtInThemes.dark, "dark");
   }

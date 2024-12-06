@@ -1,6 +1,5 @@
 import logger, { Logger } from "loglevel";
 import * as semver from "semver";
-import { mergeSubcommands } from "@fig/autocomplete-shared";
 import {
   ensureTrailingSlash,
   withTimeout,

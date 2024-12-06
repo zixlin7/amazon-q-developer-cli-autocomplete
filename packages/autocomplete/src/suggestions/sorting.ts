@@ -54,7 +54,7 @@ export const updatePriorities = (suggestions: Suggestion[], cmd: string) => {
     if (getSetting(SETTINGS.SORT_METHOD) !== "alphabetical") {
       idxToUse = recencyIndex;
     }
-  } catch (error) {
+  } catch (_err) {
     idxToUse = recencyIndex;
   }
 

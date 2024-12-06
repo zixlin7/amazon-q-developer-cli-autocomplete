@@ -2,10 +2,8 @@ import {
   InstallAction,
   InstallComponent,
   InstallResponse,
-  // eslint-disable-next-line camelcase
   InstallResponse_InstallationStatus,
   NotificationType,
-  // eslint-disable-next-line camelcase
   Result_Result,
 } from "@amzn/fig-io-proto/fig";
 
@@ -48,11 +46,9 @@ function componentToProto(component: Component) {
 function handleBasicResponse(response: InstallResponse) {
   switch (response.response?.$case) {
     case "result":
-      // eslint-disable-next-line camelcase
       if (response.response.result.result === Result_Result.OK) {
         return;
       }
-      // eslint-disable-next-line camelcase
       if (response.response.result.result === Result_Result.ERROR) {
         throw Error(response.response.result.error);
       } else {
@@ -88,14 +84,12 @@ export async function isInstalled(component: Component) {
     case "installationStatus":
       if (
         response.response.installationStatus ===
-        // eslint-disable-next-line camelcase
         InstallResponse_InstallationStatus.INSTALLED
       ) {
         return true;
       }
       if (
         response.response.installationStatus ===
-        // eslint-disable-next-line camelcase
         InstallResponse_InstallationStatus.NOT_INSTALLED
       ) {
         return false;

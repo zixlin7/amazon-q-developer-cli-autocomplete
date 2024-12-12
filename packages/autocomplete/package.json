@@ -1,8 +1,7 @@
 {
-  "name": "autocomplete",
-  "version": "1.187.0",
-  "autocomplete-engine-version": "v9",
+  "name": "@amzn/autocomplete",
   "private": true,
+  "version": "1.0.0",
   "type": "module",
   "scripts": {
     "set-host": "fig settings developer.autocomplete.host http://localhost:3124",

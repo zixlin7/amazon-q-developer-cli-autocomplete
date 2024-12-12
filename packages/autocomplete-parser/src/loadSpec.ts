@@ -1,19 +1,22 @@
 import logger, { Logger } from "loglevel";
-import { Settings, Debugger } from "@amzn/fig-io-api-bindings";
+import { Settings, Debugger } from "@aws/amazon-q-developer-cli-api-bindings";
 import { convertSubcommand, initializeDefault } from "@fig/autocomplete-shared";
 import {
   withTimeout,
   SpecLocationSource,
   splitPath,
   ensureTrailingSlash,
-} from "@amzn/fig-io-shared/utils";
-import { Subcommand, SpecLocation } from "@amzn/fig-io-shared/internal";
+} from "@aws/amazon-q-developer-cli-shared/utils";
+import {
+  Subcommand,
+  SpecLocation,
+} from "@aws/amazon-q-developer-cli-shared/internal";
 import {
   SETTINGS,
   getSetting,
   executeCommand,
   isInDevMode,
-} from "@amzn/fig-io-api-bindings-wrappers";
+} from "@aws/amazon-q-developer-cli-api-bindings-wrappers";
 import {
   importFromPublicCDN,
   publicSpecExists,

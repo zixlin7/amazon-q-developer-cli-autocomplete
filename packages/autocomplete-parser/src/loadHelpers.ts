@@ -4,12 +4,12 @@ import {
   ensureTrailingSlash,
   withTimeout,
   exponentialBackoff,
-} from "@amzn/fig-io-shared/utils";
+} from "@aws/amazon-q-developer-cli-shared/utils";
 import {
   executeCommand,
   fread,
   isInDevMode,
-} from "@amzn/fig-io-api-bindings-wrappers";
+} from "@aws/amazon-q-developer-cli-api-bindings-wrappers";
 import z from "zod";
 import { MOST_USED_SPECS } from "./constants.js";
 import { LoadLocalSpecError, SpecCDNError } from "./errors.js";

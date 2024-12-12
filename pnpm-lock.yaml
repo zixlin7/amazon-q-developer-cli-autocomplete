@@ -10,7 +10,7 @@ importers:
     devDependencies:
       '@vitest/coverage-v8':
         specifier: ^2.1.8
-        version: 2.1.8(vitest@2.1.8(@types/node@22.10.1)(@vitest/ui@2.1.8)(jsdom@24.1.0)(terser@5.37.0))
+        version: 2.1.8(vitest@2.1.8)
       '@vitest/ui':
         specifier: ^2.1.8
         version: 2.1.8(vitest@2.1.8)
@@ -120,14 +120,14 @@ importers:
 
   packages/api-bindings:
     dependencies:
-      '@amzn/fig-io-proto':
+      '@aws/amazon-q-developer-cli-proto':
         specifier: workspace:^
         version: link:../../proto
     devDependencies:
-      '@amzn/fig-io-eslint-config':
+      '@aws/amazon-q-developer-cli-eslint-config':
         specifier: workspace:^
         version: link:../eslint-config
-      '@amzn/fig-io-tsconfig':
+      '@aws/amazon-q-developer-cli-tsconfig':
         specifier: workspace:^
         version: link:../tsconfig
       '@tsconfig/recommended':
@@ -166,23 +166,23 @@ importers:
 
   packages/api-bindings-wrappers:
     dependencies:
-      '@amzn/fig-io-api-bindings':
+      '@aws/amazon-q-developer-cli-api-bindings':
         specifier: workspace:~
         version: link:../api-bindings
       loglevel:
         specifier: ^1.9.2
         version: 1.9.2
     devDependencies:
-      '@amzn/fig-io-eslint-config':
+      '@aws/amazon-q-developer-cli-eslint-config':
         specifier: workspace:^
         version: link:../eslint-config
-      '@amzn/fig-io-shared':
+      '@aws/amazon-q-developer-cli-shared':
         specifier: workspace:^
         version: link:../shared
-      '@amzn/fig-io-tsconfig':
+      '@aws/amazon-q-developer-cli-tsconfig':
         specifier: workspace:^
         version: link:../tsconfig
-      '@amzn/fig-io-types':
+      '@aws/amazon-q-developer-cli-types':
         specifier: workspace:^
         version: link:../types
       '@withfig/autocomplete-types':
@@ -200,19 +200,19 @@ importers:
 
   packages/autocomplete:
     dependencies:
-      '@amzn/fig-io-api-bindings':
+      '@aws/amazon-q-developer-cli-api-bindings':
         specifier: workspace:~
         version: link:../api-bindings
-      '@amzn/fig-io-api-bindings-wrappers':
+      '@aws/amazon-q-developer-cli-api-bindings-wrappers':
         specifier: workspace:^
         version: link:../api-bindings-wrappers
-      '@amzn/fig-io-autocomplete-parser':
+      '@aws/amazon-q-developer-cli-autocomplete-parser':
         specifier: workspace:^
         version: link:../autocomplete-parser
-      '@amzn/fig-io-proto':
+      '@aws/amazon-q-developer-cli-proto':
         specifier: workspace:^
         version: link:../../proto
-      '@amzn/fig-io-shell-parser':
+      '@aws/amazon-q-developer-cli-shell-parser':
         specifier: workspace:^
         version: link:../shell-parser
       '@fig/autocomplete-helpers':
@@ -279,16 +279,16 @@ importers:
         specifier: ^4.5.5
         version: 4.5.5(@types/react@18.3.14)(react@18.3.1)
     devDependencies:
-      '@amzn/fig-io-eslint-config':
+      '@aws/amazon-q-developer-cli-eslint-config':
         specifier: workspace:^
         version: link:../eslint-config
-      '@amzn/fig-io-fuzzysort':
+      '@aws/amazon-q-developer-cli-fuzzysort':
         specifier: workspace:^
         version: link:../fuzzysort
-      '@amzn/fig-io-shared':
+      '@aws/amazon-q-developer-cli-shared':
         specifier: workspace:^
         version: link:../shared
-      '@amzn/fig-io-types':
+      '@aws/amazon-q-developer-cli-types':
         specifier: workspace:^
         version: link:../types
       '@types/node':
@@ -336,13 +336,13 @@ importers:
 
   packages/autocomplete-parser:
     dependencies:
-      '@amzn/fig-io-api-bindings':
+      '@aws/amazon-q-developer-cli-api-bindings':
         specifier: workspace:~
         version: link:../api-bindings
-      '@amzn/fig-io-api-bindings-wrappers':
+      '@aws/amazon-q-developer-cli-api-bindings-wrappers':
         specifier: workspace:^
         version: link:../api-bindings-wrappers
-      '@amzn/fig-io-shell-parser':
+      '@aws/amazon-q-developer-cli-shell-parser':
         specifier: workspace:^
         version: link:../shell-parser
       '@fig/autocomplete-generators':
@@ -364,16 +364,16 @@ importers:
         specifier: ^3.24.1
         version: 3.24.1
     devDependencies:
-      '@amzn/fig-io-eslint-config':
+      '@aws/amazon-q-developer-cli-eslint-config':
         specifier: workspace:^
         version: link:../eslint-config
-      '@amzn/fig-io-shared':
+      '@aws/amazon-q-developer-cli-shared':
         specifier: workspace:^
         version: link:../shared
-      '@amzn/fig-io-tsconfig':
+      '@aws/amazon-q-developer-cli-tsconfig':
         specifier: workspace:^
         version: link:../tsconfig
-      '@amzn/fig-io-types':
+      '@aws/amazon-q-developer-cli-types':
         specifier: workspace:^
         version: link:../types
       '@types/semver':
@@ -394,7 +394,7 @@ importers:
 
   packages/dashboard:
     dependencies:
-      '@amzn/fig-io-api-bindings':
+      '@aws/amazon-q-developer-cli-api-bindings':
         specifier: workspace:^
         version: link:../api-bindings
       '@radix-ui/react-collapsible':
@@ -455,7 +455,7 @@ importers:
         specifier: ^4.5.5
         version: 4.5.5(@types/react@18.3.14)(react@18.3.1)
     devDependencies:
-      '@amzn/fig-io-types':
+      '@aws/amazon-q-developer-cli-types':
         specifier: workspace:^
         version: link:../types
       '@types/react':
@@ -506,7 +506,7 @@ importers:
 
   packages/eslint-config:
     devDependencies:
-      '@amzn/fig-io-tsconfig':
+      '@aws/amazon-q-developer-cli-tsconfig':
         specifier: workspace:^
         version: link:../tsconfig
       '@eslint/js':
@@ -560,16 +560,16 @@ importers:
         specifier: ^1.1.2
         version: 1.1.2
     devDependencies:
-      '@amzn/fig-io-eslint-config':
+      '@aws/amazon-q-developer-cli-eslint-config':
         specifier: workspace:^
         version: link:../eslint-config
-      '@amzn/fig-io-fuzzysort':
+      '@aws/amazon-q-developer-cli-fuzzysort':
         specifier: workspace:^
         version: link:../fuzzysort
-      '@amzn/fig-io-tsconfig':
+      '@aws/amazon-q-developer-cli-tsconfig':
         specifier: workspace:^
         version: link:../tsconfig
-      '@amzn/fig-io-types':
+      '@aws/amazon-q-developer-cli-types':
         specifier: workspace:^
         version: link:../types
       '@withfig/autocomplete-types':
@@ -587,19 +587,19 @@ importers:
 
   packages/shell-parser:
     dependencies:
-      '@amzn/fig-io-shared':
+      '@aws/amazon-q-developer-cli-shared':
         specifier: workspace:^
         version: link:../shared
     devDependencies:
-      '@amzn/fig-io-eslint-config':
+      '@aws/amazon-q-developer-cli-eslint-config':
         specifier: workspace:^
         version: link:../eslint-config
-      '@amzn/fig-io-tsconfig':
+      '@aws/amazon-q-developer-cli-tsconfig':
         specifier: workspace:^
         version: link:../tsconfig
       '@vitest/coverage-v8':
         specifier: ^2.1.8
-        version: 2.1.8(vitest@2.1.8(@types/node@22.10.1)(@vitest/ui@2.1.8)(jsdom@24.1.0)(terser@5.37.0))
+        version: 2.1.8(vitest@2.1.8)
       eslint:
         specifier: ^9.16.0
         version: 9.16.0(jiti@1.21.6)
@@ -627,7 +627,7 @@ importers:
         specifier: 2.2.2
         version: 2.2.2
     devDependencies:
-      '@amzn/fig-io-tsconfig':
+      '@aws/amazon-q-developer-cli-tsconfig':
         specifier: workspace:^
         version: link:../packages/tsconfig
       ts-proto:
@@ -639,10 +639,10 @@ importers:
 
   tests/fig-api:
     devDependencies:
-      '@amzn/fig-io-api-bindings':
+      '@aws/amazon-q-developer-cli-api-bindings':
         specifier: workspace:^
         version: link:../../packages/api-bindings
-      '@amzn/fig-io-types':
+      '@aws/amazon-q-developer-cli-types':
         specifier: link:../../packages/types
         version: link:../../packages/types
       '@types/node':
@@ -8491,7 +8491,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@vitest/coverage-v8@2.1.8(vitest@2.1.8(@types/node@22.10.1)(@vitest/ui@2.1.8)(jsdom@24.1.0)(terser@5.37.0))':
+  '@vitest/coverage-v8@2.1.8(vitest@2.1.8)':
     dependencies:
       '@ampproject/remapping': 2.3.0
       '@bcoe/v8-coverage': 0.2.3

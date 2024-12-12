@@ -4,7 +4,7 @@ import {
   AuthStartPkceAuthorizationResponse,
   AuthStatusResponse_AuthKind,
   AuthBuilderIdPollCreateTokenResponse_PollStatus as PollStatus,
-} from "@amzn/fig-io-proto/fig";
+} from "@aws/amazon-q-developer-cli-proto/fig";
 import {
   sendAuthBuilderIdStartDeviceAuthorizationRequest,
   sendAuthBuilderIdPollCreateTokenRequest,
@@ -13,8 +13,8 @@ import {
   sendAuthStartPkceAuthorizationRequest,
   sendAuthCancelPkceAuthorizationRequest,
 } from "./requests.js";
-import { AuthFinishPkceAuthorizationResponse } from "@amzn/fig-io-proto/fig";
-import { AuthFinishPkceAuthorizationRequest } from "@amzn/fig-io-proto/fig";
+import { AuthFinishPkceAuthorizationResponse } from "@aws/amazon-q-developer-cli-proto/fig";
+import { AuthFinishPkceAuthorizationRequest } from "@aws/amazon-q-developer-cli-proto/fig";
 
 export function status() {
   return sendAuthStatusRequest({}).then((res) => {

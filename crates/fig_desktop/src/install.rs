@@ -924,8 +924,12 @@ echo "{binary_name} {version}"
             assert_eq!(parse_version("cli 1.2.3"), "1.2.3");
         }
 
+        static INSTALL_TEST_LOCK: tokio::sync::Mutex<()> = tokio::sync::Mutex::const_new(());
+
         #[tokio::test]
         async fn test_linux_appimage_install_on_fresh_system() {
+            let _lock = INSTALL_TEST_LOCK.lock().await;
+
             tracing_subscriber::fmt::try_init().ok();
 
             // Given
@@ -942,6 +946,8 @@ echo "{binary_name} {version}"
 
         #[tokio::test]
         async fn test_linux_appimage_install_when_installed_binaries_have_old_version() {
+            let _lock = INSTALL_TEST_LOCK.lock().await;
+
             tracing_subscriber::fmt::try_init().ok();
 
             // Given

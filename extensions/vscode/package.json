@@ -1,8 +1,9 @@
 {
   "name": "codewhisperer-for-command-line-companion",
+  "version": "1.0.0",
+  "private": true,
   "displayName": "Amazon Q for command line",
   "description": "The IDE companion extension for the Amazon Q for command line desktop app",
-  "version": "1.0.0",
   "icon": "images/icon.png",
   "engines": {
     "vscode": "^1.80.0"

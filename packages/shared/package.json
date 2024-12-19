@@ -1,9 +1,8 @@
 {
   "name": "@aws/amazon-q-developer-cli-shared",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "license": "MIT OR Apache-2.0",
   "author": "Amazon Web Services",
-  "private": true,
   "type": "module",
   "exports": {
     "./*": "./dist/*.js"
@@ -25,10 +24,10 @@
     "@fig/autocomplete-shared": "^1.1.2"
   },
   "devDependencies": {
-    "@aws/amazon-q-developer-cli-eslint-config": "workspace:^",
+    "@amzn/eslint-config": "workspace:^",
     "@aws/amazon-q-developer-cli-fuzzysort": "workspace:^",
-    "@aws/amazon-q-developer-cli-tsconfig": "workspace:^",
-    "@aws/amazon-q-developer-cli-types": "workspace:^",
+    "@amzn/tsconfig": "workspace:^",
+    "@amzn/types": "workspace:^",
     "@withfig/autocomplete-types": "^1.31.0",
     "eslint": "^9.16.0",
     "typescript": "^5.7.2",

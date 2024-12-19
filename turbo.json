@@ -6,11 +6,11 @@
       "outputs": ["dist"]
     },
     "lint": {
-      "dependsOn": ["@aws/amazon-q-developer-cli-eslint-config#build"],
+      "dependsOn": ["@amzn/eslint-config#build"],
       "cache": false
     },
     "lint:fix": {
-      "dependsOn": ["@aws/amazon-q-developer-cli-eslint-config#build"],
+      "dependsOn": ["@amzn/eslint-config#build"],
       "cache": false
     },
     "clean": {

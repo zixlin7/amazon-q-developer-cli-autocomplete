@@ -1,6 +1,6 @@
 {
   "name": "@aws/amazon-q-developer-cli-api-bindings",
-  "version": "0.30.3",
+  "version": "0.1.0",
   "license": "MIT OR Apache-2.0",
   "author": "Amazon Web Services",
   "type": "module",
@@ -24,8 +24,8 @@
     "@aws/amazon-q-developer-cli-proto": "workspace:^"
   },
   "devDependencies": {
-    "@aws/amazon-q-developer-cli-eslint-config": "workspace:^",
-    "@aws/amazon-q-developer-cli-tsconfig": "workspace:^",
+    "@amzn/eslint-config": "workspace:^",
+    "@amzn/tsconfig": "workspace:^",
     "@tsconfig/recommended": "^1.0.8",
     "@types/node": "^22.10.1",
     "@typescript/analyze-trace": "^0.10.1",

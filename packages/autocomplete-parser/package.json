@@ -1,6 +1,6 @@
 {
   "name": "@aws/amazon-q-developer-cli-autocomplete-parser",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "license": "MIT OR Apache-2.0",
   "author": "Amazon Web Services",
   "type": "module",
@@ -19,17 +19,6 @@
     "lint:fix": "eslint --fix src tests && prettier --write src tests",
     "clean": "rm -rf dist"
   },
-  "devDependencies": {
-    "@aws/amazon-q-developer-cli-eslint-config": "workspace:^",
-    "@aws/amazon-q-developer-cli-shared": "workspace:^",
-    "@aws/amazon-q-developer-cli-tsconfig": "workspace:^",
-    "@aws/amazon-q-developer-cli-types": "workspace:^",
-    "@types/semver": "^7.5.8",
-    "@withfig/autocomplete-types": "^1.31.0",
-    "eslint": "^9.16.0",
-    "typescript": "^5.7.2",
-    "vitest": "^2.1.8"
-  },
   "dependencies": {
     "@aws/amazon-q-developer-cli-api-bindings": "workspace:~",
     "@aws/amazon-q-developer-cli-api-bindings-wrappers": "workspace:^",
@@ -40,5 +29,16 @@
     "loglevel": "^1.9.2",
     "semver": "^7.6.3",
     "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "@amzn/eslint-config": "workspace:^",
+    "@aws/amazon-q-developer-cli-shared": "workspace:^",
+    "@amzn/tsconfig": "workspace:^",
+    "@amzn/types": "workspace:^",
+    "@types/semver": "^7.5.8",
+    "@withfig/autocomplete-types": "^1.31.0",
+    "eslint": "^9.16.0",
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.8"
   }
 }

@@ -27,7 +27,7 @@
       "@/*": ["./src/*"],
       "@assets/*": ["./assets/*"]
     },
-    "types": ["@aws/amazon-q-developer-cli-types"]
+    "types": ["@amzn/types"]
   },
   "include": ["src"],
   "references": [{ "path": "./tsconfig.node.json" }]

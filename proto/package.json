@@ -1,6 +1,6 @@
 {
   "name": "@aws/amazon-q-developer-cli-proto",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "license": "MIT OR Apache-2.0",
   "author": "Amazon Web Services",
   "type": "module",
@@ -24,8 +24,8 @@
     "@bufbuild/protobuf": "2.2.2"
   },
   "devDependencies": {
-    "@aws/amazon-q-developer-cli-tsconfig": "workspace:^",
-    "ts-proto": "~2.5.0",
+    "@amzn/tsconfig": "workspace:^",
+    "ts-proto": "^2.5.0",
     "typescript": "^5.7.2"
   }
 }

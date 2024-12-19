@@ -124,10 +124,10 @@ importers:
         specifier: workspace:^
         version: link:../../proto
     devDependencies:
-      '@aws/amazon-q-developer-cli-eslint-config':
+      '@amzn/eslint-config':
         specifier: workspace:^
         version: link:../eslint-config
-      '@aws/amazon-q-developer-cli-tsconfig':
+      '@amzn/tsconfig':
         specifier: workspace:^
         version: link:../tsconfig
       '@tsconfig/recommended':
@@ -173,18 +173,18 @@ importers:
         specifier: ^1.9.2
         version: 1.9.2
     devDependencies:
-      '@aws/amazon-q-developer-cli-eslint-config':
+      '@amzn/eslint-config':
         specifier: workspace:^
         version: link:../eslint-config
+      '@amzn/tsconfig':
+        specifier: workspace:^
+        version: link:../tsconfig
+      '@amzn/types':
+        specifier: workspace:^
+        version: link:../types
       '@aws/amazon-q-developer-cli-shared':
         specifier: workspace:^
         version: link:../shared
-      '@aws/amazon-q-developer-cli-tsconfig':
-        specifier: workspace:^
-        version: link:../tsconfig
-      '@aws/amazon-q-developer-cli-types':
-        specifier: workspace:^
-        version: link:../types
       '@withfig/autocomplete-types':
         specifier: ^1.31.0
         version: 1.31.0
@@ -224,15 +224,6 @@ importers:
       '@juggle/resize-observer':
         specifier: ^3.4.0
         version: 3.4.0
-      '@types/js-yaml':
-        specifier: ^4.0.9
-        version: 4.0.9
-      '@vitejs/plugin-react':
-        specifier: ^4.3.4
-        version: 4.3.4(vite@6.0.3(@types/node@22.10.1)(jiti@1.21.6)(terser@5.37.0)(tsx@4.19.2)(yaml@2.6.1))
-      '@withfig/autocomplete-types':
-        specifier: ^1.31.0
-        version: 1.31.0
       deep-object-diff:
         specifier: ^1.1.9
         version: 1.1.9
@@ -272,25 +263,25 @@ importers:
       util:
         specifier: ^0.12.5
         version: 0.12.5
-      vite:
-        specifier: ^6.0.3
-        version: 6.0.3(@types/node@22.10.1)(jiti@1.21.6)(terser@5.37.0)(tsx@4.19.2)(yaml@2.6.1)
       zustand:
         specifier: ^4.5.5
         version: 4.5.5(@types/react@18.3.14)(react@18.3.1)
     devDependencies:
-      '@aws/amazon-q-developer-cli-eslint-config':
+      '@amzn/eslint-config':
         specifier: workspace:^
         version: link:../eslint-config
+      '@amzn/types':
+        specifier: workspace:^
+        version: link:../types
       '@aws/amazon-q-developer-cli-fuzzysort':
         specifier: workspace:^
         version: link:../fuzzysort
       '@aws/amazon-q-developer-cli-shared':
         specifier: workspace:^
         version: link:../shared
-      '@aws/amazon-q-developer-cli-types':
-        specifier: workspace:^
-        version: link:../types
+      '@types/js-yaml':
+        specifier: ^4.0.9
+        version: 4.0.9
       '@types/node':
         specifier: ^22.10.1
         version: 22.10.1
@@ -309,6 +300,12 @@ importers:
       '@vitejs/plugin-legacy':
         specifier: ^6.0.0
         version: 6.0.0(terser@5.37.0)(vite@6.0.3(@types/node@22.10.1)(jiti@1.21.6)(terser@5.37.0)(tsx@4.19.2)(yaml@2.6.1))
+      '@vitejs/plugin-react':
+        specifier: ^4.3.4
+        version: 4.3.4(vite@6.0.3(@types/node@22.10.1)(jiti@1.21.6)(terser@5.37.0)(tsx@4.19.2)(yaml@2.6.1))
+      '@withfig/autocomplete-types':
+        specifier: ^1.31.0
+        version: 1.31.0
       autoprefixer:
         specifier: ^10.4.20
         version: 10.4.20(postcss@8.4.49)
@@ -330,6 +327,9 @@ importers:
       typescript:
         specifier: ^5.7.2
         version: 5.7.2
+      vite:
+        specifier: ^6.0.3
+        version: 6.0.3(@types/node@22.10.1)(jiti@1.21.6)(terser@5.37.0)(tsx@4.19.2)(yaml@2.6.1)
       vitest:
         specifier: ^2.1.8
         version: 2.1.8(@types/node@22.10.1)(@vitest/ui@2.1.8)(jsdom@24.1.0)(terser@5.37.0)
@@ -364,18 +364,18 @@ importers:
         specifier: ^3.24.1
         version: 3.24.1
     devDependencies:
-      '@aws/amazon-q-developer-cli-eslint-config':
+      '@amzn/eslint-config':
         specifier: workspace:^
         version: link:../eslint-config
+      '@amzn/tsconfig':
+        specifier: workspace:^
+        version: link:../tsconfig
+      '@amzn/types':
+        specifier: workspace:^
+        version: link:../types
       '@aws/amazon-q-developer-cli-shared':
         specifier: workspace:^
         version: link:../shared
-      '@aws/amazon-q-developer-cli-tsconfig':
-        specifier: workspace:^
-        version: link:../tsconfig
-      '@aws/amazon-q-developer-cli-types':
-        specifier: workspace:^
-        version: link:../types
       '@types/semver':
         specifier: ^7.5.8
         version: 7.5.8
@@ -455,7 +455,7 @@ importers:
         specifier: ^4.5.5
         version: 4.5.5(@types/react@18.3.14)(react@18.3.1)
     devDependencies:
-      '@aws/amazon-q-developer-cli-types':
+      '@amzn/types':
         specifier: workspace:^
         version: link:../types
       '@types/react':
@@ -506,7 +506,7 @@ importers:
 
   packages/eslint-config:
     devDependencies:
-      '@aws/amazon-q-developer-cli-tsconfig':
+      '@amzn/tsconfig':
         specifier: workspace:^
         version: link:../tsconfig
       '@eslint/js':
@@ -560,18 +560,18 @@ importers:
         specifier: ^1.1.2
         version: 1.1.2
     devDependencies:
-      '@aws/amazon-q-developer-cli-eslint-config':
+      '@amzn/eslint-config':
         specifier: workspace:^
         version: link:../eslint-config
+      '@amzn/tsconfig':
+        specifier: workspace:^
+        version: link:../tsconfig
+      '@amzn/types':
+        specifier: workspace:^
+        version: link:../types
       '@aws/amazon-q-developer-cli-fuzzysort':
         specifier: workspace:^
         version: link:../fuzzysort
-      '@aws/amazon-q-developer-cli-tsconfig':
-        specifier: workspace:^
-        version: link:../tsconfig
-      '@aws/amazon-q-developer-cli-types':
-        specifier: workspace:^
-        version: link:../types
       '@withfig/autocomplete-types':
         specifier: ^1.31.0
         version: 1.31.0
@@ -591,10 +591,10 @@ importers:
         specifier: workspace:^
         version: link:../shared
     devDependencies:
-      '@aws/amazon-q-developer-cli-eslint-config':
+      '@amzn/eslint-config':
         specifier: workspace:^
         version: link:../eslint-config
-      '@aws/amazon-q-developer-cli-tsconfig':
+      '@amzn/tsconfig':
         specifier: workspace:^
         version: link:../tsconfig
       '@vitest/coverage-v8':
@@ -627,11 +627,11 @@ importers:
         specifier: 2.2.2
         version: 2.2.2
     devDependencies:
-      '@aws/amazon-q-developer-cli-tsconfig':
+      '@amzn/tsconfig':
         specifier: workspace:^
         version: link:../packages/tsconfig
       ts-proto:
-        specifier: ~2.5.0
+        specifier: ^2.5.0
         version: 2.5.0
       typescript:
         specifier: ^5.7.2
@@ -639,12 +639,12 @@ importers:
 
   tests/fig-api:
     devDependencies:
+      '@amzn/types':
+        specifier: link:../../packages/types
+        version: link:../../packages/types
       '@aws/amazon-q-developer-cli-api-bindings':
         specifier: workspace:^
         version: link:../../packages/api-bindings
-      '@aws/amazon-q-developer-cli-types':
-        specifier: link:../../packages/types
-        version: link:../../packages/types
       '@types/node':
         specifier: ^22.10.1
         version: 22.10.1

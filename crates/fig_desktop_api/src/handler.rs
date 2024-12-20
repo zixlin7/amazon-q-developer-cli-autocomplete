@@ -12,14 +12,11 @@ pub use fig_proto::fig::server_originated_message::Submessage as ServerOriginate
 use fig_proto::fig::{
     AggregateSessionMetricActionRequest,
     ClientOriginatedMessage,
-    DebuggerUpdateRequest,
     DragWindowRequest,
     InsertTextRequest,
     NotificationRequest,
     OnboardingRequest,
     PositionWindowRequest,
-    PseudoterminalExecuteRequest,
-    PseudoterminalWriteRequest,
     RunProcessRequest,
     ServerOriginatedMessage,
     UpdateApplicationPropertiesRequest,
@@ -53,10 +50,6 @@ pub trait EventHandler {
         RequestResult::unimplemented(request.request)
     }
 
-    async fn debugger_update(&self, request: Wrapped<Self::Ctx, DebuggerUpdateRequest>) -> RequestResult {
-        RequestResult::unimplemented(request.request)
-    }
-
     async fn insert_text(&self, request: Wrapped<Self::Ctx, InsertTextRequest>) -> RequestResult {
         RequestResult::unimplemented(request.request)
     }
@@ -81,14 +74,6 @@ pub trait EventHandler {
     }
 
     async fn run_process(&self, request: Wrapped<Self::Ctx, RunProcessRequest>) -> RequestResult {
-        RequestResult::unimplemented(request.request)
-    }
-
-    async fn pseudoterminal_execute(&self, request: Wrapped<Self::Ctx, PseudoterminalExecuteRequest>) -> RequestResult {
-        RequestResult::unimplemented(request.request)
-    }
-
-    async fn pseudoterminal_write(&self, request: Wrapped<Self::Ctx, PseudoterminalWriteRequest>) -> RequestResult {
         RequestResult::unimplemented(request.request)
     }
 
@@ -179,7 +164,6 @@ where
             use ClientOriginatedSubMessage::{
                 AggregateSessionMetricActionRequest,
                 AppendToFileRequest,
-                ApplicationUpdateStatusRequest,
                 AuthBuilderIdPollCreateTokenRequest,
                 AuthBuilderIdStartDeviceAuthorizationRequest,
                 AuthCancelPkceAuthorizationRequest,
@@ -190,36 +174,25 @@ where
                 CodewhispererListCustomizationRequest,
                 ContentsOfDirectoryRequest,
                 CreateDirectoryRequest,
-                DebuggerUpdateRequest,
                 DestinationOfSymbolicLinkRequest,
                 DragWindowRequest,
-                GetConfigPropertyRequest,
-                GetDefaultsPropertyRequest,
                 GetLocalStateRequest,
                 GetPlatformInfoRequest,
                 GetSettingsPropertyRequest,
                 HistoryQueryRequest,
                 InsertTextRequest,
                 InstallRequest,
-                MacosInputMethodRequest,
                 NotificationRequest,
                 OnboardingRequest,
                 OpenInExternalApplicationRequest,
                 PingRequest,
                 PositionWindowRequest,
-                PseudoterminalExecuteRequest,
-                PseudoterminalRestartRequest,
-                PseudoterminalWriteRequest,
                 ReadFileRequest,
                 RunProcessRequest,
-                TelemetryIdentifyRequest,
                 TelemetryPageRequest,
                 TelemetryTrackRequest,
-                TerminalSessionInfoRequest,
                 UpdateApplicationPropertiesRequest,
                 UpdateApplicationRequest,
-                UpdateConfigPropertyRequest,
-                UpdateDefaultsPropertyRequest,
                 UpdateLocalStateRequest,
                 UpdateSettingsPropertyRequest,
                 UserLogoutRequest,
@@ -229,8 +202,6 @@ where
             use requests::*;
 
             match submessage {
-                // debug
-                DebuggerUpdateRequest(request) => event_handler.debugger_update(request!(request)).await,
                 // figterm
                 InsertTextRequest(request) => event_handler.insert_text(request!(request)).await,
                 // fs
@@ -246,8 +217,6 @@ where
                 NotificationRequest(request) => event_handler.notification(request!(request)).await,
                 // process
                 RunProcessRequest(request) => event_handler.run_process(request!(request)).await,
-                PseudoterminalExecuteRequest(request) => event_handler.pseudoterminal_execute(request!(request)).await,
-                PseudoterminalWriteRequest(request) => event_handler.pseudoterminal_write(request!(request)).await,
                 // properties
                 UpdateApplicationPropertiesRequest(request) => {
                     event_handler.update_application_properties(request!(request)).await
@@ -258,11 +227,7 @@ where
                 // settings
                 GetSettingsPropertyRequest(request) => settings::get(request).await,
                 UpdateSettingsPropertyRequest(request) => settings::update(request).await,
-                // defaults
-                GetDefaultsPropertyRequest(request) => defaults::get(request).await,
-                UpdateDefaultsPropertyRequest(request) => defaults::update(request).await,
                 // telemetry
-                TelemetryIdentifyRequest(request) => telemetry::handle_identify_request(request).await,
                 TelemetryTrackRequest(request) => telemetry::handle_track_request(request).await,
                 TelemetryPageRequest(request) => telemetry::handle_page_request(request).await,
                 AggregateSessionMetricActionRequest(request) => {
@@ -296,17 +261,10 @@ where
                 // other
                 OpenInExternalApplicationRequest(request) => other::open_in_external_application(request).await,
                 PingRequest(request) => other::ping(request),
-                // deprecated
-                GetConfigPropertyRequest(request) => RequestResult::deprecated(request),
-                UpdateConfigPropertyRequest(request) => RequestResult::deprecated(request),
-                PseudoterminalRestartRequest(request) => RequestResult::deprecated(request),
-                TerminalSessionInfoRequest(request) => RequestResult::deprecated(request),
-                ApplicationUpdateStatusRequest(request) => RequestResult::deprecated(request),
-                MacosInputMethodRequest(request) => RequestResult::deprecated(request),
-                UserLogoutRequest(request) => event_handler.user_logout(request!(request)).await,
                 UpdateApplicationRequest(request) => update::update_application(request).await,
                 CheckForUpdatesRequest(request) => update::check_for_updates(request).await,
                 GetPlatformInfoRequest(request) => platform::get_platform_info(request, &ctx).await,
+                UserLogoutRequest(request) => event_handler.user_logout(request!(request)).await,
             }
         },
         None => {

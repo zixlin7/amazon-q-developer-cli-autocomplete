@@ -31,12 +31,9 @@ use fig_proto::local::{
     PreExecHook,
     PromptHook,
 };
+use fig_proto::remote::clientbound::RunProcessRequest;
 use fig_proto::remote::clientbound::request::Request as ClientboundRequest;
 use fig_proto::remote::clientbound::response::Response as ClientboundResponse;
-use fig_proto::remote::clientbound::{
-    PseudoterminalExecuteRequest,
-    RunProcessRequest,
-};
 use fig_proto::remote::{
     Clientbound,
     clientbound,
@@ -222,43 +219,6 @@ async fn handle_client_bound_message(
                     .context("Failed to receive figterm response")?;
 
                 if let hostbound::response::Response::RunProcess(response) = response {
-                    host_sender.send(match response.encode_fig_protobuf() {
-                        Ok(encoded_message) => encoded_message,
-                        Err(err) => {
-                            error!(%err, "Failed to encode message");
-                            return Err(err.into());
-                        },
-                    })?;
-
-                    return Ok(None);
-                } else {
-                    bail!("invalid response type");
-                }
-            },
-            ClientboundRequest::PseudoterminalExecute(PseudoterminalExecuteRequest {
-                command,
-                working_directory,
-                background_job,
-                is_pipelined,
-                env,
-            }) => {
-                let (message, rx) = FigtermCommand::pseudoterminal_execute(
-                    command,
-                    working_directory,
-                    background_job,
-                    is_pipelined,
-                    env,
-                );
-
-                let session_sender = &state.most_recent().context("most recent 3")?.sender;
-                session_sender.send(message)?;
-
-                let response = timeout(Duration::from_secs(10), rx)
-                    .await
-                    .context("Qterm response timed out after 10 sec")?
-                    .context("Qterm response failed to receive from sender")?;
-
-                if let hostbound::response::Response::PseudoterminalExecute(response) = response {
                     host_sender.send(match response.encode_fig_protobuf() {
                         Ok(encoded_message) => encoded_message,
                         Err(err) => {

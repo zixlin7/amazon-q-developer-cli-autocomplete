@@ -46,9 +46,7 @@ import {
 
 import Suggestion from "./components/Suggestion";
 import Description, { DescriptionPosition } from "./components/Description";
-import Preview from "./components/Preview";
 import { setFontFamily, setFontSize, setTheme } from "./fig/themes";
-import { Notifications } from "./components/notifications/Notifications";
 import LoadingIcon from "./components/LoadingIcon";
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -88,8 +86,7 @@ function App() {
   const [windowState, setWindowState] = useState({
     isDescriptionSeparate: false,
     isAboveCursor: true,
-    descriptionPosition: DescriptionPosition.UNKNOWN,
-    previewPosition: DescriptionPosition.RIGHT,
+    descriptionPosition: "unknown" as DescriptionPosition,
   });
   const {
     [SETTINGS.THEME]: theme,
@@ -100,7 +97,6 @@ function App() {
     [SETTINGS.HEIGHT]: settingsHeight,
     [SETTINGS.ALWAYS_SHOW_DESCRIPTION]: alwaysShowDescription,
     [SETTINGS.DEV_MODE_NPM]: devMode,
-    [SETTINGS.HIDE_PREVIEW]: hidePreview,
   } = settings;
 
   const [size, setSize] = useState({
@@ -158,8 +154,7 @@ function App() {
     setWindowState((state) => ({
       isAboveCursor: alwaysShowDescription ? state.isAboveCursor : false,
       isDescriptionSeparate: alwaysShowDescription as boolean,
-      descriptionPosition: DescriptionPosition.UNKNOWN,
-      previewPosition: state.previewPosition,
+      descriptionPosition: "unknown",
     }));
   }, [alwaysShowDescription]);
 
@@ -169,8 +164,7 @@ function App() {
       // if we are bringing the description back to the suggestion list, set isAboveCursor to false.
       isAboveCursor: state.isDescriptionSeparate ? false : state.isAboveCursor,
       isDescriptionSeparate: !state.isDescriptionSeparate,
-      descriptionPosition: DescriptionPosition.UNKNOWN,
-      previewPosition: state.previewPosition,
+      descriptionPosition: "unknown",
     }));
   };
 
@@ -294,13 +288,9 @@ function App() {
               Boolean(suggestions[selectedIndex]?.previewComponent)
                 ? {
                     ...state,
-                    descriptionPosition: isClipped
-                      ? DescriptionPosition.LEFT
-                      : DescriptionPosition.RIGHT,
+                    descriptionPosition: isClipped ? "left" : "right",
                     isAboveCursor: isAbove ?? false,
-                    previewPosition: isClipped
-                      ? DescriptionPosition.LEFT
-                      : DescriptionPosition.RIGHT,
+                    previewPosition: isClipped ? "left" : "right",
                   }
                 : state,
             );
@@ -333,7 +323,7 @@ function App() {
       ({ height, width }) => {
         const onLeft =
           !hasSpecialArgDescription &&
-          windowState.descriptionPosition === DescriptionPosition.LEFT;
+          windowState.descriptionPosition === "left";
 
         const frame = {
           height: height || 1,
@@ -350,13 +340,9 @@ function App() {
               Boolean(suggestions[selectedIndex]?.previewComponent)
                 ? {
                     ...state,
-                    descriptionPosition: isClipped
-                      ? DescriptionPosition.LEFT
-                      : DescriptionPosition.RIGHT,
+                    descriptionPosition: isClipped ? "left" : "right",
                     isAboveCursor: isAbove ?? false,
-                    previewPosition: isClipped
-                      ? DescriptionPosition.LEFT
-                      : DescriptionPosition.RIGHT,
+                    previewPosition: isClipped ? "left" : "right",
                   }
                 : state,
             );
@@ -390,12 +376,7 @@ function App() {
   const descriptionPosition =
     hasSuggestions && windowState.isDescriptionSeparate
       ? windowState.descriptionPosition
-      : DescriptionPosition.UNKNOWN;
-
-  const previewPosition =
-    hasSuggestions && suggestions[selectedIndex]?.previewComponent
-      ? windowState.previewPosition
-      : DescriptionPosition.UNKNOWN;
+      : "unknown";
 
   const description = (
     <Description
@@ -408,15 +389,8 @@ function App() {
     />
   );
 
-  const selectedItem = suggestions[selectedIndex];
-  // TODO: re-enable preview
-  // eslint-disable-next-line no-constant-binary-expression
-  const preview = false && Boolean(selectedItem && !hidePreview) && (
-    <Preview selectedItem={selectedItem} position={previewPosition} />
-  );
-
   const hasBottomDescription =
-    descriptionPosition === DescriptionPosition.UNKNOWN && description !== null;
+    descriptionPosition === "unknown" && description !== null;
   const listClasses = [
     "rounded",
     isShaking && "shake",
@@ -466,10 +440,8 @@ function App() {
     contents = (
       <>
         {windowState.isAboveCursor && devModeWarning}
-        {windowState.isAboveCursor && <Notifications />}
         <div className="flex flex-row gap-1.5 p-1">
-          {descriptionPosition === DescriptionPosition.LEFT && description}
-          {previewPosition === DescriptionPosition.LEFT && preview}
+          {descriptionPosition === "left" && description}
           <div
             className="bg-main-bg relative flex flex-none flex-col items-stretch overflow-hidden rounded shadow-[0px_0px_3px_0px_rgb(85,_85,_85)]"
             style={
@@ -508,8 +480,7 @@ function App() {
               )}
             </AutoSizedList>
             <div className="scrollbar-none flex flex-shrink-0 flex-row">
-              {descriptionPosition === DescriptionPosition.UNKNOWN &&
-                description}
+              {descriptionPosition === "unknown" && description}
               {isLoading && (
                 <LoadingIcon
                   className={
@@ -521,10 +492,8 @@ function App() {
               )}
             </div>
           </div>
-          {previewPosition === DescriptionPosition.RIGHT && preview}
-          {descriptionPosition === DescriptionPosition.RIGHT && description}
+          {descriptionPosition === "right" && description}
         </div>
-        {!windowState.isAboveCursor && <Notifications />}
         {!windowState.isAboveCursor && devModeWarning}
       </>
     );

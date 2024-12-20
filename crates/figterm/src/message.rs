@@ -1,4 +1,3 @@
-use std::ffi::OsStr;
 use std::iter::repeat;
 use std::path::{
     Path,
@@ -11,7 +10,6 @@ use alacritty_terminal::term::ShellState;
 use anyhow::Result;
 use fig_proto::fig::{
     EnvironmentVariable,
-    PseudoterminalExecuteResponse,
     RunProcessResponse,
 };
 use fig_proto::figterm::figterm_request_message::Request as FigtermRequest;
@@ -57,21 +55,6 @@ use crate::{
     inline,
     shell_state_to_context,
 };
-
-fn shell_args(shell_path: impl AsRef<Path>) -> Option<&'static [&'static str]> {
-    let shell_name = shell_path.as_ref().file_name().and_then(OsStr::to_str)?;
-    let shell_name = shell_name.strip_suffix(".exe").unwrap_or(shell_name);
-    match shell_name {
-        "bash" => Some(&["--norc", "--noprofile", "-c"]),
-        "zsh" => Some(&["--norcs", "-c"]),
-        "fish" => Some(&["--no-config", "-c"]),
-        // TODO: add support for Nu, a lot of generators are broken however
-        _ => {
-            warn!("unknown shell {shell_name}");
-            None
-        },
-    }
-}
 
 fn working_directory(path: Option<&str>, shell_state: &ShellState) -> PathBuf {
     let map_dir = |path: PathBuf| match path.canonicalize() {
@@ -500,67 +483,6 @@ pub async fn process_remote_message(
                                 make_response(Response::Error(format!(
                                     "failed running executable ({}): {err}",
                                     request.executable
-                                )))
-                            },
-                        };
-
-                        if let Err(err) = response_tx.send_async(response).await {
-                            error!(%err, "Failed sending request response");
-                        }
-                    });
-                },
-                Some(Request::PseudoterminalExecute(request)) => {
-                    let shell_path = term
-                        .shell_state()
-                        .local_context
-                        .shell_path
-                        .as_ref()
-                        .map_or_else(|| OsStr::new("/bin/bash"), |x| x.as_os_str())
-                        .to_owned();
-
-                    // TODO: better SHELL_ARGs handling here based on shell.
-                    let (executable, args) = match shell_args(&shell_path) {
-                        Some(args) => (shell_path, args),
-                        None => {
-                            warn!(?shell_path, "Unsupported shell");
-                            let default_shell = "bash";
-                            (default_shell.into(), shell_args(default_shell).unwrap())
-                        },
-                    };
-
-                    let mut cmd = create_command(
-                        executable,
-                        working_directory(request.working_directory.as_deref(), term.shell_state()),
-                    );
-                    cmd.args(args);
-                    cmd.arg(&request.command);
-
-                    for EnvironmentVariable { key, value } in &request.env {
-                        match value {
-                            Some(value) => cmd.env(key, value),
-                            None => cmd.env_remove(key),
-                        };
-                    }
-
-                    tokio::spawn(async move {
-                        debug!("pseudoterminal executing");
-                        let response = match cmd.output().await {
-                            Ok(output) => {
-                                make_response(Response::PseudoterminalExecute(PseudoterminalExecuteResponse {
-                                    stdout: String::from_utf8_lossy(&output.stdout).to_string(),
-                                    stderr: if output.stderr.is_empty() {
-                                        None
-                                    } else {
-                                        Some(String::from_utf8_lossy(&output.stderr).to_string())
-                                    },
-                                    exit_code: output.status.code(),
-                                }))
-                            },
-                            Err(err) => {
-                                warn!(%err, command = request.command, "failed running executable");
-                                make_response(Response::Error(format!(
-                                    "failed running command ({}): {err}",
-                                    request.command
                                 )))
                             },
                         };

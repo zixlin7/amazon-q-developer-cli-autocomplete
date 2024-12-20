@@ -146,12 +146,12 @@ export const createGeneratorState = (
           triggerFn = trigger;
         } else {
           switch (trigger.on) {
-            case "threshold":
+            case "threshold": {
               triggerFn = (a, b) =>
                 a.length > trigger.length && !(b.length > trigger.length);
               break;
-            case "match":
-              // eslint-disable-next-line no-case-declarations
+            }
+            case "match": {
               const strings =
                 typeof trigger.string === "string"
                   ? [trigger.string]
@@ -160,10 +160,12 @@ export const createGeneratorState = (
                 strings.findIndex((x) => x === a) !==
                 strings.findIndex((x) => x === b);
               break;
+            }
             case "change":
-            default:
+            default: {
               triggerFn = (a, b) => a !== b;
               break;
+            }
           }
         }
         try {

@@ -330,11 +330,11 @@ export const useAutocompleteStore = createWithEqualityFn<AutocompleteState>(
 
             const originalVisibleState = visibleState;
             switch (originalVisibleState) {
-              case Visibility.HIDDEN_UNTIL_KEYPRESS:
+              case Visibility.HIDDEN_UNTIL_KEYPRESS: {
                 visibleState = Visibility.VISIBLE;
                 break;
-              case Visibility.HIDDEN_BY_INSERTION:
-                // eslint-disable-next-line no-case-declarations
+              }
+              case Visibility.HIDDEN_BY_INSERTION: {
                 const insertionTriggeredGenerator = state.generatorStates.some(
                   (oldState, idx) =>
                     oldState.generator ===
@@ -347,6 +347,7 @@ export const useAutocompleteStore = createWithEqualityFn<AutocompleteState>(
                     ? Visibility.VISIBLE
                     : Visibility.HIDDEN_UNTIL_KEYPRESS;
                 break;
+              }
               default:
                 break;
             }

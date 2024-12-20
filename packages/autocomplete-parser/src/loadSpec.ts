@@ -1,5 +1,5 @@
 import logger, { Logger } from "loglevel";
-import { Settings, Debugger } from "@aws/amazon-q-developer-cli-api-bindings";
+import { Settings } from "@aws/amazon-q-developer-cli-api-bindings";
 import { convertSubcommand, initializeDefault } from "@fig/autocomplete-shared";
 import {
   withTimeout,
@@ -169,18 +169,11 @@ export const importSpecFromLocation = async (
         const result = await importFromPublicCDN(
           versionFileName ? `${name}/${versionFileName}` : name,
         );
-        Debugger.resetDebugger();
 
         specFile = result;
         resolvedLocation = { type: "public", name };
       } catch (err) {
-        Debugger.reportError({
-          message: [
-            `Autocomplete: Unable to load spec ${name} from any CDN.`,
-            "Make sure you're connected to the internet",
-          ],
-          color: "ff0000",
-        });
+        localLogger.error("Unable to load from CDN", err);
         throw err;
       }
     } else {

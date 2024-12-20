@@ -44,7 +44,6 @@ use crate::webview::LOGIN_PATH;
 use crate::{
     AUTOCOMPLETE_ID,
     DASHBOARD_ID,
-    DebugState,
     EventLoopProxy,
     EventLoopWindowTarget,
 };
@@ -261,7 +260,6 @@ fn load_icon(path: impl AsRef<std::path::Path>) -> Option<Icon> {
 
 pub async fn build_tray(
     _event_loop_window_target: &EventLoopWindowTarget,
-    _debug_state: &DebugState,
     _figterm_state: &FigtermState,
 ) -> tray_icon::Result<TrayIcon> {
     let is_logged_in = fig_auth::is_logged_in().await;

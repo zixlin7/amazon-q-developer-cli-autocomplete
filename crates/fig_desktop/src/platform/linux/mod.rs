@@ -4,7 +4,6 @@ pub mod integrations;
 mod sway;
 mod x11;
 
-use std::borrow::Cow;
 use std::sync::Arc;
 use std::sync::atomic::{
     AtomicBool,
@@ -303,15 +302,6 @@ impl PlatformStateImpl {
                 }
             },
         }
-    }
-
-    pub(super) fn shell() -> Cow<'static, str> {
-        for shell in &["bash", "zsh", "sh"] {
-            if let Ok(shell_path) = which::which(shell) {
-                return shell_path.to_string_lossy().to_string().into();
-            }
-        }
-        "/bin/bash".into()
     }
 
     pub fn accessibility_is_enabled() -> Option<bool> {

@@ -1,4 +1,3 @@
-use std::borrow::Cow;
 use std::sync::Arc;
 
 #[cfg(target_os = "macos")]
@@ -91,11 +90,6 @@ impl PlatformState {
     /// Looks up icons by name on the platform
     pub async fn icon_lookup(name: &AssetSpecifier<'_>) -> Option<ProcessedAsset> {
         PlatformStateImpl::icon_lookup(name).await
-    }
-
-    /// The shell to execute processes in
-    pub fn shell() -> Cow<'static, str> {
-        PlatformStateImpl::shell()
     }
 
     /// Whether or not accessibility is enabled

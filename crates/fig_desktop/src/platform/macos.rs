@@ -1,7 +1,6 @@
 // This is needed for objc
 #![allow(unexpected_cfgs)]
 
-use std::borrow::Cow;
 use std::ffi::CString;
 use std::path::Path;
 use std::slice;
@@ -787,10 +786,6 @@ impl PlatformStateImpl {
         };
 
         Some((Arc::new(data.into()), AssetKind::Png))
-    }
-
-    pub(super) fn shell() -> Cow<'static, str> {
-        "/bin/bash".into()
     }
 
     pub(super) fn accessibility_is_enabled() -> Option<bool> {

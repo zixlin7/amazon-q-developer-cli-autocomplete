@@ -5,8 +5,6 @@
 import {
   AggregateSessionMetricActionRequest,
   AppendToFileRequest,
-  ApplicationUpdateStatusRequest,
-  ApplicationUpdateStatusResponse,
   AuthBuilderIdPollCreateTokenRequest,
   AuthBuilderIdPollCreateTokenResponse,
   AuthBuilderIdStartDeviceAuthorizationRequest,
@@ -26,14 +24,9 @@ import {
   ContentsOfDirectoryRequest,
   ContentsOfDirectoryResponse,
   CreateDirectoryRequest,
-  DebuggerUpdateRequest,
   DestinationOfSymbolicLinkRequest,
   DestinationOfSymbolicLinkResponse,
   DragWindowRequest,
-  GetConfigPropertyRequest,
-  GetConfigPropertyResponse,
-  GetDefaultsPropertyRequest,
-  GetDefaultsPropertyResponse,
   GetLocalStateRequest,
   GetLocalStateResponse,
   GetPlatformInfoRequest,
@@ -45,31 +38,20 @@ import {
   InsertTextRequest,
   InstallRequest,
   InstallResponse,
-  MacosInputMethodRequest,
-  MacosInputMethodResponse,
   OnboardingRequest,
   OpenInExternalApplicationRequest,
   PingRequest,
   PingResponse,
   PositionWindowRequest,
   PositionWindowResponse,
-  PseudoterminalExecuteRequest,
-  PseudoterminalExecuteResponse,
-  PseudoterminalRestartRequest,
-  PseudoterminalWriteRequest,
   ReadFileRequest,
   ReadFileResponse,
   RunProcessRequest,
   RunProcessResponse,
-  TelemetryIdentifyRequest,
   TelemetryPageRequest,
   TelemetryTrackRequest,
-  TerminalSessionInfoRequest,
-  TerminalSessionInfoResponse,
   UpdateApplicationPropertiesRequest,
   UpdateApplicationRequest,
-  UpdateConfigPropertyRequest,
-  UpdateDefaultsPropertyRequest,
   UpdateLocalStateRequest,
   UpdateSettingsPropertyRequest,
   UserLogoutRequest,
@@ -96,35 +78,6 @@ export async function sendPositionWindowRequest(
             reject(
               Error(
                 `Invalid response '${response?.$case}' for 'PositionWindowRequest'`,
-              ),
-            );
-        }
-      },
-    );
-  });
-}
-
-export async function sendPseudoterminalExecuteRequest(
-  request: PseudoterminalExecuteRequest,
-): Promise<PseudoterminalExecuteResponse> {
-  return new Promise((resolve, reject) => {
-    sendMessage(
-      {
-        $case: "pseudoterminalExecuteRequest",
-        pseudoterminalExecuteRequest: request,
-      },
-      (response) => {
-        switch (response?.$case) {
-          case "pseudoterminalExecuteResponse":
-            resolve(response.pseudoterminalExecuteResponse);
-            break;
-          case "error":
-            reject(Error(response.error));
-            break;
-          default:
-            reject(
-              Error(
-                `Invalid response '${response?.$case}' for 'PseudoterminalExecuteRequest'`,
               ),
             );
         }
@@ -246,119 +199,6 @@ export async function sendDestinationOfSymbolicLinkRequest(
   });
 }
 
-export async function sendGetDefaultsPropertyRequest(
-  request: GetDefaultsPropertyRequest,
-): Promise<GetDefaultsPropertyResponse> {
-  return new Promise((resolve, reject) => {
-    sendMessage(
-      {
-        $case: "getDefaultsPropertyRequest",
-        getDefaultsPropertyRequest: request,
-      },
-      (response) => {
-        switch (response?.$case) {
-          case "getDefaultsPropertyResponse":
-            resolve(response.getDefaultsPropertyResponse);
-            break;
-          case "error":
-            reject(Error(response.error));
-            break;
-          default:
-            reject(
-              Error(
-                `Invalid response '${response?.$case}' for 'GetDefaultsPropertyRequest'`,
-              ),
-            );
-        }
-      },
-    );
-  });
-}
-
-export async function sendGetConfigPropertyRequest(
-  request: GetConfigPropertyRequest,
-): Promise<GetConfigPropertyResponse> {
-  return new Promise((resolve, reject) => {
-    sendMessage(
-      { $case: "getConfigPropertyRequest", getConfigPropertyRequest: request },
-      (response) => {
-        switch (response?.$case) {
-          case "getConfigPropertyResponse":
-            resolve(response.getConfigPropertyResponse);
-            break;
-          case "error":
-            reject(Error(response.error));
-            break;
-          default:
-            reject(
-              Error(
-                `Invalid response '${response?.$case}' for 'GetConfigPropertyRequest'`,
-              ),
-            );
-        }
-      },
-    );
-  });
-}
-
-export async function sendTerminalSessionInfoRequest(
-  request: TerminalSessionInfoRequest,
-): Promise<TerminalSessionInfoResponse> {
-  return new Promise((resolve, reject) => {
-    sendMessage(
-      {
-        $case: "terminalSessionInfoRequest",
-        terminalSessionInfoRequest: request,
-      },
-      (response) => {
-        switch (response?.$case) {
-          case "terminalSessionInfoResponse":
-            resolve(response.terminalSessionInfoResponse);
-            break;
-          case "error":
-            reject(Error(response.error));
-            break;
-          default:
-            reject(
-              Error(
-                `Invalid response '${response?.$case}' for 'TerminalSessionInfoRequest'`,
-              ),
-            );
-        }
-      },
-    );
-  });
-}
-
-export async function sendApplicationUpdateStatusRequest(
-  request: ApplicationUpdateStatusRequest,
-): Promise<ApplicationUpdateStatusResponse> {
-  return new Promise((resolve, reject) => {
-    sendMessage(
-      {
-        $case: "applicationUpdateStatusRequest",
-        applicationUpdateStatusRequest: request,
-      },
-      (response) => {
-        switch (response?.$case) {
-          case "applicationUpdateStatusResponse":
-            resolve(response.applicationUpdateStatusResponse);
-            break;
-          case "error":
-            reject(Error(response.error));
-            break;
-          default:
-            reject(
-              Error(
-                `Invalid response '${response?.$case}' for 'ApplicationUpdateStatusRequest'`,
-              ),
-            );
-        }
-      },
-    );
-  });
-}
-
 export async function sendGetLocalStateRequest(
   request: GetLocalStateRequest,
 ): Promise<GetLocalStateResponse> {
@@ -403,32 +243,6 @@ export async function sendRunProcessRequest(
             reject(
               Error(
                 `Invalid response '${response?.$case}' for 'RunProcessRequest'`,
-              ),
-            );
-        }
-      },
-    );
-  });
-}
-
-export async function sendMacosInputMethodRequest(
-  request: MacosInputMethodRequest,
-): Promise<MacosInputMethodResponse> {
-  return new Promise((resolve, reject) => {
-    sendMessage(
-      { $case: "macosInputMethodRequest", macosInputMethodRequest: request },
-      (response) => {
-        switch (response?.$case) {
-          case "macosInputMethodResponse":
-            resolve(response.macosInputMethodResponse);
-            break;
-          case "error":
-            reject(Error(response.error));
-            break;
-          default:
-            reject(
-              Error(
-                `Invalid response '${response?.$case}' for 'MacosInputMethodRequest'`,
               ),
             );
         }
@@ -762,35 +576,6 @@ export async function sendGetPlatformInfoRequest(
   });
 }
 
-export async function sendPseudoterminalWriteRequest(
-  request: PseudoterminalWriteRequest,
-): Promise<void> {
-  return new Promise((resolve, reject) => {
-    sendMessage(
-      {
-        $case: "pseudoterminalWriteRequest",
-        pseudoterminalWriteRequest: request,
-      },
-      (response) => {
-        switch (response?.$case) {
-          case "success":
-            resolve();
-            break;
-          case "error":
-            reject(Error(response.error));
-            break;
-          default:
-            reject(
-              Error(
-                `Invalid response '${response?.$case}' for 'PseudoterminalWriteRequest'`,
-              ),
-            );
-        }
-      },
-    );
-  });
-}
-
 export async function sendWriteFileRequest(
   request: WriteFileRequest,
 ): Promise<void> {
@@ -901,61 +686,6 @@ export async function sendUpdateApplicationPropertiesRequest(
   });
 }
 
-export async function sendUpdateDefaultsPropertyRequest(
-  request: UpdateDefaultsPropertyRequest,
-): Promise<void> {
-  return new Promise((resolve, reject) => {
-    sendMessage(
-      {
-        $case: "updateDefaultsPropertyRequest",
-        updateDefaultsPropertyRequest: request,
-      },
-      (response) => {
-        switch (response?.$case) {
-          case "success":
-            resolve();
-            break;
-          case "error":
-            reject(Error(response.error));
-            break;
-          default:
-            reject(
-              Error(
-                `Invalid response '${response?.$case}' for 'UpdateDefaultsPropertyRequest'`,
-              ),
-            );
-        }
-      },
-    );
-  });
-}
-
-export async function sendTelemetryIdentifyRequest(
-  request: TelemetryIdentifyRequest,
-): Promise<void> {
-  return new Promise((resolve, reject) => {
-    sendMessage(
-      { $case: "telemetryIdentifyRequest", telemetryIdentifyRequest: request },
-      (response) => {
-        switch (response?.$case) {
-          case "success":
-            resolve();
-            break;
-          case "error":
-            reject(Error(response.error));
-            break;
-          default:
-            reject(
-              Error(
-                `Invalid response '${response?.$case}' for 'TelemetryIdentifyRequest'`,
-              ),
-            );
-        }
-      },
-    );
-  });
-}
-
 export async function sendTelemetryTrackRequest(
   request: TelemetryTrackRequest,
 ): Promise<void> {
@@ -1055,90 +785,6 @@ export async function sendOpenInExternalApplicationRequest(
             reject(
               Error(
                 `Invalid response '${response?.$case}' for 'OpenInExternalApplicationRequest'`,
-              ),
-            );
-        }
-      },
-    );
-  });
-}
-
-export async function sendUpdateConfigPropertyRequest(
-  request: UpdateConfigPropertyRequest,
-): Promise<void> {
-  return new Promise((resolve, reject) => {
-    sendMessage(
-      {
-        $case: "updateConfigPropertyRequest",
-        updateConfigPropertyRequest: request,
-      },
-      (response) => {
-        switch (response?.$case) {
-          case "success":
-            resolve();
-            break;
-          case "error":
-            reject(Error(response.error));
-            break;
-          default:
-            reject(
-              Error(
-                `Invalid response '${response?.$case}' for 'UpdateConfigPropertyRequest'`,
-              ),
-            );
-        }
-      },
-    );
-  });
-}
-
-export async function sendPseudoterminalRestartRequest(
-  request: PseudoterminalRestartRequest,
-): Promise<void> {
-  return new Promise((resolve, reject) => {
-    sendMessage(
-      {
-        $case: "pseudoterminalRestartRequest",
-        pseudoterminalRestartRequest: request,
-      },
-      (response) => {
-        switch (response?.$case) {
-          case "success":
-            resolve();
-            break;
-          case "error":
-            reject(Error(response.error));
-            break;
-          default:
-            reject(
-              Error(
-                `Invalid response '${response?.$case}' for 'PseudoterminalRestartRequest'`,
-              ),
-            );
-        }
-      },
-    );
-  });
-}
-
-export async function sendDebuggerUpdateRequest(
-  request: DebuggerUpdateRequest,
-): Promise<void> {
-  return new Promise((resolve, reject) => {
-    sendMessage(
-      { $case: "debuggerUpdateRequest", debuggerUpdateRequest: request },
-      (response) => {
-        switch (response?.$case) {
-          case "success":
-            resolve();
-            break;
-          case "error":
-            reject(Error(response.error));
-            break;
-          default:
-            reject(
-              Error(
-                `Invalid response '${response?.$case}' for 'DebuggerUpdateRequest'`,
               ),
             );
         }

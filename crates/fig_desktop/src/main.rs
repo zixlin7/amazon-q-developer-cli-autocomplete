@@ -76,12 +76,6 @@ use webview::{
 extern crate objc;
 
 #[derive(Debug, Default)]
-pub struct DebugState {
-    pub debug_lines: RwLock<Vec<String>>,
-    pub color: RwLock<Option<String>>,
-}
-
-#[derive(Debug, Default)]
 pub struct InterceptState {
     pub intercept_bound_keystrokes: RwLock<bool>,
     pub intercept_global_keystrokes: RwLock<bool>,

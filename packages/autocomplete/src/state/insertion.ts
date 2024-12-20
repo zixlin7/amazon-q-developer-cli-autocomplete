@@ -132,10 +132,6 @@ const insertString = (
       }
     : null;
 
-  if (metadata && specLocation?.location.privateNamespaceId) {
-    metadata.specNamespaceId = `${specLocation.location.privateNamespaceId}`;
-  }
-
   trackEvent("autocomplete-insert", {
     ...metadata,
     rootCommand,

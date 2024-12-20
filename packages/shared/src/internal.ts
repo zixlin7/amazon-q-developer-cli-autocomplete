@@ -3,7 +3,6 @@ import type { Result } from "@aws/amazon-q-developer-cli-fuzzysort";
 
 export type SpecLocation = Fig.SpecLocation & {
   diffVersionedFile?: string;
-  privateNamespaceId?: number;
 };
 
 type Override<T, S> = Omit<T, keyof S> & S;

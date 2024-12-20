@@ -25,8 +25,7 @@ export enum Visibility {
 
 export type ComponentMap = Record<
   string,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  React.LazyExoticComponent<React.ComponentType<any>>
+  React.LazyExoticComponent<React.ComponentType<unknown>>
 >;
 
 type AutocompleteActions = {

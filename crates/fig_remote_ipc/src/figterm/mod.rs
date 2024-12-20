@@ -248,14 +248,6 @@ pub enum FigtermCommand {
         working_directory: Option<String>,
         env: Vec<EnvironmentVariable>,
     },
-    PseudoterminalExecute {
-        channel: oneshot::Sender<hostbound::response::Response>,
-        command: String,
-        working_directory: Option<String>,
-        background_job: Option<bool>,
-        is_pipelined: Option<bool>,
-        env: Vec<EnvironmentVariable>,
-    },
 }
 
 macro_rules! field {
@@ -273,15 +265,6 @@ impl FigtermCommand {
         executable: String,
         arguments: Vec<String>,
         working_directory: Option<String>,
-        env: Vec<EnvironmentVariable>,
-    );
-
-    field!(
-        pseudoterminal_execute: PseudoterminalExecute,
-        command: String,
-        working_directory: Option<String>,
-        background_job: Option<bool>,
-        is_pipelined: Option<bool>,
         env: Vec<EnvironmentVariable>,
     );
 }

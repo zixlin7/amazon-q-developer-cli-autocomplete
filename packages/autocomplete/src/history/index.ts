@@ -24,7 +24,6 @@ import {
   getSetting,
 } from "@aws/amazon-q-developer-cli-api-bindings-wrappers";
 import { History } from "@aws/amazon-q-developer-cli-api-bindings";
-import { captureError } from "../sentry";
 import {
   AnnotatedCommand,
   HistoryEntry,
@@ -272,7 +271,7 @@ export const loadHistory = async (aliases: AliasMap) => {
         .split("\n")
         .map((text) => ({ text, context: {}, commands: [] }));
     } catch (err) {
-      captureError(err as Error);
+      historyLogger.error(err as Error);
     }
 
     const key = shell ?? "customCommand";

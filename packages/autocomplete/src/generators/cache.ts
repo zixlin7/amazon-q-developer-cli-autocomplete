@@ -1,8 +1,7 @@
 class CacheEntry<T> {
   private lastFetch = 0;
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  private promise: Promise<any> | undefined = undefined;
+  private promise: Promise<T> | undefined = undefined;
 
   value: T | undefined = undefined;
 
@@ -21,8 +20,7 @@ class CacheEntry<T> {
     return this.value;
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  private async fetchAsync(run: () => Promise<T>): Promise<any> {
+  private async fetchAsync(run: () => Promise<T>): Promise<T | undefined> {
     if (this.isFetching) {
       await this.promise;
       return this.value;
@@ -44,7 +42,7 @@ class CacheEntry<T> {
     return this.value as T;
   }
 
-  async entry(run: () => Promise<T>, cache: Fig.Cache): Promise<T> {
+  async entry(run: () => Promise<T>, cache: Fig.Cache): Promise<T | undefined> {
     if (!this.isInitialized) return this.fetchAsync(run);
     switch (cache.strategy || "stale-while-revalidate") {
       case "max-age":

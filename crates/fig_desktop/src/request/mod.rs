@@ -1,4 +1,3 @@
-mod debug;
 mod figterm;
 mod notifications;
 mod onboarding;
@@ -30,14 +29,11 @@ use fig_proto::fig::server_originated_message::Submessage as ServerOriginatedSub
 use fig_proto::fig::{
     AggregateSessionMetricActionRequest,
     ClientOriginatedMessage,
-    DebuggerUpdateRequest,
     DragWindowRequest,
     InsertTextRequest,
     NotificationRequest,
     OnboardingRequest,
     PositionWindowRequest,
-    PseudoterminalExecuteRequest,
-    PseudoterminalWriteRequest,
     RunProcessRequest,
     ServerOriginatedMessage,
     UpdateApplicationPropertiesRequest,
@@ -65,13 +61,11 @@ use crate::event::{
 use crate::webview::WindowId;
 use crate::webview::notification::WebviewNotificationsState;
 use crate::{
-    DebugState,
     EventLoopProxy,
     InterceptState,
 };
 
 pub struct Context<'a> {
-    pub debug_state: &'a DebugState,
     pub figterm_state: &'a FigtermState,
     pub intercept_state: &'a InterceptState,
     pub notifications_state: &'a WebviewNotificationsState,
@@ -136,10 +130,6 @@ impl<'a> fig_desktop_api::handler::EventHandler for EventHandler<'a> {
         .await
     }
 
-    async fn debugger_update(&self, request: Wrapped<Self::Ctx, DebuggerUpdateRequest>) -> RequestResult {
-        debug::update(request.request, request.context.debug_state).await
-    }
-
     async fn insert_text(&self, request: Wrapped<Self::Ctx, InsertTextRequest>) -> RequestResult {
         figterm::insert_text(request.request, request.context.figterm_state).await
     }
@@ -187,14 +177,6 @@ impl<'a> fig_desktop_api::handler::EventHandler for EventHandler<'a> {
         process::run(request.request, request.context.figterm_state).await
     }
 
-    async fn pseudoterminal_execute(&self, request: Wrapped<Self::Ctx, PseudoterminalExecuteRequest>) -> RequestResult {
-        process::execute(request.request, request.context.figterm_state).await
-    }
-
-    async fn pseudoterminal_write(&self, _request: Wrapped<Self::Ctx, PseudoterminalWriteRequest>) -> RequestResult {
-        process::write().await
-    }
-
     async fn update_application_properties(
         &self,
         request: Wrapped<Self::Ctx, UpdateApplicationPropertiesRequest>,
@@ -223,7 +205,6 @@ impl<'a> fig_desktop_api::handler::EventHandler for EventHandler<'a> {
 pub async fn api_request(
     window_id: WindowId,
     message: fig_desktop_api::error::Result<ClientOriginatedMessage>,
-    debug_state: &DebugState,
     figterm_state: &FigtermState,
     intercept_state: &InterceptState,
     notifications_state: &WebviewNotificationsState,
@@ -237,7 +218,6 @@ pub async fn api_request(
             match fig_desktop_api::handler::api_request(
                 EventHandler::default(),
                 Context {
-                    debug_state,
                     figterm_state,
                     intercept_state,
                     notifications_state,

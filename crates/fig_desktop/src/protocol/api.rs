@@ -24,7 +24,6 @@ use crate::request::{
 };
 use crate::webview::{
     DASH_KV_STORE,
-    DEBUG_STATE,
     FIGTERM_STATE,
     GLOBAL_PROXY,
     INTERCEPT_STATE,
@@ -54,7 +53,6 @@ pub async fn handle(
         EventHandler::default(),
         Context {
             window_id: &window_id,
-            debug_state: DEBUG_STATE.get().unwrap().as_ref(),
             figterm_state: FIGTERM_STATE.get().unwrap().as_ref(),
             intercept_state: INTERCEPT_STATE.get().unwrap().as_ref(),
             notifications_state: NOTIFICATIONS_STATE.get().unwrap().as_ref(),

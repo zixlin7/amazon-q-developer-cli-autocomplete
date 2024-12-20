@@ -1,5 +1,4 @@
 import { Component, ErrorInfo, ReactNode } from "react";
-import { captureError } from "../sentry";
 
 interface Props {
   children: ReactNode;
@@ -21,8 +20,6 @@ class ErrorBoundary extends Component<Props, State> {
 
   public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     console.error("Uncaught error:", error, errorInfo);
-
-    captureError(error);
 
     // Reload the page in 5 seconds
     setTimeout(() => {

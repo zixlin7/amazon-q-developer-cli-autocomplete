@@ -100,7 +100,6 @@ pub use crate::webview::window_id::{
     WindowId,
 };
 use crate::{
-    DebugState,
     EventLoop,
     EventLoopProxy,
     InterceptState,
@@ -148,7 +147,6 @@ pub struct WebviewManager {
     fig_id_map: FigIdMap,
     window_id_map: WryIdMap,
     event_loop: EventLoop,
-    debug_state: Arc<DebugState>,
     figterm_state: Arc<FigtermState>,
     intercept_state: Arc<InterceptState>,
     platform_state: Arc<PlatformState>,
@@ -158,7 +156,6 @@ pub struct WebviewManager {
 }
 
 pub static GLOBAL_PROXY: OnceLock<EventLoopProxy> = OnceLock::new();
-pub static DEBUG_STATE: OnceLock<Arc<DebugState>> = OnceLock::new();
 pub static FIGTERM_STATE: OnceLock<Arc<FigtermState>> = OnceLock::new();
 pub static INTERCEPT_STATE: OnceLock<Arc<InterceptState>> = OnceLock::new();
 pub static PLATFORM_STATE: OnceLock<Arc<PlatformState>> = OnceLock::new();
@@ -187,9 +184,6 @@ impl WebviewManager {
         let proxy = event_loop.create_proxy();
         GLOBAL_PROXY.set(proxy.clone()).unwrap();
 
-        let debug_state = Arc::new(DebugState::default());
-        DEBUG_STATE.set(debug_state.clone()).unwrap();
-
         let figterm_state = Arc::new(FigtermState::default());
         FIGTERM_STATE.set(figterm_state.clone()).unwrap();
 
@@ -209,7 +203,6 @@ impl WebviewManager {
             fig_id_map: Default::default(),
             window_id_map: Default::default(),
             event_loop,
-            debug_state,
             figterm_state,
             intercept_state,
             platform_state,
@@ -302,7 +295,6 @@ impl WebviewManager {
 
         {
             let sync_proxy = self.event_loop.create_proxy();
-            let sync_debug_state = self.debug_state.clone();
             let sync_figterm_state = self.figterm_state.clone();
             let sync_intercept_state = self.intercept_state.clone();
             let sync_notifications_state = self.notifications_state.clone();
@@ -311,14 +303,12 @@ impl WebviewManager {
             tokio::spawn(async move {
                 while let Some((fig_id, message)) = sync_api_handler_rx.recv().await {
                     let proxy = sync_proxy.clone();
-                    let debug_state = sync_debug_state.clone();
                     let figterm_state = sync_figterm_state.clone();
                     let intercept_state = sync_intercept_state.clone();
                     let notifications_state = sync_notifications_state.clone();
                     api_request(
                         fig_id,
                         message,
-                        &debug_state,
                         &figterm_state,
                         &intercept_state,
                         &notifications_state,
@@ -330,7 +320,6 @@ impl WebviewManager {
             });
 
             let proxy = self.event_loop.create_proxy();
-            let debug_state = self.debug_state.clone();
             let figterm_state = self.figterm_state.clone();
             let intercept_state = self.intercept_state.clone();
             let notifications_state = self.notifications_state.clone();
@@ -349,7 +338,6 @@ impl WebviewManager {
                         sync_api_handler_tx.send((fig_id, message)).ok();
                     } else {
                         let proxy = proxy.clone();
-                        let debug_state = debug_state.clone();
                         let figterm_state = figterm_state.clone();
                         let intercept_state = intercept_state.clone();
                         let notifications_state = notifications_state.clone();
@@ -358,7 +346,6 @@ impl WebviewManager {
                             api_request(
                                 fig_id,
                                 message,
-                                &debug_state,
                                 &figterm_state,
                                 &intercept_state,
                                 &notifications_state,
@@ -378,9 +365,7 @@ impl WebviewManager {
         init_webview_notification_listeners(self.event_loop.create_proxy()).await;
 
         let tray_visible = !fig_settings::settings::get_bool_or("app.hideMenubarIcon", false);
-        let tray = build_tray(&self.event_loop, &self.debug_state, &self.figterm_state)
-            .await
-            .unwrap();
+        let tray = build_tray(&self.event_loop, &self.figterm_state).await.unwrap();
         if let Err(err) = tray.set_visible(tray_visible) {
             error!(%err, "Failed to set tray visible");
         }

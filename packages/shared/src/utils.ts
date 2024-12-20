@@ -214,15 +214,6 @@ export function localProtocol(domain: string, path: string) {
   return `fig://${modifiedDomain}/${path}`;
 }
 
-const JWS_REGEX = /^[a-zA-Z0-9\-_]+?\.[a-zA-Z0-9\-_]+?\.([a-zA-Z0-9\-_]+)?$/;
-
-export const jwtDecode = (jwt: string) => {
-  if (!JWS_REGEX.test(jwt)) {
-    return null;
-  }
-  return JSON.parse(atob(jwt.split(".")[1]));
-};
-
 type ExponentialBackoffOptions = {
   attemptTimeout: number; // The maximum time in milliseconds to wait for a function to execute.
   baseDelay: number; // The initial delay in milliseconds.

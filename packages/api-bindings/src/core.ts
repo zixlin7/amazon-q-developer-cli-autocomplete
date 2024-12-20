@@ -1,9 +1,12 @@
 import {
-  ServerOriginatedMessage,
-  ClientOriginatedMessage,
+  type ServerOriginatedMessage,
+  type ClientOriginatedMessage,
+  ClientOriginatedMessageSchema,
+  ServerOriginatedMessageSchema,
 } from "@aws/amazon-q-developer-cli-proto/fig";
 
 import { b64ToBytes, bytesToBase64 } from "./utils.js";
+import { create, fromBinary, toBinary } from "@bufbuild/protobuf";
 
 interface GlobalAPIError {
   error: string;
@@ -19,9 +22,9 @@ export type APIResponseHandler = (
 ) => shouldKeepListening | void;
 
 let messageId = 0;
-const handlers: Record<number, APIResponseHandler> = {};
+const handlers: Record<string, APIResponseHandler> = {};
 
-export function setHandlerForId(handler: APIResponseHandler, id: number) {
+export function setHandlerForId(handler: APIResponseHandler, id: string) {
   handlers[id] = handler;
 }
 
@@ -30,33 +33,37 @@ const receivedMessage = (response: ServerOriginatedMessage): void => {
     return;
   }
 
-  const handler = handlers[response.id];
+  const id = response.id.toString();
+  const handler = handlers[id];
 
   if (!handler) {
     return;
   }
 
-  const keepListeningOnID = handlers[response.id](response.submessage);
+  const keepListeningOnID = handlers[id](response.submessage);
 
   if (!keepListeningOnID) {
-    delete handlers[response.id];
+    delete handlers[id];
   }
 };
 
 export function sendMessage(
-  message: ClientOriginatedMessage["submessage"],
+  submessage: ClientOriginatedMessage["submessage"],
   handler?: APIResponseHandler,
 ) {
-  const request: ClientOriginatedMessage = {
-    id: (messageId += 1),
-    submessage: message,
-  };
+  const request: ClientOriginatedMessage = create(
+    ClientOriginatedMessageSchema,
+    {
+      id: BigInt((messageId += 1)),
+      submessage,
+    },
+  );
 
   if (handler && request.id) {
-    handlers[request.id] = handler;
+    handlers[request.id.toString()] = handler;
   }
 
-  const buffer = ClientOriginatedMessage.encode(request).finish();
+  const buffer = toBinary(ClientOriginatedMessageSchema, request);
 
   if (
     window?.fig?.constants?.supportApiProto &&
@@ -64,11 +71,8 @@ export function sendMessage(
   ) {
     const url = new URL(window.fig.constants.apiProtoUrl);
 
-    if (
-      request.submessage?.$case &&
-      typeof request.submessage?.$case === "string"
-    ) {
-      url.pathname = `/${request.submessage.$case}`;
+    if (typeof request.submessage?.case === "string") {
+      url.pathname = `/${request.submessage.case}`;
     } else {
       url.pathname = "/unknown";
     }
@@ -81,8 +85,8 @@ export function sendMessage(
       body: buffer,
     }).then(async (res) => {
       const body = new Uint8Array(await res.arrayBuffer());
-      const m = ServerOriginatedMessage.decode(body);
-      receivedMessage(m);
+      const message = fromBinary(ServerOriginatedMessageSchema, body);
+      receivedMessage(message);
     });
     return;
   }
@@ -115,7 +119,7 @@ const setupEventListeners = (): void => {
   document.addEventListener(FigProtoMessageReceived, (event: Event) => {
     const raw = (event as CustomEvent).detail as string;
     const bytes = b64ToBytes(raw);
-    const message = ServerOriginatedMessage.decode(bytes);
+    const message = fromBinary(ServerOriginatedMessageSchema, bytes);
     receivedMessage(message);
   });
 };

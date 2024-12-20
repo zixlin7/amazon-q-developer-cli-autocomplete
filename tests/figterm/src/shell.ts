@@ -68,34 +68,39 @@ class FigtermListener {
     const matchesSession = (context: ShellContext | undefined) =>
       context?.sessionId === this.sessionId;
 
-    /* eslint-disable no-case-declarations */
     switch (message.type?.$case) {
-      case 'hook':
+      case 'hook': {
         const { hook } = message.type.hook;
         switch (hook?.$case) {
-          case 'init':
+          case 'init': {
             break;
-          case 'prompt':
+          }
+          case 'prompt': {
             if (matchesSession(hook.prompt.context)) {
               this.onPrompt();
             }
             break;
-          case 'editBuffer':
+          }
+          case 'editBuffer': {
             if (matchesSession(hook.editBuffer.context)) {
               this.buffer = hook.editBuffer.text;
               this.cursor = hook.editBuffer.cursor;
             }
             break;
-          default:
+          }
+          default: {
             break;
+          }
         }
         break;
-      case 'command':
+      }
+      case 'command': {
         break;
-      default:
+      }
+      default: {
         break;
+      }
     }
-    /* eslint-enable no-case-declarations */
   }
 
   listen() {
@@ -220,7 +225,7 @@ class Shell {
       ...environment,
       TMPDIR: '/tmp/',
       TERM_SESSION_ID: uuid.v4(),
-      FIG_SHELL_EXTRA_ARGS: Array.isArray(args) ? args.join(' ') : args ?? '',
+      FIG_SHELL_EXTRA_ARGS: Array.isArray(args) ? args.join(' ') : (args ?? ''),
     };
 
     this.cliListener = new FigCliListener(this.initialEnv.TERM_SESSION_ID);
@@ -268,8 +273,8 @@ class Shell {
     });
 
     this.exitPty = (signal?: string) => {
-      const prom = new Promise<void>(
-        (resolve) => this.pty?.onExit(() => resolve())
+      const prom = new Promise<void>((resolve) =>
+        this.pty?.onExit(() => resolve())
       );
       this.pty?.kill(signal ?? 'SIGKILL');
       this.pty = undefined;

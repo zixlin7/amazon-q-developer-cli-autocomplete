@@ -1,3 +1,4 @@
+import { create } from "@bufbuild/protobuf";
 import {
   sendWriteFileRequest,
   sendReadFileRequest,
@@ -6,48 +7,56 @@ import {
   sendAppendToFileRequest,
   sendCreateDirectoryRequest,
 } from "./requests.js";
+import {
+  type FilePath,
+  FilePathSchema,
+} from "@aws/amazon-q-developer-cli-proto/fig";
+
+function filePath(options: Omit<FilePath, "$typeName">) {
+  return create(FilePathSchema, options);
+}
 
 export async function write(path: string, contents: string) {
   return sendWriteFileRequest({
-    path: { path, expandTildeInPath: true },
-    data: { $case: "text", text: contents },
+    path: filePath({ path, expandTildeInPath: true }),
+    data: { case: "text", value: contents },
   });
 }
 
 export async function append(path: string, contents: string) {
   return sendAppendToFileRequest({
-    path: { path, expandTildeInPath: true },
-    data: { $case: "text", text: contents },
+    path: filePath({ path, expandTildeInPath: true }),
+    data: { case: "text", value: contents },
   });
 }
 
 export async function read(path: string) {
   const response = await sendReadFileRequest({
-    path: { path, expandTildeInPath: true },
+    path: filePath({ path, expandTildeInPath: true }),
   });
-  if (response.type?.$case === "text") {
-    return response.type.text;
+  if (response.type?.case === "text") {
+    return response.type.value;
   }
   return null;
 }
 
 export async function list(path: string) {
   const response = await sendContentsOfDirectoryRequest({
-    directory: { path, expandTildeInPath: true },
+    directory: filePath({ path, expandTildeInPath: true }),
   });
   return response.fileNames;
 }
 
 export async function destinationOfSymbolicLink(path: string) {
   const response = await sendDestinationOfSymbolicLinkRequest({
-    path: { path, expandTildeInPath: true },
+    path: filePath({ path, expandTildeInPath: true }),
   });
   return response.destination?.path;
 }
 
 export async function createDirectory(path: string, recursive: boolean) {
   return sendCreateDirectoryRequest({
-    path: { path, expandTildeInPath: true },
+    path: filePath({ path, expandTildeInPath: true }),
     recursive,
   });
 }

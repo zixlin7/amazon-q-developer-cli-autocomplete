@@ -4,9 +4,11 @@ import {
   ShellPromptReturnedNotification,
   TextUpdate,
   HistoryUpdatedNotification,
+  TextUpdateSchema,
 } from "@aws/amazon-q-developer-cli-proto/fig";
 import { sendInsertTextRequest } from "./requests.js";
 import { _subscribe, NotificationResponse } from "./notifications.js";
+import { create } from "@bufbuild/protobuf";
 
 export const processDidChange = {
   subscribe(
@@ -17,9 +19,9 @@ export const processDidChange = {
     return _subscribe(
       { type: NotificationType.NOTIFY_ON_PROCESS_CHANGED },
       (notification) => {
-        switch (notification?.type?.$case) {
+        switch (notification?.type?.case) {
           case "processChangeNotification":
-            return handler(notification.type.processChangeNotification);
+            return handler(notification.type.value);
           default:
             break;
         }
@@ -39,9 +41,9 @@ export const promptDidReturn = {
     return _subscribe(
       { type: NotificationType.NOTIFY_ON_PROMPT },
       (notification) => {
-        switch (notification?.type?.$case) {
+        switch (notification?.type?.case) {
           case "shellPromptReturnedNotification":
-            return handler(notification.type.shellPromptReturnedNotification);
+            return handler(notification.type.value);
           default:
             break;
         }
@@ -61,9 +63,9 @@ export const historyUpdated = {
     return _subscribe(
       { type: NotificationType.NOTIFY_ON_HISTORY_UPDATED },
       (notification) => {
-        switch (notification?.type?.$case) {
+        switch (notification?.type?.case) {
           case "historyUpdatedNotification":
-            return handler(notification.type.historyUpdatedNotification);
+            return handler(notification.type.value);
           default:
             break;
         }
@@ -76,17 +78,20 @@ export const historyUpdated = {
 
 export async function insert(
   text: string,
-  request?: Omit<TextUpdate, "insertion">,
+  request?: Omit<TextUpdate, "insertion" | "$typeName">,
   terminalSessionId?: string,
 ) {
   if (request) {
     return sendInsertTextRequest({
       terminalSessionId,
-      type: { $case: "update", update: { ...request, insertion: text } },
+      type: {
+        case: "update",
+        value: create(TextUpdateSchema, { ...request, insertion: text }),
+      },
     });
   }
   return sendInsertTextRequest({
     terminalSessionId,
-    type: { $case: "text", text },
+    type: { case: "text", value: text },
   });
 }

@@ -1,8 +1,12 @@
-import { TelemetryProperty } from "@aws/amazon-q-developer-cli-proto/fig";
+import {
+  TelemetryProperty,
+  TelemetryPropertySchema,
+} from "@aws/amazon-q-developer-cli-proto/fig";
 import {
   sendTelemetryPageRequest,
   sendTelemetryTrackRequest,
 } from "./requests.js";
+import { create } from "@bufbuild/protobuf";
 
 type Property = string | boolean | number | null;
 
@@ -10,10 +14,10 @@ export function track(event: string, properties: Record<string, Property>) {
   // convert to internal type 'TelemetryProperty'
   const props = Object.keys(properties).reduce(
     (array, key) => {
-      const entry: TelemetryProperty = {
+      const entry: TelemetryProperty = create(TelemetryPropertySchema, {
         key,
         value: JSON.stringify(properties[key]),
-      };
+      });
       array.push(entry);
       return array;
     },

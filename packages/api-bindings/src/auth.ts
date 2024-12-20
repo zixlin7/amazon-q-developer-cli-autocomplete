@@ -54,7 +54,10 @@ export function startPkceAuthorization({
 
 export function finishPkceAuthorization({
   authRequestId,
-}: AuthFinishPkceAuthorizationRequest): Promise<AuthFinishPkceAuthorizationResponse> {
+}: Omit<
+  AuthFinishPkceAuthorizationRequest,
+  "$typeName"
+>): Promise<AuthFinishPkceAuthorizationResponse> {
   return sendAuthFinishPkceAuthorizationRequest({ authRequestId });
 }
 

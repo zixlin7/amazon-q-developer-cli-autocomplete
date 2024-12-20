@@ -44,18 +44,18 @@ function componentToProto(component: Component) {
 }
 
 function handleBasicResponse(response: InstallResponse) {
-  switch (response.response?.$case) {
+  switch (response.response?.case) {
     case "result":
-      if (response.response.result.result === Result_Result.OK) {
+      if (response.response.value.result === Result_Result.OK) {
         return;
       }
-      if (response.response.result.result === Result_Result.ERROR) {
-        throw Error(response.response.result.error);
+      if (response.response.value.result === Result_Result.ERROR) {
+        throw Error(response.response.value.error);
       } else {
-        throw Error(`Unexpected result: ${response.response.result.result}`);
+        throw Error(`Unexpected result: ${response.response.value.result}`);
       }
     default:
-      throw Error(`Unexpected result: ${response.response?.$case}`);
+      throw Error(`Unexpected result: ${response.response?.case}`);
   }
 }
 
@@ -80,24 +80,23 @@ export async function isInstalled(component: Component) {
     action: InstallAction.STATUS,
     component: componentToProto(component),
   });
-  switch (response.response?.$case) {
+  switch (response.response?.case) {
     case "installationStatus":
       if (
-        response.response.installationStatus ===
-        InstallResponse_InstallationStatus.INSTALLED
+        response.response.value === InstallResponse_InstallationStatus.INSTALLED
       ) {
         return true;
       }
       if (
-        response.response.installationStatus ===
+        response.response.value ===
         InstallResponse_InstallationStatus.NOT_INSTALLED
       ) {
         return false;
       }
-      throw Error(`Unexpected result: ${response.response.installationStatus}`);
+      throw Error(`Unexpected result: ${response.response.value}`);
 
     default:
-      throw Error(`Unexpected result: ${response.response?.$case}`);
+      throw Error(`Unexpected result: ${response.response?.case}`);
   }
 }
 
@@ -110,11 +109,9 @@ export const installStatus = {
       return _subscribe(
         { type: NotificationType.NOTIFY_ON_ACCESSIBILITY_CHANGE },
         (notification) => {
-          switch (notification?.type?.$case) {
+          switch (notification?.type?.case) {
             case "accessibilityChangeNotification":
-              return handler(
-                notification.type.accessibilityChangeNotification.enabled,
-              );
+              return handler(notification.type.value.enabled);
             default:
               break;
           }

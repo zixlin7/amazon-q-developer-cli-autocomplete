@@ -33,8 +33,7 @@ const cdnUrlFactory = makeCdnUrlFactory(
   "https://specs.q.us-east-1.amazonaws.com/",
 );
 
-/* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-const stringImportCache = new Map<string, any>();
+const stringImportCache = new Map<string, unknown>();
 
 export const importString = async (str: string) => {
   if (stringImportCache.has(str)) {

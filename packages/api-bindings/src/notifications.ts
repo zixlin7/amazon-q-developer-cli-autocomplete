@@ -1,11 +1,13 @@
 import {
-  Notification,
-  ServerOriginatedMessage,
-  NotificationRequest,
+  type Notification,
+  type ServerOriginatedMessage,
+  type NotificationRequest,
+  NotificationRequestSchema,
   NotificationType,
 } from "@aws/amazon-q-developer-cli-proto/fig";
 
 import { sendMessage } from "./core.js";
+import { create } from "@bufbuild/protobuf";
 
 export type NotificationResponse = {
   unsubscribe: boolean;
@@ -30,7 +32,7 @@ export function _unsubscribe(
 }
 
 export function _subscribe(
-  request: NotificationRequest,
+  request: Omit<NotificationRequest, "$typeName">,
   handler: NotificationHandler,
 ): Promise<Subscription> | undefined {
   return new Promise<Subscription>((resolve, reject) => {
@@ -50,9 +52,12 @@ export function _subscribe(
 
         let handlersToRemove: NotificationHandler[] | undefined;
         sendMessage(
-          { $case: "notificationRequest", notificationRequest: request },
+          {
+            case: "notificationRequest",
+            value: create(NotificationRequestSchema, request),
+          },
           (response: ServerOriginatedMessage["submessage"]) => {
-            switch (response?.$case) {
+            switch (response?.case) {
               case "notification":
                 if (!handlers[type]) {
                   return false;
@@ -60,7 +65,7 @@ export function _subscribe(
 
                 // call handlers and remove any that have unsubscribed (by returning false)
                 handlersToRemove = handlers[type]?.filter((existingHandler) => {
-                  const res = existingHandler(response.notification);
+                  const res = existingHandler(response.value);
                   return Boolean(res?.unsubscribe);
                 });
 
@@ -74,7 +79,7 @@ export function _subscribe(
                 addHandler();
                 return true;
               case "error":
-                reject(new Error(response.error));
+                reject(new Error(response.value));
                 break;
               default:
                 reject(new Error("Not a notification"));
@@ -95,11 +100,11 @@ export function _subscribe(
 
 const unsubscribeFromAll = () => {
   sendMessage({
-    $case: "notificationRequest",
-    notificationRequest: {
+    case: "notificationRequest",
+    value: create(NotificationRequestSchema, {
       subscribe: false,
       type: NotificationType.ALL,
-    },
+    }),
   });
 };
 

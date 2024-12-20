@@ -1,10 +1,5 @@
-import {
-  Project,
-  PropertySignature,
-  SourceFile,
-  CodeBlockWriter,
-  IndentationText,
-} from "ts-morph";
+import { file_fig as file } from "@aws/amazon-q-developer-cli-proto/fig";
+import { CodeBlockWriter, IndentationText, Project } from "ts-morph";
 import { readFileSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -30,21 +25,13 @@ const normalize = (type: string): string => {
   return capitalizeFirstLetter(normalized);
 };
 
-const getSubmessageTypes = (bindings: SourceFile, interfaceName: string) => {
-  const interfaceRef = bindings.getInterface(interfaceName)!;
-  const submessage = interfaceRef.getProperties()[1];
-
-  const submessageUnion = submessage
-    .getChildren()
-    .filter((elm) => elm.getKindName() === "UnionType")[0];
-  const literals = submessageUnion
-    .getChildren()[0]
-    .getChildren()
-    .filter((elm) => elm.getKindName() === "TypeLiteral");
-  const types = literals
-    .map((elm) => elm.getChildren()[1])
-    .map((elm) => elm.getChildren()[1]);
-  return types.map((prop) => (prop as PropertySignature).getName());
+const getSubmessageTypes = (interfaceName: string) => {
+  const message = file.messages.find(
+    (message) => message.name === interfaceName,
+  );
+  return (
+    message?.fields.map((type) => type.message?.name!).filter(Boolean) ?? []
+  );
 };
 
 const writeGenericSendRequestWithResponseFunction = (
@@ -54,23 +41,23 @@ const writeGenericSendRequestWithResponseFunction = (
   const lowercasedEndpoint = lowercaseFirstLetter(endpoint);
 
   const template = `export async function send${endpoint}Request(
-request: ${endpoint}Request
+request: Omit<${endpoint}Request, "$typeName" | "$unknown">
 ): Promise<${endpoint}Response> {
   return new Promise((resolve, reject) => {
     sendMessage(
-      { $case: "${lowercasedEndpoint}Request", ${lowercasedEndpoint}Request: request },
+      { case: "${lowercasedEndpoint}Request", value: create(${endpoint}RequestSchema, request) },
       (response) => {
-        switch (response?.$case) {
+        switch (response?.case) {
           case "${lowercasedEndpoint}Response":
-            resolve(response.${lowercasedEndpoint}Response);
+            resolve(response.value);
             break;
           case "error":
-            reject(Error(response.error));
+            reject(Error(response.value));
             break;
           default:
             reject(
               Error(
-                  \`Invalid response '\${response?.$case}' for '${endpoint}Request'\`
+                  \`Invalid response '\${response?.case}' for '${endpoint}Request'\`
               )
             );
         }
@@ -89,23 +76,23 @@ const writeGenericSendRequestFunction = (
   const lowercasedEndpoint = lowercaseFirstLetter(endpoint);
 
   const template = `export async function send${endpoint}Request(
-  request: ${endpoint}Request
+  request: Omit<${endpoint}Request, "$typeName" | "$unknown">
 ): Promise<void> {
   return new Promise((resolve, reject) => {
     sendMessage(
-      { $case: "${lowercasedEndpoint}Request", ${lowercasedEndpoint}Request: request },
+      { case: "${lowercasedEndpoint}Request", value: create(${endpoint}RequestSchema, request) },
       (response) => {
-        switch (response?.$case) {
+        switch (response?.case) {
           case "success":
             resolve();
             break;
           case "error":
-            reject(Error(response.error));
+            reject(Error(response.value));
             break;
           default:
             reject(
               Error(
-                \`Invalid response '\${response?.$case}' for '${endpoint}Request'\`
+                \`Invalid response '\${response?.case}' for '${endpoint}Request'\`
               )
             );
         }
@@ -124,20 +111,10 @@ const project = new Project({
 
 project.addSourceFilesAtPaths(join(__dirname, "../src/*.ts"));
 
-const text = readFileSync(
-  "node_modules/@aws/amazon-q-developer-cli-proto/dist/fig.pb.ts",
-  "utf8",
+const requestTypes = getSubmessageTypes("ClientOriginatedMessage");
+const responseTypes = getSubmessageTypes("ServerOriginatedMessage").filter(
+  (type) => type.includes("Response"),
 );
-const protobufBindings = project.createSourceFile("fig.pb.ts", text);
-
-const requestTypes = getSubmessageTypes(
-  protobufBindings,
-  "ClientOriginatedMessage",
-);
-const responseTypes = getSubmessageTypes(
-  protobufBindings,
-  "ServerOriginatedMessage",
-).filter((type) => type.includes("Response"));
 
 const [requestsWithMatchingResponses, otherRequests] = requestTypes
   .filter((request) => request !== "notificationRequest")
@@ -145,7 +122,9 @@ const [requestsWithMatchingResponses, otherRequests] = requestTypes
     (result, request) => {
       const [matchingResponse, other] = result;
 
-      const endpoint = lowercaseFirstLetter(normalize(request));
+      const endpoint = normalize(request);
+
+      console.log(endpoint, requestTypes);
 
       if (responseTypes.indexOf(`${endpoint}Response`) !== -1) {
         return [matchingResponse.concat([request]), other];
@@ -175,15 +154,31 @@ const sourceFile = project.createSourceFile(
     const responses = requestsWithMatchingResponses.map((request) =>
       request.replace("Request", "Response"),
     );
-    const imports = requestsWithMatchingResponses
-      .concat(responses)
-      .concat(otherRequests)
+    const requestSchemas = requestsWithMatchingResponses.map(
+      (s) => `${s}Schema`,
+    );
+    const otherRequestSchemas = otherRequests.map((s) => `${s}Schema`);
+    const imports = [
+      requestsWithMatchingResponses,
+      responses,
+      otherRequests,
+      requestSchemas,
+      otherRequestSchemas,
+    ]
+      .flat()
       .sort()
       .map(capitalizeFirstLetter);
     writer.writeLine(
       `import { \n${imports.join(",\n")}\n } from "@aws/amazon-q-developer-cli-proto/fig";`,
     );
-    writer.writeLine(`import { sendMessage } from "./core.js";`).blankLine();
+    writer
+      .writeLine(
+        [
+          'import { sendMessage } from "./core.js";',
+          'import { create } from "@bufbuild/protobuf";',
+        ].join("\n"),
+      )
+      .blankLine();
 
     requestsWithMatchingResponses.forEach((request) =>
       writeGenericSendRequestWithResponseFunction(writer, normalize(request)),

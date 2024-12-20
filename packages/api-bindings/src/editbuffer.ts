@@ -12,9 +12,9 @@ export function subscribe(
   return _subscribe(
     { type: NotificationType.NOTIFY_ON_EDITBUFFFER_CHANGE },
     (notification) => {
-      switch (notification?.type?.$case) {
+      switch (notification?.type?.case) {
         case "editBufferNotification":
-          return handler(notification.type.editBufferNotification);
+          return handler(notification.type.value);
         default:
           break;
       }

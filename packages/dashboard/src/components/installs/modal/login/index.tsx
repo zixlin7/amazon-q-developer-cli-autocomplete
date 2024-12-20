@@ -97,7 +97,9 @@ export default function LoginModal({ next }: { next: () => void }) {
       );
     });
 
-    await Auth.finishPkceAuthorization(init)
+    await Auth.finishPkceAuthorization({
+      authRequestId: init.authRequestId,
+    })
       .then(() => {
         setLoginState("logged in");
         Internal.sendWindowFocusRequest({});

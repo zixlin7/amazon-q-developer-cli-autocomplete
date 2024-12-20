@@ -18,9 +18,9 @@ export const didChange = {
     return _subscribe(
       { type: NotificationType.NOTIFY_ON_SETTINGS_CHANGE },
       (notification) => {
-        switch (notification?.type?.$case) {
+        switch (notification?.type?.case) {
           case "settingsChangedNotification":
-            return handler(notification.type.settingsChangedNotification);
+            return handler(notification.type.value);
           default:
             break;
         }
@@ -37,8 +37,7 @@ export async function get(key: string) {
   });
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export async function set(key: string, value: any): Promise<void> {
+export async function set(key: string, value: unknown): Promise<void> {
   return sendUpdateSettingsPropertyRequest({
     key,
     value: JSON.stringify(value),

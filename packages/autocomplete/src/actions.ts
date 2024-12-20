@@ -1,6 +1,10 @@
-import { Fig as FigAPI } from "@aws/amazon-q-developer-cli-api-bindings";
 import { SettingsMap } from "@aws/amazon-q-developer-cli-api-bindings-wrappers";
 import * as app from "./fig.json";
+import { create } from "@bufbuild/protobuf";
+import {
+  ActionAvailability,
+  ActionSchema,
+} from "@aws/amazon-q-developer-cli-proto/fig";
 
 const SELECT_SUGGESTION_ACTION_PREFIX = "selectSuggestion";
 
@@ -42,7 +46,28 @@ export enum AutocompleteAction {
   SELECT_SUGGESTION_10 = "selectSuggestion10",
 }
 
-export const ACTIONS = app.contributes.actions.map(FigAPI.Action.fromJSON);
+export const ACTIONS = app.contributes.actions.map((action) => {
+  let availability: ActionAvailability | undefined;
+  switch (action.availability) {
+    case "ALWAYS":
+      availability = ActionAvailability.ALWAYS;
+      break;
+    case "WHEN_FOCUSED":
+      availability = ActionAvailability.WHEN_FOCUSED;
+      break;
+    case "WHEN_HIDDEN":
+      availability = ActionAvailability.WHEN_HIDDEN;
+      break;
+    case "WHEN_VISIBLE":
+      availability = ActionAvailability.WHEN_VISIBLE;
+      break;
+  }
+
+  return create(ActionSchema, {
+    ...action,
+    availability,
+  });
+});
 
 const defaultSelectSuggestionKeybindings = app.contributes.actions.reduce(
   (p, v) => {

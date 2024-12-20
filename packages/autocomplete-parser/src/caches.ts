@@ -1,4 +1,3 @@
-import { SpecMixin } from "@fig/autocomplete-shared";
 import { Subcommand } from "@aws/amazon-q-developer-cli-shared/internal";
 
 const allCaches: Array<Map<string, unknown>> = [];
@@ -17,12 +16,10 @@ export const resetCaches = () => {
 
 window.resetCaches = resetCaches;
 
-export const mixinCache = createCache<SpecMixin | undefined>();
 export const specCache = createCache<Subcommand>();
 export const generateSpecCache = createCache<Subcommand>();
 
 window.listCache = () => {
-  console.log(mixinCache);
   console.log(specCache);
   console.log(generateSpecCache);
 };

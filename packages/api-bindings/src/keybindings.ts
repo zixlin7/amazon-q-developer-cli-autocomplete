@@ -1,10 +1,12 @@
 import {
   Action,
+  ActionListSchema,
   KeybindingPressedNotification,
   NotificationType,
 } from "@aws/amazon-q-developer-cli-proto/fig";
 import { sendUpdateApplicationPropertiesRequest } from "./requests.js";
 import { _subscribe, NotificationResponse } from "./notifications.js";
+import { create } from "@bufbuild/protobuf";
 
 export function pressed(
   handler: (
@@ -14,9 +16,9 @@ export function pressed(
   return _subscribe(
     { type: NotificationType.NOTIFY_ON_KEYBINDING_PRESSED },
     (notification) => {
-      switch (notification?.type?.$case) {
+      switch (notification?.type?.case) {
         case "keybindingPressedNotification":
-          return handler(notification.type.keybindingPressedNotification);
+          return handler(notification.type.value);
         default:
           break;
       }
@@ -27,7 +29,7 @@ export function pressed(
 }
 
 export function setInterceptKeystrokes(
-  actions: Action[],
+  actions: Omit<Action, "$typeName">[],
   intercept: boolean,
   globalIntercept?: boolean,
   currentTerminalSessionId?: string,
@@ -35,7 +37,7 @@ export function setInterceptKeystrokes(
   sendUpdateApplicationPropertiesRequest({
     interceptBoundKeystrokes: intercept,
     interceptGlobalKeystrokes: globalIntercept,
-    actionList: { actions },
+    actionList: create(ActionListSchema, { actions }),
     currentTerminalSessionId,
   });
 }

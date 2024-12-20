@@ -23,12 +23,7 @@ import { type Types } from "@aws/amazon-q-developer-cli-api-bindings";
 import { detailedDiff } from "deep-object-diff";
 import { trackEvent } from "../telemetry.js";
 import { FigState, initialFigState } from "../fig/hooks";
-import {
-  AutocompleteState,
-  ComponentMap,
-  NamedSetState,
-  Visibility,
-} from "./types";
+import { AutocompleteState, NamedSetState, Visibility } from "./types";
 
 import { updatePriorities } from "../suggestions/sorting";
 import {
@@ -61,8 +56,6 @@ const initialState: Partial<AutocompleteState> = {
   fuzzySearchEnabled: false,
   userFuzzySearchEnabled: getSetting(SETTINGS.FUZZY_SEARCH, false) as boolean,
   settings: {} as SettingsMap,
-
-  components: {},
 };
 
 const getCommandMemoized = memoizeOne(getCommand);
@@ -508,14 +501,6 @@ export const useAutocompleteStore = createWithEqualityFn<AutocompleteState>(
               return error(`Failed to get token array: ${err}`);
             }
           }),
-
-        setComponents: (components: React.SetStateAction<ComponentMap>) =>
-          setNamed("setComponents", (state) => ({
-            components:
-              typeof components === "function"
-                ? components(state.components)
-                : components,
-          })),
 
         error: (error: string) =>
           setNamed("error", (state) => {

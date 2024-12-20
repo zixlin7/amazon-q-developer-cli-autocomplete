@@ -18,9 +18,9 @@ export const didChange = {
     return _subscribe(
       { type: NotificationType.NOTIFY_ON_LOCAL_STATE_CHANGED },
       (notification) => {
-        switch (notification?.type?.$case) {
+        switch (notification?.type?.case) {
           case "localStateChangedNotification":
-            return handler(notification.type.localStateChangedNotification);
+            return handler(notification.type.value);
           default:
             break;
         }
@@ -36,8 +36,7 @@ export async function get(key: string) {
   return response.jsonBlob ? JSON.parse(response.jsonBlob) : null;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export async function set(key: string, value: any): Promise<void> {
+export async function set(key: string, value: unknown): Promise<void> {
   return sendUpdateLocalStateRequest({
     key,
     value: JSON.stringify(value),

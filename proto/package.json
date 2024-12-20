@@ -1,12 +1,12 @@
 {
   "name": "@aws/amazon-q-developer-cli-proto",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "license": "MIT OR Apache-2.0",
   "author": "Amazon Web Services",
   "repository": "https://github.com/aws/amazon-q-developer-cli",
   "type": "module",
   "exports": {
-    "./*": "./dist/*.pb.js"
+    "./*": "./dist/*_pb.js"
   },
   "files": [
     "dist"
@@ -15,18 +15,19 @@
     "node": ">=18"
   },
   "scripts": {
-    "build": "./build-ts.sh",
+    "build": "rm -rf dist && buf generate && tsc",
     "lint": "buf lint && (buf format --exit-code > /dev/null || (echo 'Run `buf format -w`' && exit 1))",
     "lint:fix": "buf format -w",
     "precommit": "exit 0",
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@bufbuild/protobuf": "2.2.2"
+    "@bufbuild/protobuf": "2.2.3"
   },
   "devDependencies": {
     "@amzn/tsconfig": "workspace:^",
-    "ts-proto": "^2.5.0",
+    "@bufbuild/buf": "^1.47.2",
+    "@bufbuild/protoc-gen-es": "^2.2.3",
     "typescript": "^5.7.2"
   }
 }

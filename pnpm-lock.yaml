@@ -227,33 +227,18 @@ importers:
       deep-object-diff:
         specifier: ^1.1.9
         version: 1.1.9
-      exponential-backoff:
-        specifier: ^3.1.1
-        version: 3.1.1
-      js-yaml:
-        specifier: ^4.1.0
-        version: 4.1.0
       loglevel:
         specifier: ^1.9.2
         version: 1.9.2
-      prop-types:
-        specifier: ^15.8.1
-        version: 15.8.1
       react:
         specifier: ^18.3.1
         version: 18.3.1
       react-dom:
         specifier: ^18.3.1
         version: 18.3.1(react@18.3.1)
-      react-shadow:
-        specifier: ^20.5.0
-        version: 20.5.0(prop-types@15.8.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       react-window:
         specifier: ^1.8.10
         version: 1.8.10(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      semver:
-        specifier: ^7.6.3
-        version: 7.6.3
       tailwind-merge:
         specifier: ^2.5.5
         version: 2.5.5
@@ -337,7 +322,7 @@ importers:
   packages/autocomplete-parser:
     dependencies:
       '@aws/amazon-q-developer-cli-api-bindings':
-        specifier: workspace:~
+        specifier: workspace:^
         version: link:../api-bindings
       '@aws/amazon-q-developer-cli-api-bindings-wrappers':
         specifier: workspace:^
@@ -3653,9 +3638,6 @@ packages:
     resolution: {integrity: sha512-bFi65yM+xZgk+u/KRIpekdSYkTB5W1pEf0Lt8Q8Msh7b+eQ7LXVtIB1Bkm4fvclDEL1b2CZkMhv2mOeF8tMdkA==}
     engines: {node: '>=12.0.0'}
 
-  exponential-backoff@3.1.1:
-    resolution: {integrity: sha512-dX7e/LHVJ6W3DE1MHWi9S1EYzDESENfLrYohG2G++ovZrYOkm4Knwa0mc1cn84xJOR4KEU0WSchhLbd0UklbHw==}
-
   extend@3.0.2:
     resolution: {integrity: sha512-fjquC59cD7CyW6urNXK0FBufkZcoiGG80wTuPujX590cB5Ttln20E2UB4S/WARVqhXffZl2LNgS+gQdPIIim/g==}
 
@@ -3926,9 +3908,6 @@ packages:
   human-signals@5.0.0:
     resolution: {integrity: sha512-AXcZb6vzzrFAUE61HnN4mpLqd/cSIwNQjtNWR0euPm6y0iqx3G4gOXaIDdtdDwZmhwe82LA6+zinmW4UBWVePQ==}
     engines: {node: '>=16.17.0'}
-
-  humps@2.0.1:
-    resolution: {integrity: sha512-E0eIbrFWUhwfXJmsbdjRQFQPrl5pTEoKlz163j1mTqqUnU9PgR4AgB8AIITzuB3vLBdxZXyZ9TDIrwB2OASz4g==}
 
   husky@9.1.7:
     resolution: {integrity: sha512-5gs5ytaNjBrh5Ow3zrvdUUY+0VxIuWVL4i9irt6friV+BqdCfmV11CQTWMiBYWHbXhco+J1kHfTOUkePhCDvMA==}
@@ -5012,13 +4991,6 @@ packages:
     peerDependenciesMeta:
       react-dom:
         optional: true
-
-  react-shadow@20.5.0:
-    resolution: {integrity: sha512-DHukRfWpJrFtZMcZrKrqU3ZwuHjTpTbrjnJdTGZQE3lqtC5ivBDVWqAVVW6lR3Lq6bhphjAbqaJU8NOoTRSCsg==}
-    peerDependencies:
-      prop-types: ^15.0.0
-      react: ^16.8.0 || ^17.0.0 || ^18.0.0
-      react-dom: ^16.0.0 || ^17.0.0 || ^18.0.0
 
   react-style-singleton@2.2.1:
     resolution: {integrity: sha512-ZWj0fHEMyWkHzKYUr2Bs/4zU6XLmq9HsgBURm7g5pAVfyn49DgUiNgY2d4lXRlYSiCif9YBGpQleewkcqddc7g==}
@@ -9775,8 +9747,6 @@ snapshots:
 
   expect-type@1.1.0: {}
 
-  exponential-backoff@3.1.1: {}
-
   extend@3.0.2: {}
 
   fast-deep-equal@3.1.3: {}
@@ -10073,8 +10043,6 @@ snapshots:
       - supports-color
 
   human-signals@5.0.0: {}
-
-  humps@2.0.1: {}
 
   husky@9.1.7: {}
 
@@ -11313,13 +11281,6 @@ snapshots:
       set-cookie-parser: 2.7.1
       turbo-stream: 2.4.0
     optionalDependencies:
-      react-dom: 18.3.1(react@18.3.1)
-
-  react-shadow@20.5.0(prop-types@15.8.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
-    dependencies:
-      humps: 2.0.1
-      prop-types: 15.8.1
-      react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
 
   react-style-singleton@2.2.1(@types/react@18.3.14)(react@18.3.1):

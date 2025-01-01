@@ -24,6 +24,7 @@ pub const MACOS_TERMINALS: &[Terminal] = &[
     Terminal::CursorNightly,
     Terminal::Rio,
     Terminal::Windsurf,
+    Terminal::Ghostty,
 ];
 
 /// Terminals that Linux supports
@@ -138,6 +139,8 @@ pub enum Terminal {
     Zellij,
     /// Windsurf
     Windsurf,
+    /// Ghostty
+    Ghostty,
 }
 
 impl fmt::Display for Terminal {
@@ -174,6 +177,7 @@ impl fmt::Display for Terminal {
             Terminal::Rio => write!(f, "Rio"),
             Terminal::Windsurf => write!(f, "Windsurf"),
             Terminal::Guake => write!(f, "Guake"),
+            Terminal::Ghostty => write!(f, "Ghostty"),
         }
     }
 }
@@ -333,6 +337,7 @@ impl Terminal {
             Terminal::Rio => "rio".into(),
             Terminal::Windsurf => "windsurf".into(),
             Terminal::Guake => "guake".into(),
+            Terminal::Ghostty => "ghostty".into(),
         }
     }
 
@@ -358,6 +363,7 @@ impl Terminal {
             Terminal::CursorNightly => Some("com.todesktop.23052492jqa5xjo".into()),
             Terminal::Rio => Some("com.raphaelamorim.rio".into()),
             Terminal::Windsurf => Some("com.exafunction.windsurf".into()),
+            Terminal::Ghostty => Some("com.mitchellh.ghostty".into()),
             _ => None,
         }
     }
@@ -381,7 +387,8 @@ impl Terminal {
             "com.todesktop.23052492jqa5xjo" => Terminal::CursorNightly,
             "com.raphaelamorim.rio" => Terminal::Rio,
             "com.exafunction.windsurf" => Terminal::Windsurf,
-            // todo(mschrage): the following line does not account for Android Studio
+            "com.mitchellh.ghostty" => Terminal::Ghostty,
+            // TODO: the following line does not account for Android Studio
             _ if bundle.starts_with("com.jetbrains.") | bundle.starts_with("com.google.") => {
                 Terminal::IntelliJ(IntelliJVariant::from_bundle_id(bundle))
             },
@@ -401,6 +408,7 @@ impl Terminal {
                 | Terminal::IntelliJ(_)
                 | Terminal::Zed
                 | Terminal::Rio
+                | Terminal::Ghostty
         )
     }
 
@@ -453,6 +461,7 @@ impl Terminal {
             Terminal::Rio => &["rio"],
             Terminal::Windsurf => &["windsurf"],
             Terminal::Guake => &["guake"],
+            Terminal::Ghostty => &["ghostty"],
 
             Terminal::Ssh => &["sshd"],
             Terminal::Tmux => &["tmux", "tmux: server"],

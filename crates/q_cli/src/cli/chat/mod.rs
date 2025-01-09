@@ -1,7 +1,7 @@
 mod api;
 mod parse;
 mod prompt;
-mod terminal;
+mod stdio;
 
 use std::io::{
     IsTerminal,
@@ -16,13 +16,13 @@ use color_eyre::owo_colors::OwoColorize;
 use crossterm::style::{
     Attribute,
     Color,
-    Print,
 };
 use crossterm::{
     cursor,
     execute,
     queue,
     style,
+    terminal,
 };
 use eyre::{
     Result,
@@ -40,7 +40,7 @@ use spinners::{
     Spinner,
     Spinners,
 };
-use terminal::StdioOutput;
+use stdio::StdioOutput;
 use winnow::Partial;
 use winnow::stream::Offset;
 
@@ -79,7 +79,8 @@ pub async fn chat(mut input: String) -> Result<ExitCode> {
     }
 
     let mut output = StdioOutput::new(is_interactive);
-    let result = try_chat(&mut output, input, is_interactive).await;
+    let client = StreamingClient::new().await?;
+    let result = try_chat(&mut output, input, is_interactive, &client).await;
 
     if is_interactive {
         queue!(output, style::SetAttribute(Attribute::Reset), style::ResetColor).ok();
@@ -89,9 +90,13 @@ pub async fn chat(mut input: String) -> Result<ExitCode> {
     result.map(|_| ExitCode::SUCCESS)
 }
 
-async fn try_chat<W: Write>(output: &mut W, mut input: String, interactive: bool) -> Result<()> {
+async fn try_chat<W: Write>(
+    output: &mut W,
+    mut input: String,
+    interactive: bool,
+    client: &StreamingClient,
+) -> Result<()> {
     let mut rl = if interactive { Some(rl()?) } else { None };
-    let client = StreamingClient::new().await?;
     let mut rx = None;
     let mut conversation_id: Option<String> = None;
     let mut message_id = None;
@@ -158,8 +163,8 @@ You can include additional context by adding the following to your prompt:
             let mut offset = 0;
             let mut ended = false;
 
-            let columns = crossterm::terminal::window_size()?.columns.into();
-            let mut state = ParseState::new(columns);
+            let terminal_width = terminal::window_size().map(|s| s.columns.into()).ok();
+            let mut state = ParseState::new(terminal_width);
 
             loop {
                 if let Some(response) = rx.recv().await {
@@ -229,11 +234,11 @@ You can include additional context by adding the following to your prompt:
                     buf.push('\n');
                 }
 
-                if !buf.is_empty() && interactive {
+                if !buf.is_empty() && interactive && spinner.is_some() {
                     drop(spinner.take());
                     queue!(
                         output,
-                        crossterm::terminal::Clear(crossterm::terminal::ClearType::CurrentLine),
+                        terminal::Clear(terminal::ClearType::CurrentLine),
                         cursor::MoveToColumn(0),
                         cursor::Show
                     )?;
@@ -259,32 +264,26 @@ You can include additional context by adding the following to your prompt:
                 }
 
                 if ended {
+                    if let (Some(conversation_id), Some(message_id)) = (&conversation_id, &message_id) {
+                        fig_telemetry::send_chat_added_message(conversation_id.to_owned(), message_id.to_owned()).await;
+                    }
+
                     if interactive {
-                        queue!(
-                            output,
-                            style::ResetColor,
-                            style::SetAttribute(Attribute::Reset),
-                            Print("\n")
-                        )?;
+                        queue!(output, style::ResetColor, style::SetAttribute(Attribute::Reset))?;
 
                         for (i, citation) in &state.citations {
                             queue!(
                                 output,
+                                style::Print("\n"),
                                 style::SetForegroundColor(Color::Blue),
-                                style::Print(format!("{i} ")),
+                                style::Print(format!("[^{i}]: ")),
                                 style::SetForegroundColor(Color::DarkGrey),
                                 style::Print(format!("{citation}\n")),
                                 style::SetForegroundColor(Color::Reset)
                             )?;
                         }
 
-                        if !state.citations.is_empty() {
-                            execute!(output, Print("\n"))?;
-                        }
-                    }
-
-                    if let (Some(conversation_id), Some(message_id)) = (&conversation_id, &message_id) {
-                        fig_telemetry::send_chat_added_message(conversation_id.to_owned(), message_id.to_owned()).await;
+                        execute!(output, style::Print("\n"))?;
                     }
 
                     break;
@@ -313,6 +312,64 @@ You can include additional context by adding the following to your prompt:
                     },
                 }
             }
+        } else {
+            break Ok(());
         }
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use fig_api_client::model::ChatResponseStream;
+
+    use super::*;
+
+    fn mock_client(s: impl IntoIterator<Item = &'static str>) -> StreamingClient {
+        StreamingClient::mock(
+            s.into_iter()
+                .map(|s| ChatResponseStream::AssistantResponseEvent { content: s.into() })
+                .collect(),
+        )
+    }
+
+    #[tokio::test]
+    async fn try_chat_non_interactive() {
+        let client = mock_client(["Hello,", " World", "!"]);
+        let mut output = Vec::new();
+        try_chat(&mut output, "test".into(), false, &client).await.unwrap();
+
+        let mut expected = Vec::new();
+        execute!(
+            expected,
+            style::Print("Hello, World!"),
+            style::ResetColor,
+            style::SetAttribute(Attribute::Reset),
+            style::Print("\n")
+        )
+        .unwrap();
+
+        assert_eq!(expected, output);
+    }
+
+    #[tokio::test]
+    async fn try_chat_non_interactive_citation() {
+        let client = mock_client(["Citation [[1]](https://aws.com)"]);
+        let mut output = Vec::new();
+        try_chat(&mut output, "test".into(), false, &client).await.unwrap();
+
+        let mut expected = Vec::new();
+        execute!(
+            expected,
+            style::Print("Citation "),
+            style::SetForegroundColor(Color::Blue),
+            style::Print("[^1]"),
+            style::ResetColor,
+            style::ResetColor,
+            style::SetAttribute(Attribute::Reset),
+            style::Print("\n")
+        )
+        .unwrap();
+
+        assert_eq!(expected, output);
     }
 }

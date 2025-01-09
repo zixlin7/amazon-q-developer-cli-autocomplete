@@ -54,6 +54,8 @@ const BLOCKQUOTE_COLOR: Color = Color::DarkGrey;
 const URL_TEXT_COLOR: Color = Color::Blue;
 const URL_LINK_COLOR: Color = Color::DarkGrey;
 
+const DEFAULT_RULE_WIDTH: usize = 40;
+
 #[derive(Debug, thiserror::Error)]
 pub enum Error<'a> {
     #[error(transparent)]
@@ -82,7 +84,7 @@ impl<'a> ParserError<Partial<&'a str>> for Error<'a> {
 
 #[derive(Debug)]
 pub struct ParseState {
-    pub terminal_width: usize,
+    pub terminal_width: Option<usize>,
     pub column: usize,
     pub in_codeblock: bool,
     pub bold: bool,
@@ -94,7 +96,7 @@ pub struct ParseState {
 }
 
 impl ParseState {
-    pub fn new(terminal_width: usize) -> Self {
+    pub fn new(terminal_width: Option<usize>) -> Self {
         Self {
             terminal_width,
             column: 0,
@@ -270,7 +272,8 @@ fn horizontal_rule<'a, 'b>(
         state.column = 0;
         state.set_newline = true;
 
-        queue(&mut o, style::Print(format!("{}\n", "━".repeat(state.terminal_width))))
+        let rule_width = state.terminal_width.unwrap_or(DEFAULT_RULE_WIDTH);
+        queue(&mut o, style::Print(format!("{}\n", "━".repeat(rule_width))))
     }
 }
 
@@ -394,7 +397,7 @@ fn citation<'a, 'b>(
 
         queue_newline_or_advance(&mut o, state, num.width() + 1)?;
         queue(&mut o, style::SetForegroundColor(URL_TEXT_COLOR))?;
-        queue(&mut o, style::Print(format!("[{num}]")))?;
+        queue(&mut o, style::Print(format!("[^{num}]")))?;
         queue(&mut o, style::ResetColor)
     }
 }
@@ -499,12 +502,16 @@ fn queue_newline_or_advance<'a, 'b>(
     state: &'b mut ParseState,
     width: usize,
 ) -> Result<(), ErrMode<Error<'a>>> {
-    if state.column > 0 && state.column + width > state.terminal_width {
-        state.column = width;
-        queue(&mut o, style::Print('\n'))?;
-    } else {
-        state.column += width;
+    if let Some(terminal_width) = state.terminal_width {
+        if state.column > 0 && state.column + width > terminal_width {
+            state.column = width;
+            queue(&mut o, style::Print('\n'))?;
+            return Ok(());
+        }
     }
+
+    // else
+    state.column += width;
 
     Ok(())
 }
@@ -630,7 +637,7 @@ mod tests {
                 input.push(' ');
                 input.push(' ');
 
-                let mut state = ParseState::new(256);
+                let mut state = ParseState::new(Some(80));
                 let mut presult = vec![];
                 let mut offset = 0;
 
@@ -686,7 +693,7 @@ mod tests {
     ]);
     validate!(citation_1, "[[1]](google.com)", [
         style::SetForegroundColor(URL_TEXT_COLOR),
-        style::Print("[1]"),
+        style::Print("[^1]"),
         style::ResetColor,
     ]);
     validate!(bold_1, "**hello**", [
@@ -709,7 +716,7 @@ mod tests {
     validate!(ampersand_1, "&amp;", [style::Print('&')]);
     validate!(quote_1, "&quot;", [style::Print('"')]);
     validate!(fallback_1, "+ % @ . ? ", [style::Print("+ % @ . ?")]);
-    validate!(horizontal_rule_1, "---", [style::Print("━".repeat(256))]);
+    validate!(horizontal_rule_1, "---", [style::Print("━".repeat(80))]);
     validate!(heading_1, "# Hello World", [
         style::SetForegroundColor(HEADING_COLOR),
         style::SetAttribute(Attribute::Bold),

@@ -80,7 +80,7 @@ impl fig_remote_ipc::RemoteHookHandler for RemoteHook {
             let current_session_expired = session
                 .current_session_metrics
                 .as_ref()
-                .map_or(false, |metrics| received_at > metrics.end_time + Duration::from_secs(5));
+                .is_some_and(|metrics| received_at > metrics.end_time + Duration::from_secs(5));
 
             if current_session_expired {
                 let previous = session.current_session_metrics.clone();

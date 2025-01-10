@@ -114,7 +114,7 @@ pub async fn process_asset(path: PathBuf) -> Result<ProcessedAsset> {
     let is_svg = path
         .extension()
         .and_then(OsStr::to_str)
-        .map_or(true, |ext| ext.to_lowercase() == "svg");
+        .is_none_or(|ext| ext.to_lowercase() == "svg");
 
     let built = if is_svg {
         (Arc::new(tokio::fs::read(&path).await?.into()), AssetKind::Svg)

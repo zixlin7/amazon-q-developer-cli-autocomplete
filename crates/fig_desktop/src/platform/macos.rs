@@ -489,7 +489,7 @@ impl PlatformStateImpl {
                     // Checking if IME is installed is async :(
                     let enabled_proxy = self.proxy.clone();
                     tokio::spawn(async move {
-                        let is_terminal_disabled = current_terminal.as_ref().map_or(false, |terminal| {
+                        let is_terminal_disabled = current_terminal.as_ref().is_some_and(|terminal| {
                             fig_settings::settings::get_bool_or(
                                 format!("integrations.{}.disabled", terminal.internal_id()),
                                 false,
@@ -558,7 +558,7 @@ impl PlatformStateImpl {
                     let dashboard_visible = dashboard_visible.unwrap_or_else(|| {
                         window_map
                             .get(&DASHBOARD_ID)
-                            .map_or(false, |window| window.window.is_visible())
+                            .is_some_and(|window| window.window.is_visible())
                     });
 
                     if dashboard_visible {

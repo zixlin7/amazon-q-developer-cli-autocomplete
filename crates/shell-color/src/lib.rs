@@ -10,11 +10,11 @@ pub struct SuggestionColor {
 
 impl SuggestionColor {
     pub fn fg(&self) -> Option<VTermColor> {
-        self.fg.clone().map(VTermColor::from)
+        self.fg.clone()
     }
 
     pub fn bg(&self) -> Option<VTermColor> {
-        self.bg.clone().map(VTermColor::from)
+        self.bg.clone()
     }
 }
 

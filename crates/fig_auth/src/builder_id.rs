@@ -547,7 +547,7 @@ pub async fn refresh_token() -> Result<Option<BuilderIdToken>> {
 }
 
 pub async fn is_amzn_user() -> Result<bool> {
-    Ok(builder_id_token().await?.map_or(false, |t| t.is_amzn_user()))
+    Ok(builder_id_token().await?.is_some_and(|t| t.is_amzn_user()))
 }
 
 pub async fn is_logged_in() -> bool {

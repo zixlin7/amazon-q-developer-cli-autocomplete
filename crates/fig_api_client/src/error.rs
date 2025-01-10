@@ -55,14 +55,14 @@ impl Error {
     pub fn is_throttling_error(&self) -> bool {
         match self {
             Error::Credentials(_) => false,
-            Error::GenerateCompletions(e) => e.as_service_error().map_or(false, |e| e.is_throttling_error()),
-            Error::GenerateRecommendations(e) => e.as_service_error().map_or(false, |e| e.is_throttling_error()),
-            Error::ListAvailableCustomizations(e) => e.as_service_error().map_or(false, |e| e.is_throttling_error()),
-            Error::ListAvailableServices(e) => e.as_service_error().map_or(false, |e| e.is_throttling_error()),
+            Error::GenerateCompletions(e) => e.as_service_error().is_some_and(|e| e.is_throttling_error()),
+            Error::GenerateRecommendations(e) => e.as_service_error().is_some_and(|e| e.is_throttling_error()),
+            Error::ListAvailableCustomizations(e) => e.as_service_error().is_some_and(|e| e.is_throttling_error()),
+            Error::ListAvailableServices(e) => e.as_service_error().is_some_and(|e| e.is_throttling_error()),
             Error::CodewhispererGenerateAssistantResponse(e) => {
-                e.as_service_error().map_or(false, |e| e.is_throttling_error())
+                e.as_service_error().is_some_and(|e| e.is_throttling_error())
             },
-            Error::QDeveloperSendMessage(e) => e.as_service_error().map_or(false, |e| e.is_throttling_error()),
+            Error::QDeveloperSendMessage(e) => e.as_service_error().is_some_and(|e| e.is_throttling_error()),
             Error::CodewhispererChatResponseStream(_)
             | Error::QDeveloperChatResponseStream(_)
             | Error::SmithyBuild(_)

@@ -310,7 +310,7 @@ pub async fn is_brew_reinstall() -> bool {
         .args(["aux", "-o", "args"])
         .output()
         .await
-        .map_or(false, |output| regex.is_match(&output.stdout))
+        .is_ok_and(|output| regex.is_match(&output.stdout))
 }
 
 #[cfg(test)]

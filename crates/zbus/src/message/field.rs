@@ -151,19 +151,15 @@ impl<'de: 'f, 'f> Deserialize<'de> for Field<'f> {
             FieldCode::Path => Field::Path(ObjectPath::try_from(value).map_err(D::Error::custom)?),
             FieldCode::Interface => Field::Interface(InterfaceName::try_from(value).map_err(D::Error::custom)?),
             FieldCode::Member => Field::Member(MemberName::try_from(value).map_err(D::Error::custom)?),
-            FieldCode::ErrorName => {
-                Field::ErrorName(ErrorName::try_from(value).map(Into::into).map_err(D::Error::custom)?)
-            },
+            FieldCode::ErrorName => Field::ErrorName(ErrorName::try_from(value).map_err(D::Error::custom)?),
             FieldCode::ReplySerial => {
                 let value = u32::try_from(value)
                     .map_err(D::Error::custom)
                     .and_then(|v| v.try_into().map_err(D::Error::custom))?;
                 Field::ReplySerial(value)
             },
-            FieldCode::Destination => {
-                Field::Destination(BusName::try_from(value).map(Into::into).map_err(D::Error::custom)?)
-            },
-            FieldCode::Sender => Field::Sender(UniqueName::try_from(value).map(Into::into).map_err(D::Error::custom)?),
+            FieldCode::Destination => Field::Destination(BusName::try_from(value).map_err(D::Error::custom)?),
+            FieldCode::Sender => Field::Sender(UniqueName::try_from(value).map_err(D::Error::custom)?),
             FieldCode::Signature => Field::Signature(Signature::try_from(value).map_err(D::Error::custom)?),
             FieldCode::UnixFDs => Field::UnixFDs(u32::try_from(value).map_err(D::Error::custom)?),
         })

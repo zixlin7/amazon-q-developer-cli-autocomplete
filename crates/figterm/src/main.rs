@@ -320,9 +320,9 @@ where
         Some(at) => {
             let lock_expired = at.elapsed().unwrap_or(Duration::ZERO) > Duration::from_millis(16);
             let should_unlock = lock_expired
-                || term.get_current_buffer().map_or(true, |buff| {
-                    &buff.buffer == (&EXPECTED_BUFFER.lock().unwrap() as &String)
-                });
+                || term
+                    .get_current_buffer()
+                    .is_none_or(|buff| &buff.buffer == (&EXPECTED_BUFFER.lock().unwrap() as &String));
             if should_unlock {
                 handle.take();
                 if lock_expired {

@@ -446,7 +446,7 @@ impl Terminal {
                 | Terminal::Zed
                 | Terminal::Rio
                 | Terminal::Ghostty
-        ) || self.as_custom().map_or(false, |c| c.macos.input_method)
+        ) || self.as_custom().is_some_and(|c| c.macos.input_method)
     }
 
     pub fn supports_macos_accessibility(&self) -> bool {
@@ -459,7 +459,7 @@ impl Terminal {
                 | Terminal::VSCodium
                 | Terminal::Hyper
                 | Terminal::Tabby
-        ) || self.as_custom().map_or(false, |c| c.macos.accessibility)
+        ) || self.as_custom().is_some_and(|c| c.macos.accessibility)
     }
 
     pub fn is_xterm(&self) -> bool {
@@ -473,7 +473,7 @@ impl Terminal {
                 | Terminal::Cursor
                 | Terminal::CursorNightly
                 | Terminal::Windsurf
-        ) || self.as_custom().map_or(false, |c| c.macos.xterm)
+        ) || self.as_custom().is_some_and(|c| c.macos.xterm)
     }
 
     pub fn executable_names(&self) -> &'static [&'static str] {

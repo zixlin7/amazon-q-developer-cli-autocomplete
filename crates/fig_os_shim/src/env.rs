@@ -142,7 +142,7 @@ impl Env {
 
     pub fn in_cloudshell(&self) -> bool {
         self.get("AWS_EXECUTION_ENV")
-            .map_or(false, |v| v.trim().eq_ignore_ascii_case("cloudshell"))
+            .is_ok_and(|v| v.trim().eq_ignore_ascii_case("cloudshell"))
     }
 
     pub fn in_ssh(&self) -> bool {

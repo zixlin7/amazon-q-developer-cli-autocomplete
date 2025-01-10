@@ -113,7 +113,7 @@ impl Constants {
             new_uri_format: true,
             support_api_proto,
             api_proto_url: "api://localhost".to_string(),
-            midway: midway_cookie_path().map_or(false, |p| p.is_file()),
+            midway: midway_cookie_path().is_ok_and(|p| p.is_file()),
             #[cfg(target_os = "macos")]
             macos_version: macos_utils::os::OperatingSystemVersion::get().to_string(),
             #[cfg(target_os = "linux")]

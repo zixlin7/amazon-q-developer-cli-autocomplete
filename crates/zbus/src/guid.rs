@@ -146,7 +146,7 @@ impl<'de> Deserialize<'de> for Guid<'de> {
 }
 
 fn validate_guid(value: &str) -> crate::Result<()> {
-    if value.as_bytes().len() != 32 || value.chars().any(|c| !char::is_ascii_hexdigit(&c)) {
+    if value.len() != 32 || value.chars().any(|c| !char::is_ascii_hexdigit(&c)) {
         return Err(crate::Error::InvalidGUID);
     }
 

@@ -120,7 +120,9 @@ async fn main() -> ExitCode {
     if !cli.allow_multiple {
         match get_current_pid() {
             Ok(current_pid) => {
-                allow_multiple_running_check(current_pid, cli.kill_old, page.clone()).await;
+                if let Some(exit_code) = allow_multiple_running_check(current_pid, cli.kill_old, page.clone()).await {
+                    return exit_code;
+                }
             },
             Err(err) => warn!(%err, "Failed to get pid"),
         }
@@ -226,6 +228,7 @@ fn parse_url_page(url: Option<&str>) -> Result<Option<String>, ExitCode> {
 }
 
 #[cfg(target_os = "linux")]
+#[must_use]
 async fn allow_multiple_running_check(
     current_pid: sysinfo::Pid,
     kill_old: bool,
@@ -287,6 +290,7 @@ async fn allow_multiple_running_check(
 }
 
 #[cfg(target_os = "macos")]
+#[must_use]
 async fn allow_multiple_running_check(
     current_pid: sysinfo::Pid,
     kill_old: bool,
@@ -297,14 +301,7 @@ async fn allow_multiple_running_check(
     let app_process_name = OsString::from(APP_PROCESS_NAME);
     let system = System::new_with_specifics(RefreshKind::new().with_processes(ProcessRefreshKind::new()));
     let processes = system.processes_by_name(&app_process_name);
-
-    cfg_if::cfg_if! {
-        if #[cfg(unix)] {
-            let current_user_id = Some(nix::unistd::getuid().as_raw());
-        } else {
-            let current_user_id = None;
-        }
-    };
+    let current_uid = nix::unistd::getuid().as_raw();
 
     for process in processes {
         let pid = process.pid();
@@ -347,12 +344,8 @@ async fn allow_multiple_running_check(
                     }
                 };
 
-                match (process.user_id().map(|uid| uid as &u32), current_user_id.as_ref()) {
-                    (Some(uid), Some(current_uid)) if uid == current_uid => {
-                        on_match.await;
-                        return Some(ExitCode::SUCCESS);
-                    },
-                    (_, None) => {
+                match process.user_id().map(|uid| uid as &u32) {
+                    Some(&uid) if uid == current_uid => {
                         on_match.await;
                         return Some(ExitCode::SUCCESS);
                     },

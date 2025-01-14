@@ -34,7 +34,7 @@ const config = ({
       // @ts-ignore
       rules: reactHooks.configs.recommended.rules,
     },
-    reactRefresh.default.configs.recommended,
+    reactRefresh.configs.recommended,
     {
       languageOptions: {
         parserOptions: {

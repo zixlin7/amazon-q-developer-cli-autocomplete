@@ -29,14 +29,14 @@
     "@amzn/eslint-config": "workspace:^",
     "@amzn/tsconfig": "workspace:^",
     "@tsconfig/recommended": "^1.0.8",
-    "@types/node": "^22.10.1",
+    "@types/node": "^22.10.6",
     "@typescript/analyze-trace": "^0.10.1",
-    "eslint": "^9.16.0",
-    "lint-staged": "^15.2.10",
+    "eslint": "^9.18.0",
+    "lint-staged": "^15.3.0",
     "prettier": "^3.4.2",
-    "ts-morph": "^24.0.0",
+    "ts-morph": "^25.0.0",
     "tsx": "^4.19.2",
-    "typescript": "^5.7.2"
+    "typescript": "^5.7.3"
   },
   "lint-staged": {
     "*.{ts,tsx}": "npx eslint --cache --fix"

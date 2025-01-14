@@ -1,7 +1,7 @@
 [Trigger]
 Operation = Remove
 Type = Package
-Target = fig
+Target = amazon-q 
 
 [Action]
 When = PreTransaction

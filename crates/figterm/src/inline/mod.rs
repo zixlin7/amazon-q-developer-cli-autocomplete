@@ -35,6 +35,7 @@ use fig_util::terminal::{
     current_terminal_version,
 };
 use flume::Sender;
+use regex::Regex;
 use tokio::sync::Mutex;
 use tracing::{
     error,
@@ -50,6 +51,9 @@ use crate::history::{
     HistorySender,
 };
 
+const HISTORY_COUNT_DEFAULT: usize = 49;
+const DEBOUNCE_DURATION_DEFAULT: Duration = Duration::from_millis(300);
+
 static INLINE_ENABLED: Mutex<bool> = Mutex::const_new(true);
 
 static LAST_RECEIVED: Mutex<Option<SystemTime>> = Mutex::const_new(None);
@@ -59,6 +63,19 @@ static CACHE_ENABLED: LazyLock<bool> =
 static COMPLETION_CACHE: LazyLock<Mutex<CompletionCache>> = LazyLock::new(|| Mutex::new(CompletionCache::new()));
 
 static TELEMETRY_QUEUE: Mutex<TelemetryQueue> = Mutex::const_new(TelemetryQueue::new());
+
+static HISTORY_COUNT: LazyLock<usize> = LazyLock::new(|| {
+    std::env::var("Q_INLINE_SHELL_COMPLETION_HISTORY_COUNT")
+        .ok()
+        .and_then(|s| s.parse().ok())
+        .unwrap_or(HISTORY_COUNT_DEFAULT)
+});
+static DEBOUNCE_DURATION: LazyLock<Duration> = LazyLock::new(|| {
+    std::env::var("Q_INLINE_SHELL_COMPLETION_DEBOUNCE_MS")
+        .ok()
+        .and_then(|s| s.parse().ok())
+        .map_or(DEBOUNCE_DURATION_DEFAULT, Duration::from_millis)
+});
 
 pub async fn on_prompt() {
     COMPLETION_CACHE.lock().await.clear();
@@ -166,13 +183,6 @@ pub async fn handle_request(
     }
 
     // debounce requests
-    let debounce_duration = Duration::from_millis(
-        std::env::var("Q_INLINE_SHELL_COMPLETION_DEBOUNCE_MS")
-            .ok()
-            .and_then(|s| s.parse().ok())
-            .unwrap_or(300),
-    );
-
     let now = SystemTime::now();
     LAST_RECEIVED.lock().await.replace(now);
 
@@ -181,7 +191,7 @@ pub async fn handle_request(
     };
 
     for _ in 0..3 {
-        tokio::time::sleep(debounce_duration).await;
+        tokio::time::sleep(*DEBOUNCE_DURATION).await;
         if *LAST_RECEIVED.lock().await == Some(now) {
             // TODO: determine behavior here, None or Some(unix timestamp)
             *LAST_RECEIVED.lock().await = Some(SystemTime::now());
@@ -206,12 +216,7 @@ pub async fn handle_request(
         let (history_query_tx, history_query_rx) = flume::bounded(1);
         if let Err(err) = history_sender
             .send_async(history::HistoryCommand::Query(
-                HistoryQueryParams {
-                    limit: std::env::var("Q_INLINE_SHELL_COMPLETION_HISTORY_COUNT")
-                        .ok()
-                        .and_then(|s| s.parse().ok())
-                        .unwrap_or(50),
-                },
+                HistoryQueryParams { limit: *HISTORY_COUNT },
                 history_query_tx,
             ))
             .await
@@ -247,7 +252,7 @@ pub async fn handle_request(
         let response = match client.generate_recommendations(input).await {
             Err(err) if err.is_throttling_error() => {
                 warn!(%err, "Too many requests, trying again in 1 second");
-                tokio::time::sleep(Duration::from_secs(1).saturating_sub(debounce_duration)).await;
+                tokio::time::sleep(Duration::from_secs(1).saturating_sub(*DEBOUNCE_DURATION)).await;
                 continue;
             },
             other => other,
@@ -257,13 +262,13 @@ pub async fn handle_request(
             Ok(output) => {
                 let request_id = output.request_id.unwrap_or_default();
                 let session_id = output.session_id.unwrap_or_default();
-                let completions = output.recommendations;
-                let number_of_recommendations = completions.len();
+                let recommendations = output.recommendations;
+                let number_of_recommendations = recommendations.len() as i32;
                 let mut completion_cache = COMPLETION_CACHE.lock().await;
 
-                let mut completions = completions
+                let mut completions = recommendations
                     .into_iter()
-                    .map(|choice| clean_completion(&choice.content).to_owned())
+                    .map(|choice| clean_completion(&choice.content).clone())
                     .collect::<Vec<_>>();
 
                 // skips the first one which we will recommend, we only cache the rest
@@ -296,7 +301,7 @@ pub async fn handle_request(
                         async move {
                             TELEMETRY_QUEUE.lock().await.items.push(TelemetryQueueItem {
                                 suggested_chars_len: completion.chars().count() as i32,
-                                number_of_recommendations: number_of_recommendations as i32,
+                                number_of_recommendations,
                                 suggestion: completion,
                                 timestamp: SystemTime::now(),
                                 session_id,
@@ -373,16 +378,33 @@ fn prompt(history: &[CommandInfo], buffer: &str) -> String {
         })
 }
 
-fn clean_completion(response: &str) -> &str {
+static RE_1: LazyLock<Regex> = LazyLock::new(|| Regex::new(&format!("{}\\s+.*", *HISTORY_COUNT + 1)).unwrap());
+static RE_2: LazyLock<Regex> = LazyLock::new(|| Regex::new(&format!("{}\\s+.*", *HISTORY_COUNT + 2)).unwrap());
+
+fn clean_completion(response: &str) -> String {
+    // only return the first line of the response
     let first_line = match response.split_once('\n') {
         Some((left, _)) => left,
         None => response,
     };
-    first_line.trim_end()
+
+    // replace parts of the prompt that potentially are the next lines without a newline
+    let res = RE_1.replace(first_line, "");
+    let res = RE_2.replace(&res, "");
+
+    // trim any remaining whitespace
+    res.trim_end().to_owned()
 }
 
 #[cfg(test)]
 mod tests {
+    use fig_settings::history::{
+        HistoryColumn,
+        Order,
+        OrderBy,
+        WhereExpression,
+    };
+
     use super::*;
 
     #[test]
@@ -410,5 +432,51 @@ mod tests {
         assert_eq!(clean_completion("echo hello\necho world"), "echo hello");
         assert_eq!(clean_completion("echo hello   \necho world\n"), "echo hello");
         assert_eq!(clean_completion("echo hello     "), "echo hello");
+
+        // Trim potential excess lines from the model
+        assert_eq!(clean_completion("cd           50      ls"), "cd");
+        assert_eq!(
+            clean_completion("git add     50  git commit -m \"initial commit\""),
+            "git add"
+        );
+        assert_eq!(clean_completion("cd           51      ls"), "cd");
+        assert_eq!(
+            clean_completion("git add     51  git commit -m \"initial commit\""),
+            "git add"
+        );
+    }
+
+    #[ignore = "not in CI"]
+    #[tokio::test]
+    async fn test_inline_suggestion_prompt() {
+        let history = fig_settings::history::History::new();
+        let commands = history
+            .rows(
+                Some(WhereExpression::NotNull(HistoryColumn::ExitCode)),
+                vec![OrderBy::new(HistoryColumn::Id, Order::Desc)],
+                *HISTORY_COUNT,
+                0,
+            )
+            .unwrap();
+        let prompt = prompt(&commands, "cd ");
+
+        let client = fig_api_client::Client::new().await.unwrap();
+        let out = client
+            .generate_recommendations(RecommendationsInput {
+                file_context: FileContext {
+                    left_file_content: prompt,
+                    right_file_content: "".into(),
+                    filename: "history.sh".into(),
+                    programming_language: ProgrammingLanguage {
+                        language_name: LanguageName::Shell,
+                    },
+                },
+                max_results: 1,
+                next_token: None,
+            })
+            .await
+            .unwrap();
+
+        println!("out: {out:?}");
     }
 }

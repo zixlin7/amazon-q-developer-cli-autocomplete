@@ -10,6 +10,7 @@ use fig_os_shim::Context;
 use fig_util::Terminal;
 
 const Q_FORCE_FIGTERM_LAUNCH: &str = "Q_FORCE_FIGTERM_LAUNCH";
+const Q_TERM_DISABLED: &str = "Q_TERM_DISABLED";
 const INSIDE_EMACS: &str = "INSIDE_EMACS";
 const TERM_PROGRAM: &str = "TERM_PROGRAM";
 const WARP_TERMINAL: &str = "WarpTerminal";
@@ -215,6 +216,13 @@ pub fn should_figterm_launch_exit_status(ctx: &Context, quiet: bool) -> u8 {
             writeln!(stdout(), "✅ {Q_FORCE_FIGTERM_LAUNCH}").ok();
         }
         return 0;
+    }
+
+    if env.get_os(Q_TERM_DISABLED).is_some() {
+        if !quiet {
+            writeln!(stdout(), "❌ {Q_TERM_DISABLED}").ok();
+        }
+        return 1;
     }
 
     if env.get_os(PROCESS_LAUNCHED_BY_Q).is_some() {
@@ -438,6 +446,7 @@ mod tests {
             test(Q_FORCE_FIGTERM_LAUNCH)
                 .env(&[(Q_FORCE_FIGTERM_LAUNCH, "1")])
                 .expect(0),
+            test(Q_TERM_DISABLED).env(&[(Q_TERM_DISABLED, "1")]).expect(1),
             test(PROCESS_LAUNCHED_BY_Q)
                 .env(&[(PROCESS_LAUNCHED_BY_Q, "1")])
                 .expect(1),

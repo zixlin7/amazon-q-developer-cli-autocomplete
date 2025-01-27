@@ -195,6 +195,130 @@ importers:
         specifier: ^5.7.3
         version: 5.7.3
 
+  packages/autocomplete:
+    dependencies:
+      '@aws/amazon-q-developer-cli-api-bindings':
+        specifier: workspace:~
+        version: link:../api-bindings
+      '@aws/amazon-q-developer-cli-api-bindings-wrappers':
+        specifier: workspace:^
+        version: link:../api-bindings-wrappers
+      '@aws/amazon-q-developer-cli-autocomplete-parser':
+        specifier: workspace:^
+        version: link:../autocomplete-parser
+      '@aws/amazon-q-developer-cli-proto':
+        specifier: workspace:^
+        version: link:../../proto
+      '@aws/amazon-q-developer-cli-shell-parser':
+        specifier: workspace:^
+        version: link:../shell-parser
+      '@bufbuild/protobuf':
+        specifier: 2.2.3
+        version: 2.2.3
+      '@fig/autocomplete-helpers':
+        specifier: ^2.0.0
+        version: 2.0.0
+      '@fig/autocomplete-shared':
+        specifier: ^1.1.2
+        version: 1.1.2
+      '@juggle/resize-observer':
+        specifier: ^3.4.0
+        version: 3.4.0
+      deep-object-diff:
+        specifier: ^1.1.9
+        version: 1.1.9
+      loglevel:
+        specifier: ^1.9.2
+        version: 1.9.2
+      react:
+        specifier: ^18.3.1
+        version: 18.3.1
+      react-dom:
+        specifier: ^18.3.1
+        version: 18.3.1(react@18.3.1)
+      react-window:
+        specifier: ^1.8.11
+        version: 1.8.11(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      tailwind-merge:
+        specifier: ^2.6.0
+        version: 2.6.0
+      use-resize-observer:
+        specifier: ^9.1.0
+        version: 9.1.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      util:
+        specifier: ^0.12.5
+        version: 0.12.5
+      zustand:
+        specifier: ^4.5.6
+        version: 4.5.6(@types/react@18.3.18)(react@18.3.1)
+    devDependencies:
+      '@amzn/eslint-config':
+        specifier: workspace:^
+        version: link:../eslint-config
+      '@amzn/types':
+        specifier: workspace:^
+        version: link:../types
+      '@aws/amazon-q-developer-cli-fuzzysort':
+        specifier: workspace:^
+        version: link:../fuzzysort
+      '@aws/amazon-q-developer-cli-shared':
+        specifier: workspace:^
+        version: link:../shared
+      '@types/js-yaml':
+        specifier: ^4.0.9
+        version: 4.0.9
+      '@types/node':
+        specifier: ^22.10.6
+        version: 22.10.6
+      '@types/react':
+        specifier: ^18.3.18
+        version: 18.3.18
+      '@types/react-dom':
+        specifier: ^18.3.5
+        version: 18.3.5(@types/react@18.3.18)
+      '@types/react-window':
+        specifier: ^1.8.8
+        version: 1.8.8
+      '@types/semver':
+        specifier: ^7.5.8
+        version: 7.5.8
+      '@vitejs/plugin-legacy':
+        specifier: ^6.0.0
+        version: 6.0.0(terser@5.37.0)(vite@6.0.7(@types/node@22.10.6)(jiti@1.21.7)(terser@5.37.0)(tsx@4.19.2)(yaml@2.7.0))
+      '@vitejs/plugin-react':
+        specifier: ^4.3.4
+        version: 4.3.4(vite@6.0.7(@types/node@22.10.6)(jiti@1.21.7)(terser@5.37.0)(tsx@4.19.2)(yaml@2.7.0))
+      '@withfig/autocomplete-types':
+        specifier: ^1.31.0
+        version: 1.31.0
+      autoprefixer:
+        specifier: ^10.4.20
+        version: 10.4.20(postcss@8.5.1)
+      eslint:
+        specifier: ^9.18.0
+        version: 9.18.0(jiti@1.21.7)
+      postcss:
+        specifier: ^8.5.1
+        version: 8.5.1
+      prettier:
+        specifier: ^3.4.2
+        version: 3.4.2
+      tailwindcss:
+        specifier: ^3.4.17
+        version: 3.4.17(ts-node@10.9.2(@types/node@22.10.6)(typescript@5.7.3))
+      terser:
+        specifier: ^5.37.0
+        version: 5.37.0
+      typescript:
+        specifier: ^5.7.3
+        version: 5.7.3
+      vite:
+        specifier: ^6.0.7
+        version: 6.0.7(@types/node@22.10.6)(jiti@1.21.7)(terser@5.37.0)(tsx@4.19.2)(yaml@2.7.0)
+      vitest:
+        specifier: ^2.1.8
+        version: 2.1.8(@types/node@22.10.6)(@vitest/ui@2.1.8)(jsdom@24.1.0)(terser@5.37.0)
+
   packages/autocomplete-app:
     dependencies:
       '@aws/amazon-q-developer-cli-api-bindings':

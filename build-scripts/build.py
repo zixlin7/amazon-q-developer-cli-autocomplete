@@ -86,11 +86,11 @@ def build_npm_packages(run_test: bool = True) -> NpmBuildOutput:
     # copy to output
     dashboard_path = BUILD_DIR / "dashboard"
     shutil.rmtree(dashboard_path, ignore_errors=True)
-    shutil.copytree("packages/dashboard/dist", dashboard_path)
+    shutil.copytree("packages/dashboard-app/dist", dashboard_path)
 
     autocomplete_path = BUILD_DIR / "autocomplete"
     shutil.rmtree(autocomplete_path, ignore_errors=True)
-    shutil.copytree("packages/autocomplete/dist", autocomplete_path)
+    shutil.copytree("packages/autocomplete-app/dist", autocomplete_path)
 
     vscode_path = BUILD_DIR / "vscode-plugin.vsix"
     shutil.rmtree(vscode_path, ignore_errors=True)

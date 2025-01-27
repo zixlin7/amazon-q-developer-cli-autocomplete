@@ -1,5 +1,5 @@
 {
-  "name": "@amzn/autocomplete",
+  "name": "@amzn/autocomplete-app",
   "private": true,
   "version": "1.0.0",
   "repository": "https://github.com/aws/amazon-q-developer-cli",

@@ -1,5 +1,5 @@
 {
-  "name": "@amzn/dashboard",
+  "name": "@amzn/dashboard-app",
   "private": true,
   "version": "1.0.0",
   "repository": "https://github.com/aws/amazon-q-developer-cli",

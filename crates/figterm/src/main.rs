@@ -52,7 +52,10 @@ use fig_log::{
     LogArgs,
     initialize_logging,
 };
-use fig_os_shim::Context;
+use fig_os_shim::{
+    Context,
+    Env,
+};
 use fig_proto::local::{
     self,
     EnvironmentVariable,
@@ -344,6 +347,14 @@ where
     shell_enabled && !insertion_locked && !preexec
 }
 
+const Q_DISABLE_AUTOCOMPLETE: &str = "Q_DISABLE_AUTOCOMPLETE";
+
+fn autocomplete_enabled(env: &Env) -> bool {
+    env.get_os(Q_DISABLE_AUTOCOMPLETE).is_none_or(|s| s.is_empty())
+}
+
+static AUTOCOMPLETE_ENABLED: LazyLock<bool> = LazyLock::new(|| autocomplete_enabled(&Env::new()));
+
 async fn send_edit_buffer<T>(
     term: &Term<T>,
     sender: &Sender<Hostbound>,
@@ -352,6 +363,10 @@ async fn send_edit_buffer<T>(
 where
     T: EventListener,
 {
+    if !*AUTOCOMPLETE_ENABLED {
+        return Ok(());
+    }
+
     match term.get_current_buffer() {
         Some(edit_buffer) => {
             if let Some(cursor_idx) = edit_buffer.cursor_idx.and_then(|i| i.try_into().ok()) {
@@ -984,5 +999,24 @@ fn main() {
                 logger::stdio_debug_log(err.to_string());
             }
         },
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn autocomplete_enabled_test() {
+        assert!(autocomplete_enabled(&Env::new_fake()));
+        assert!(autocomplete_enabled(&Env::from_slice(&[(Q_DISABLE_AUTOCOMPLETE, "")])));
+        assert!(!autocomplete_enabled(&Env::from_slice(&[(
+            Q_DISABLE_AUTOCOMPLETE,
+            "1"
+        )])));
+        assert!(!autocomplete_enabled(&Env::from_slice(&[(
+            Q_DISABLE_AUTOCOMPLETE,
+            "1"
+        )])));
     }
 }

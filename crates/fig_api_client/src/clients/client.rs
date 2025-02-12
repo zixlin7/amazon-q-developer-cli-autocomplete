@@ -43,6 +43,11 @@ use crate::{
     Error,
 };
 
+// Limits for FileContext
+pub const FILE_CONTEXT_LEFT_FILE_CONTENT_MAX_LEN: usize = 10240;
+pub const FILE_CONTEXT_RIGHT_FILE_CONTENT_MAX_LEN: usize = 10240;
+pub const FILE_CONTEXT_FILE_NAME_MAX_LEN: usize = 1024;
+
 mod inner {
     use amzn_codewhisperer_client::Client as CodewhispererClient;
     use amzn_consolas_client::Client as ConsolasClient;
@@ -96,7 +101,36 @@ impl Client {
         Ok(Self(inner::Inner::Consolas(ConsolasClient::from_conf(conf))))
     }
 
-    pub async fn generate_recommendations(&self, input: RecommendationsInput) -> Result<RecommendationsOutput, Error> {
+    pub async fn generate_recommendations(
+        &self,
+        mut input: RecommendationsInput,
+    ) -> Result<RecommendationsOutput, Error> {
+        let truncate_left = |s: String, max_len: usize| {
+            if s.len() > max_len {
+                s[(s.len() - max_len)..].into()
+            } else {
+                s
+            }
+        };
+
+        let truncate_right = |s: String, max_len: usize| {
+            if s.len() > max_len { s[..max_len].into() } else { s }
+        };
+
+        let filename = truncate_right(input.file_context.filename, FILE_CONTEXT_FILE_NAME_MAX_LEN);
+        let left_content = truncate_left(
+            input.file_context.left_file_content,
+            FILE_CONTEXT_LEFT_FILE_CONTENT_MAX_LEN,
+        );
+        let right_content = truncate_right(
+            input.file_context.right_file_content,
+            FILE_CONTEXT_RIGHT_FILE_CONTENT_MAX_LEN,
+        );
+
+        input.file_context.filename = filename;
+        input.file_context.left_file_content = left_content;
+        input.file_context.right_file_content = right_content;
+
         match &self.0 {
             inner::Inner::Codewhisperer(client) => Ok(codewhisperer_generate_recommendation(client, input).await?),
             inner::Inner::Consolas(client) => Ok(consolas_generate_recommendation(client, input).await?),

@@ -10,6 +10,7 @@ use std::time::{
 };
 
 use fig_api_client::Client;
+use fig_api_client::clients::FILE_CONTEXT_LEFT_FILE_CONTENT_MAX_LEN;
 use fig_api_client::model::{
     FileContext,
     LanguageName,
@@ -232,7 +233,7 @@ pub async fn handle_request(
             },
         };
 
-        let prompt = prompt(&history, buffer);
+        let prompt = prompt(&history, buffer).unwrap();
 
         let input = RecommendationsInput {
             file_context: FileContext {
@@ -362,20 +363,28 @@ pub async fn handle_set_enabled(figterm_request: InlineShellCompletionSetEnabled
     *INLINE_ENABLED.lock().await = figterm_request.enabled;
 }
 
-fn prompt(history: &[CommandInfo], buffer: &str) -> String {
-    history
-        .iter()
-        .rev()
-        .filter_map(|c| c.command.clone())
-        .chain([buffer.into()])
-        .enumerate()
-        .fold(String::new(), |mut acc, (i, c)| {
-            if i > 0 {
-                acc.push('\n');
-            }
-            let _ = write!(acc, "{:>5}  {c}", i + 1);
-            acc
-        })
+fn prompt(history: &[CommandInfo], buffer: &str) -> Option<String> {
+    for i in (0..history.len()).rev() {
+        let formatted_prompt = history
+            .iter()
+            .rev()
+            .take(i + 1)
+            .filter_map(|c| c.command.clone())
+            .chain([buffer.into()])
+            .enumerate()
+            .fold(String::new(), |mut acc, (i, c)| {
+                if i > 0 {
+                    acc.push('\n');
+                }
+                let _ = write!(acc, "{:>5}  {c}", i + 1);
+                acc
+            });
+
+        if formatted_prompt.len() < FILE_CONTEXT_LEFT_FILE_CONTENT_MAX_LEN {
+            return Some(formatted_prompt);
+        }
+    }
+    None
 }
 
 static RE_1: LazyLock<Regex> = LazyLock::new(|| Regex::new(&format!("{}\\s+.*", *HISTORY_COUNT + 1)).unwrap());
@@ -420,7 +429,7 @@ mod tests {
             },
         ];
 
-        let prompt = prompt(&history, "echo ");
+        let prompt = prompt(&history, "echo ").unwrap();
         println!("{prompt}");
 
         assert_eq!(prompt, "    1  echo hello\n    2  echo world\n    3  echo ");
@@ -446,6 +455,16 @@ mod tests {
         );
     }
 
+    #[test]
+    fn too_long_prompt() {
+        let history = vec![CommandInfo {
+            command: Some("a".repeat(FILE_CONTEXT_LEFT_FILE_CONTENT_MAX_LEN + 1)),
+            ..Default::default()
+        }];
+
+        assert!(prompt(&history, "echo ").is_none());
+    }
+
     #[ignore = "not in CI"]
     #[tokio::test]
     async fn test_inline_suggestion_prompt() {
@@ -458,7 +477,7 @@ mod tests {
                 0,
             )
             .unwrap();
-        let prompt = prompt(&commands, "cd ");
+        let prompt = prompt(&commands, "cd ").unwrap();
 
         let client = fig_api_client::Client::new().await.unwrap();
         let out = client

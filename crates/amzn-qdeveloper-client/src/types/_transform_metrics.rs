@@ -8,6 +8,8 @@ pub struct TransformMetrics {
     #[allow(missing_docs)] // documentation missing in model
     pub lines_of_code_changed: ::std::option::Option<i64>,
     #[allow(missing_docs)] // documentation missing in model
+    pub characters_of_code_changed: i32,
+    #[allow(missing_docs)] // documentation missing in model
     pub lines_of_code_submitted: ::std::option::Option<i64>,
 }
 impl TransformMetrics {
@@ -19,6 +21,11 @@ impl TransformMetrics {
     #[allow(missing_docs)] // documentation missing in model
     pub fn lines_of_code_changed(&self) -> ::std::option::Option<i64> {
         self.lines_of_code_changed
+    }
+
+    #[allow(missing_docs)] // documentation missing in model
+    pub fn characters_of_code_changed(&self) -> i32 {
+        self.characters_of_code_changed
     }
 
     #[allow(missing_docs)] // documentation missing in model
@@ -40,6 +47,7 @@ impl TransformMetrics {
 pub struct TransformMetricsBuilder {
     pub(crate) transforms_performed: ::std::option::Option<i64>,
     pub(crate) lines_of_code_changed: ::std::option::Option<i64>,
+    pub(crate) characters_of_code_changed: ::std::option::Option<i32>,
     pub(crate) lines_of_code_submitted: ::std::option::Option<i64>,
 }
 impl TransformMetricsBuilder {
@@ -78,6 +86,23 @@ impl TransformMetricsBuilder {
     }
 
     #[allow(missing_docs)] // documentation missing in model
+    pub fn characters_of_code_changed(mut self, input: i32) -> Self {
+        self.characters_of_code_changed = ::std::option::Option::Some(input);
+        self
+    }
+
+    #[allow(missing_docs)] // documentation missing in model
+    pub fn set_characters_of_code_changed(mut self, input: ::std::option::Option<i32>) -> Self {
+        self.characters_of_code_changed = input;
+        self
+    }
+
+    #[allow(missing_docs)] // documentation missing in model
+    pub fn get_characters_of_code_changed(&self) -> &::std::option::Option<i32> {
+        &self.characters_of_code_changed
+    }
+
+    #[allow(missing_docs)] // documentation missing in model
     pub fn lines_of_code_submitted(mut self, input: i64) -> Self {
         self.lines_of_code_submitted = ::std::option::Option::Some(input);
         self
@@ -99,6 +124,7 @@ impl TransformMetricsBuilder {
         crate::types::TransformMetrics {
             transforms_performed: self.transforms_performed,
             lines_of_code_changed: self.lines_of_code_changed,
+            characters_of_code_changed: self.characters_of_code_changed.unwrap_or_default(),
             lines_of_code_submitted: self.lines_of_code_submitted,
         }
     }

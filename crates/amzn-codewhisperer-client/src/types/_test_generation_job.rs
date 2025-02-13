@@ -16,6 +16,14 @@ pub struct TestGenerationJob {
     pub creation_time: ::aws_smithy_types::DateTime,
     #[allow(missing_docs)] // documentation missing in model
     pub progress_rate: ::std::option::Option<i32>,
+    #[allow(missing_docs)] // documentation missing in model
+    pub job_status_reason: ::std::option::Option<::std::string::String>,
+    #[allow(missing_docs)] // documentation missing in model
+    pub job_summary: ::std::option::Option<::std::string::String>,
+    #[allow(missing_docs)] // documentation missing in model
+    pub job_plan: ::std::option::Option<::std::string::String>,
+    #[allow(missing_docs)] // documentation missing in model
+    pub package_info_list: ::std::option::Option<::std::vec::Vec<crate::types::PackageInfo>>,
 }
 impl TestGenerationJob {
     #[allow(missing_docs)] // documentation missing in model
@@ -49,6 +57,28 @@ impl TestGenerationJob {
     pub fn progress_rate(&self) -> ::std::option::Option<i32> {
         self.progress_rate
     }
+
+    #[allow(missing_docs)] // documentation missing in model
+    pub fn job_status_reason(&self) -> ::std::option::Option<&str> {
+        self.job_status_reason.as_deref()
+    }
+
+    #[allow(missing_docs)] // documentation missing in model
+    pub fn job_summary(&self) -> ::std::option::Option<&str> {
+        self.job_summary.as_deref()
+    }
+
+    #[allow(missing_docs)] // documentation missing in model
+    pub fn job_plan(&self) -> ::std::option::Option<&str> {
+        self.job_plan.as_deref()
+    }
+
+    #[allow(missing_docs)] // documentation missing in model
+    /// If no value was sent for this field, a default will be set. If you want to determine if no
+    /// value was sent, use `.package_info_list.is_none()`.
+    pub fn package_info_list(&self) -> &[crate::types::PackageInfo] {
+        self.package_info_list.as_deref().unwrap_or_default()
+    }
 }
 impl ::std::fmt::Debug for TestGenerationJob {
     fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -59,6 +89,10 @@ impl ::std::fmt::Debug for TestGenerationJob {
         formatter.field("short_answer", &"*** Sensitive Data Redacted ***");
         formatter.field("creation_time", &self.creation_time);
         formatter.field("progress_rate", &self.progress_rate);
+        formatter.field("job_status_reason", &self.job_status_reason);
+        formatter.field("job_summary", &"*** Sensitive Data Redacted ***");
+        formatter.field("job_plan", &"*** Sensitive Data Redacted ***");
+        formatter.field("package_info_list", &self.package_info_list);
         formatter.finish()
     }
 }
@@ -80,6 +114,10 @@ pub struct TestGenerationJobBuilder {
     pub(crate) short_answer: ::std::option::Option<::std::string::String>,
     pub(crate) creation_time: ::std::option::Option<::aws_smithy_types::DateTime>,
     pub(crate) progress_rate: ::std::option::Option<i32>,
+    pub(crate) job_status_reason: ::std::option::Option<::std::string::String>,
+    pub(crate) job_summary: ::std::option::Option<::std::string::String>,
+    pub(crate) job_plan: ::std::option::Option<::std::string::String>,
+    pub(crate) package_info_list: ::std::option::Option<::std::vec::Vec<crate::types::PackageInfo>>,
 }
 impl TestGenerationJobBuilder {
     #[allow(missing_docs)] // documentation missing in model
@@ -188,6 +226,82 @@ impl TestGenerationJobBuilder {
         &self.progress_rate
     }
 
+    #[allow(missing_docs)] // documentation missing in model
+    pub fn job_status_reason(mut self, input: impl ::std::convert::Into<::std::string::String>) -> Self {
+        self.job_status_reason = ::std::option::Option::Some(input.into());
+        self
+    }
+
+    #[allow(missing_docs)] // documentation missing in model
+    pub fn set_job_status_reason(mut self, input: ::std::option::Option<::std::string::String>) -> Self {
+        self.job_status_reason = input;
+        self
+    }
+
+    #[allow(missing_docs)] // documentation missing in model
+    pub fn get_job_status_reason(&self) -> &::std::option::Option<::std::string::String> {
+        &self.job_status_reason
+    }
+
+    #[allow(missing_docs)] // documentation missing in model
+    pub fn job_summary(mut self, input: impl ::std::convert::Into<::std::string::String>) -> Self {
+        self.job_summary = ::std::option::Option::Some(input.into());
+        self
+    }
+
+    #[allow(missing_docs)] // documentation missing in model
+    pub fn set_job_summary(mut self, input: ::std::option::Option<::std::string::String>) -> Self {
+        self.job_summary = input;
+        self
+    }
+
+    #[allow(missing_docs)] // documentation missing in model
+    pub fn get_job_summary(&self) -> &::std::option::Option<::std::string::String> {
+        &self.job_summary
+    }
+
+    #[allow(missing_docs)] // documentation missing in model
+    pub fn job_plan(mut self, input: impl ::std::convert::Into<::std::string::String>) -> Self {
+        self.job_plan = ::std::option::Option::Some(input.into());
+        self
+    }
+
+    #[allow(missing_docs)] // documentation missing in model
+    pub fn set_job_plan(mut self, input: ::std::option::Option<::std::string::String>) -> Self {
+        self.job_plan = input;
+        self
+    }
+
+    #[allow(missing_docs)] // documentation missing in model
+    pub fn get_job_plan(&self) -> &::std::option::Option<::std::string::String> {
+        &self.job_plan
+    }
+
+    /// Appends an item to `package_info_list`.
+    ///
+    /// To override the contents of this collection use
+    /// [`set_package_info_list`](Self::set_package_info_list).
+    pub fn package_info_list(mut self, input: crate::types::PackageInfo) -> Self {
+        let mut v = self.package_info_list.unwrap_or_default();
+        v.push(input);
+        self.package_info_list = ::std::option::Option::Some(v);
+        self
+    }
+
+    #[allow(missing_docs)] // documentation missing in model
+    pub fn set_package_info_list(
+        mut self,
+        input: ::std::option::Option<::std::vec::Vec<crate::types::PackageInfo>>,
+    ) -> Self {
+        self.package_info_list = input;
+        self
+    }
+
+    #[allow(missing_docs)] // documentation missing in model
+    pub fn get_package_info_list(&self) -> &::std::option::Option<::std::vec::Vec<crate::types::PackageInfo>> {
+        &self.package_info_list
+    }
+
     /// Consumes the builder and constructs a
     /// [`TestGenerationJob`](crate::types::TestGenerationJob). This method will fail if any of
     /// the following fields are not set:
@@ -225,6 +339,10 @@ impl TestGenerationJobBuilder {
                 )
             })?,
             progress_rate: self.progress_rate,
+            job_status_reason: self.job_status_reason,
+            job_summary: self.job_summary,
+            job_plan: self.job_plan,
+            package_info_list: self.package_info_list,
         })
     }
 }
@@ -237,6 +355,10 @@ impl ::std::fmt::Debug for TestGenerationJobBuilder {
         formatter.field("short_answer", &"*** Sensitive Data Redacted ***");
         formatter.field("creation_time", &self.creation_time);
         formatter.field("progress_rate", &self.progress_rate);
+        formatter.field("job_status_reason", &self.job_status_reason);
+        formatter.field("job_summary", &"*** Sensitive Data Redacted ***");
+        formatter.field("job_plan", &"*** Sensitive Data Redacted ***");
+        formatter.field("package_info_list", &self.package_info_list);
         formatter.finish()
     }
 }

@@ -154,11 +154,23 @@ pub fn ser_telemetry_event(
             crate::protocol_serde::shape_doc_generation_event::ser_doc_generation_event(&mut object_20, inner)?;
             object_20.finish();
         },
+        crate::types::TelemetryEvent::DocV2GenerationEvent(inner) => {
+            #[allow(unused_mut)]
+            let mut object_21 = object_3.key("docV2GenerationEvent").start_object();
+            crate::protocol_serde::shape_doc_v2_generation_event::ser_doc_v2_generation_event(&mut object_21, inner)?;
+            object_21.finish();
+        },
+        crate::types::TelemetryEvent::DocV2AcceptanceEvent(inner) => {
+            #[allow(unused_mut)]
+            let mut object_22 = object_3.key("docV2AcceptanceEvent").start_object();
+            crate::protocol_serde::shape_doc_v2_acceptance_event::ser_doc_v2_acceptance_event(&mut object_22, inner)?;
+            object_22.finish();
+        },
         crate::types::TelemetryEvent::TestGenerationEvent(inner) => {
             #[allow(unused_mut)]
-            let mut object_21 = object_3.key("testGenerationEvent").start_object();
-            crate::protocol_serde::shape_test_generation_event::ser_test_generation_event(&mut object_21, inner)?;
-            object_21.finish();
+            let mut object_23 = object_3.key("testGenerationEvent").start_object();
+            crate::protocol_serde::shape_test_generation_event::ser_test_generation_event(&mut object_23, inner)?;
+            object_23.finish();
         },
         crate::types::TelemetryEvent::Unknown => {
             return Err(::aws_smithy_types::error::operation::SerializationError::unknown_variant("TelemetryEvent"));

@@ -51,5 +51,44 @@ pub fn ser_user_input_message_context(
         crate::protocol_serde::shape_user_settings::ser_user_settings(&mut object_16, var_15)?;
         object_16.finish();
     }
+    if let Some(var_17) = &input.additional_context {
+        let mut array_18 = object.key("additionalContext").start_array();
+        for item_19 in var_17 {
+            {
+                #[allow(unused_mut)]
+                let mut object_20 = array_18.value().start_object();
+                crate::protocol_serde::shape_additional_content_entry::ser_additional_content_entry(
+                    &mut object_20,
+                    item_19,
+                )?;
+                object_20.finish();
+            }
+        }
+        array_18.finish();
+    }
+    if let Some(var_21) = &input.tool_results {
+        let mut array_22 = object.key("toolResults").start_array();
+        for item_23 in var_21 {
+            {
+                #[allow(unused_mut)]
+                let mut object_24 = array_22.value().start_object();
+                crate::protocol_serde::shape_tool_result::ser_tool_result(&mut object_24, item_23)?;
+                object_24.finish();
+            }
+        }
+        array_22.finish();
+    }
+    if let Some(var_25) = &input.tools {
+        let mut array_26 = object.key("tools").start_array();
+        for item_27 in var_25 {
+            {
+                #[allow(unused_mut)]
+                let mut object_28 = array_26.value().start_object();
+                crate::protocol_serde::shape_tool::ser_tool(&mut object_28, item_27)?;
+                object_28.finish();
+            }
+        }
+        array_26.finish();
+    }
     Ok(())
 }

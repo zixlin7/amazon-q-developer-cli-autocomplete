@@ -34,6 +34,7 @@
 /// be avoided for two reasons:
 /// - The inner data `UnknownVariantValue` is opaque, and no further information can be extracted.
 /// - It might inadvertently shadow other intended match arms.
+///
 /// Currently supported providers for receiving events.
 #[non_exhaustive]
 #[derive(

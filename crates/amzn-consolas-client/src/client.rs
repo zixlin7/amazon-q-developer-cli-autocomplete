@@ -105,8 +105,6 @@ mod list_customization_versions;
 
 mod list_customizations;
 
-mod list_dashboard_metrics;
-
 mod list_profiles;
 
 mod list_tags_for_resource;

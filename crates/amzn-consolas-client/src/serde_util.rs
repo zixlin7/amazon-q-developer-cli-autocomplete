@@ -122,15 +122,6 @@ pub(crate) fn list_customizations_output_output_correct_errors(
     builder
 }
 
-pub(crate) fn list_dashboard_metrics_output_output_correct_errors(
-    mut builder: crate::operation::list_dashboard_metrics::builders::ListDashboardMetricsOutputBuilder,
-) -> crate::operation::list_dashboard_metrics::builders::ListDashboardMetricsOutputBuilder {
-    if builder.metrics.is_none() {
-        builder.metrics = Some(Default::default())
-    }
-    builder
-}
-
 pub(crate) fn list_profiles_output_output_correct_errors(
     mut builder: crate::operation::list_profiles::builders::ListProfilesOutputBuilder,
 ) -> crate::operation::list_profiles::builders::ListProfilesOutputBuilder {
@@ -208,18 +199,6 @@ pub(crate) fn customization_version_summary_correct_errors(
     }
     if builder.updated_at.is_none() {
         builder.updated_at = Some(::aws_smithy_types::DateTime::from_fractional_secs(0, 0_f64))
-    }
-    builder
-}
-
-pub(crate) fn dashboard_metric_correct_errors(
-    mut builder: crate::types::builders::DashboardMetricBuilder,
-) -> crate::types::builders::DashboardMetricBuilder {
-    if builder.dimensions.is_none() {
-        builder.dimensions = {
-            let builder = crate::types::builders::DimensionsBuilder::default();
-            Some(builder.build())
-        }
     }
     builder
 }
@@ -326,15 +305,6 @@ pub(crate) fn dashboard_analytics_correct_errors(
 ) -> crate::types::builders::DashboardAnalyticsBuilder {
     if builder.toggle.is_none() {
         builder.toggle = "no value was set".parse::<crate::types::OptInFeatureToggle>().ok()
-    }
-    builder
-}
-
-pub(crate) fn programming_language_correct_errors(
-    mut builder: crate::types::builders::ProgrammingLanguageBuilder,
-) -> crate::types::builders::ProgrammingLanguageBuilder {
-    if builder.language_name.is_none() {
-        builder.language_name = Some(Default::default())
     }
     builder
 }

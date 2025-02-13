@@ -20,6 +20,12 @@ pub struct UserInputMessageContext {
     pub console_state: ::std::option::Option<crate::types::ConsoleState>,
     /// Settings information, e.g., whether the user has enabled cross-region API calls.
     pub user_settings: ::std::option::Option<crate::types::UserSettings>,
+    /// List of additional contextual content entries that can be included with the message
+    pub additional_context: ::std::option::Option<::std::vec::Vec<crate::types::AdditionalContentEntry>>,
+    /// ToolResults for the requested ToolUses
+    pub tool_results: ::std::option::Option<::std::vec::Vec<crate::types::ToolResult>>,
+    /// Tools that can be used.
+    pub tools: ::std::option::Option<::std::vec::Vec<crate::types::Tool>>,
 }
 impl UserInputMessageContext {
     /// Editor state chat message context.
@@ -61,6 +67,30 @@ impl UserInputMessageContext {
     pub fn user_settings(&self) -> ::std::option::Option<&crate::types::UserSettings> {
         self.user_settings.as_ref()
     }
+
+    /// List of additional contextual content entries that can be included with the message
+    ///
+    /// If no value was sent for this field, a default will be set. If you want to determine if no
+    /// value was sent, use `.additional_context.is_none()`.
+    pub fn additional_context(&self) -> &[crate::types::AdditionalContentEntry] {
+        self.additional_context.as_deref().unwrap_or_default()
+    }
+
+    /// ToolResults for the requested ToolUses
+    ///
+    /// If no value was sent for this field, a default will be set. If you want to determine if no
+    /// value was sent, use `.tool_results.is_none()`.
+    pub fn tool_results(&self) -> &[crate::types::ToolResult] {
+        self.tool_results.as_deref().unwrap_or_default()
+    }
+
+    /// Tools that can be used.
+    ///
+    /// If no value was sent for this field, a default will be set. If you want to determine if no
+    /// value was sent, use `.tools.is_none()`.
+    pub fn tools(&self) -> &[crate::types::Tool] {
+        self.tools.as_deref().unwrap_or_default()
+    }
 }
 impl UserInputMessageContext {
     /// Creates a new builder-style object to manufacture
@@ -82,6 +112,9 @@ pub struct UserInputMessageContextBuilder {
     pub(crate) diagnostic: ::std::option::Option<crate::types::Diagnostic>,
     pub(crate) console_state: ::std::option::Option<crate::types::ConsoleState>,
     pub(crate) user_settings: ::std::option::Option<crate::types::UserSettings>,
+    pub(crate) additional_context: ::std::option::Option<::std::vec::Vec<crate::types::AdditionalContentEntry>>,
+    pub(crate) tool_results: ::std::option::Option<::std::vec::Vec<crate::types::ToolResult>>,
+    pub(crate) tools: ::std::option::Option<::std::vec::Vec<crate::types::Tool>>,
 }
 impl UserInputMessageContextBuilder {
     /// Editor state chat message context.
@@ -220,6 +253,82 @@ impl UserInputMessageContextBuilder {
         &self.user_settings
     }
 
+    /// Appends an item to `additional_context`.
+    ///
+    /// To override the contents of this collection use
+    /// [`set_additional_context`](Self::set_additional_context).
+    ///
+    /// List of additional contextual content entries that can be included with the message
+    pub fn additional_context(mut self, input: crate::types::AdditionalContentEntry) -> Self {
+        let mut v = self.additional_context.unwrap_or_default();
+        v.push(input);
+        self.additional_context = ::std::option::Option::Some(v);
+        self
+    }
+
+    /// List of additional contextual content entries that can be included with the message
+    pub fn set_additional_context(
+        mut self,
+        input: ::std::option::Option<::std::vec::Vec<crate::types::AdditionalContentEntry>>,
+    ) -> Self {
+        self.additional_context = input;
+        self
+    }
+
+    /// List of additional contextual content entries that can be included with the message
+    pub fn get_additional_context(
+        &self,
+    ) -> &::std::option::Option<::std::vec::Vec<crate::types::AdditionalContentEntry>> {
+        &self.additional_context
+    }
+
+    /// Appends an item to `tool_results`.
+    ///
+    /// To override the contents of this collection use
+    /// [`set_tool_results`](Self::set_tool_results).
+    ///
+    /// ToolResults for the requested ToolUses
+    pub fn tool_results(mut self, input: crate::types::ToolResult) -> Self {
+        let mut v = self.tool_results.unwrap_or_default();
+        v.push(input);
+        self.tool_results = ::std::option::Option::Some(v);
+        self
+    }
+
+    /// ToolResults for the requested ToolUses
+    pub fn set_tool_results(mut self, input: ::std::option::Option<::std::vec::Vec<crate::types::ToolResult>>) -> Self {
+        self.tool_results = input;
+        self
+    }
+
+    /// ToolResults for the requested ToolUses
+    pub fn get_tool_results(&self) -> &::std::option::Option<::std::vec::Vec<crate::types::ToolResult>> {
+        &self.tool_results
+    }
+
+    /// Appends an item to `tools`.
+    ///
+    /// To override the contents of this collection use [`set_tools`](Self::set_tools).
+    ///
+    /// Tools that can be used.
+    pub fn tools(mut self, input: crate::types::Tool) -> Self {
+        let mut v = self.tools.unwrap_or_default();
+        v.push(input);
+        self.tools = ::std::option::Option::Some(v);
+        self
+    }
+
+    /// Tools that can be used.
+    pub fn set_tools(mut self, input: ::std::option::Option<::std::vec::Vec<crate::types::Tool>>) -> Self {
+        self.tools = input;
+        self
+    }
+
+    /// Tools that can be used.
+    pub fn get_tools(&self) -> &::std::option::Option<::std::vec::Vec<crate::types::Tool>> {
+        &self.tools
+    }
+
     /// Consumes the builder and constructs a
     /// [`UserInputMessageContext`](crate::types::UserInputMessageContext).
     pub fn build(self) -> crate::types::UserInputMessageContext {
@@ -232,6 +341,9 @@ impl UserInputMessageContextBuilder {
             diagnostic: self.diagnostic,
             console_state: self.console_state,
             user_settings: self.user_settings,
+            additional_context: self.additional_context,
+            tool_results: self.tool_results,
+            tools: self.tools,
         }
     }
 }

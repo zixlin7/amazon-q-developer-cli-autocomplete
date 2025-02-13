@@ -7,6 +7,10 @@ pub struct DevMetrics {
     pub lines_of_code_accepted: ::std::option::Option<i64>,
     #[allow(missing_docs)] // documentation missing in model
     pub lines_of_code_generated: ::std::option::Option<i64>,
+    #[allow(missing_docs)] // documentation missing in model
+    pub characters_of_code_accepted: i32,
+    #[allow(missing_docs)] // documentation missing in model
+    pub characters_of_code_generated: i32,
 }
 impl DevMetrics {
     #[allow(missing_docs)] // documentation missing in model
@@ -17,6 +21,16 @@ impl DevMetrics {
     #[allow(missing_docs)] // documentation missing in model
     pub fn lines_of_code_generated(&self) -> ::std::option::Option<i64> {
         self.lines_of_code_generated
+    }
+
+    #[allow(missing_docs)] // documentation missing in model
+    pub fn characters_of_code_accepted(&self) -> i32 {
+        self.characters_of_code_accepted
+    }
+
+    #[allow(missing_docs)] // documentation missing in model
+    pub fn characters_of_code_generated(&self) -> i32 {
+        self.characters_of_code_generated
     }
 }
 impl DevMetrics {
@@ -32,6 +46,8 @@ impl DevMetrics {
 pub struct DevMetricsBuilder {
     pub(crate) lines_of_code_accepted: ::std::option::Option<i64>,
     pub(crate) lines_of_code_generated: ::std::option::Option<i64>,
+    pub(crate) characters_of_code_accepted: ::std::option::Option<i32>,
+    pub(crate) characters_of_code_generated: ::std::option::Option<i32>,
 }
 impl DevMetricsBuilder {
     #[allow(missing_docs)] // documentation missing in model
@@ -68,11 +84,47 @@ impl DevMetricsBuilder {
         &self.lines_of_code_generated
     }
 
+    #[allow(missing_docs)] // documentation missing in model
+    pub fn characters_of_code_accepted(mut self, input: i32) -> Self {
+        self.characters_of_code_accepted = ::std::option::Option::Some(input);
+        self
+    }
+
+    #[allow(missing_docs)] // documentation missing in model
+    pub fn set_characters_of_code_accepted(mut self, input: ::std::option::Option<i32>) -> Self {
+        self.characters_of_code_accepted = input;
+        self
+    }
+
+    #[allow(missing_docs)] // documentation missing in model
+    pub fn get_characters_of_code_accepted(&self) -> &::std::option::Option<i32> {
+        &self.characters_of_code_accepted
+    }
+
+    #[allow(missing_docs)] // documentation missing in model
+    pub fn characters_of_code_generated(mut self, input: i32) -> Self {
+        self.characters_of_code_generated = ::std::option::Option::Some(input);
+        self
+    }
+
+    #[allow(missing_docs)] // documentation missing in model
+    pub fn set_characters_of_code_generated(mut self, input: ::std::option::Option<i32>) -> Self {
+        self.characters_of_code_generated = input;
+        self
+    }
+
+    #[allow(missing_docs)] // documentation missing in model
+    pub fn get_characters_of_code_generated(&self) -> &::std::option::Option<i32> {
+        &self.characters_of_code_generated
+    }
+
     /// Consumes the builder and constructs a [`DevMetrics`](crate::types::DevMetrics).
     pub fn build(self) -> crate::types::DevMetrics {
         crate::types::DevMetrics {
             lines_of_code_accepted: self.lines_of_code_accepted,
             lines_of_code_generated: self.lines_of_code_generated,
+            characters_of_code_accepted: self.characters_of_code_accepted.unwrap_or_default(),
+            characters_of_code_generated: self.characters_of_code_generated.unwrap_or_default(),
         }
     }
 }

@@ -14,6 +14,7 @@
 /// match transformationjavaruntimeenv {
 ///     TransformationJavaRuntimeEnv::Jvm11 => { /* ... */ },
 ///     TransformationJavaRuntimeEnv::Jvm17 => { /* ... */ },
+///     TransformationJavaRuntimeEnv::Jvm21 => { /* ... */ },
 ///     TransformationJavaRuntimeEnv::Jvm8 => { /* ... */ },
 ///     other @ _ if other.as_str() == "NewFeature" => { /* handles a case for `NewFeature` */ },
 ///     _ => { /* ... */ },
@@ -53,6 +54,8 @@ pub enum TransformationJavaRuntimeEnv {
     #[allow(missing_docs)] // documentation missing in model
     Jvm17,
     #[allow(missing_docs)] // documentation missing in model
+    Jvm21,
+    #[allow(missing_docs)] // documentation missing in model
     Jvm8,
     /// `Unknown` contains new variants that have been added since this code was generated.
     #[deprecated(
@@ -65,6 +68,7 @@ impl ::std::convert::From<&str> for TransformationJavaRuntimeEnv {
         match s {
             "JVM_11" => TransformationJavaRuntimeEnv::Jvm11,
             "JVM_17" => TransformationJavaRuntimeEnv::Jvm17,
+            "JVM_21" => TransformationJavaRuntimeEnv::Jvm21,
             "JVM_8" => TransformationJavaRuntimeEnv::Jvm8,
             other => TransformationJavaRuntimeEnv::Unknown(
                 crate::primitives::sealed_enum_unknown::UnknownVariantValue(other.to_owned()),
@@ -85,6 +89,7 @@ impl TransformationJavaRuntimeEnv {
         match self {
             TransformationJavaRuntimeEnv::Jvm11 => "JVM_11",
             TransformationJavaRuntimeEnv::Jvm17 => "JVM_17",
+            TransformationJavaRuntimeEnv::Jvm21 => "JVM_21",
             TransformationJavaRuntimeEnv::Jvm8 => "JVM_8",
             TransformationJavaRuntimeEnv::Unknown(value) => value.as_str(),
         }
@@ -92,7 +97,7 @@ impl TransformationJavaRuntimeEnv {
 
     /// Returns all the `&str` representations of the enum members.
     pub const fn values() -> &'static [&'static str] {
-        &["JVM_11", "JVM_17", "JVM_8"]
+        &["JVM_11", "JVM_17", "JVM_21", "JVM_8"]
     }
 }
 impl ::std::convert::AsRef<str> for TransformationJavaRuntimeEnv {
@@ -117,6 +122,7 @@ impl ::std::fmt::Display for TransformationJavaRuntimeEnv {
         match self {
             TransformationJavaRuntimeEnv::Jvm11 => write!(f, "JVM_11"),
             TransformationJavaRuntimeEnv::Jvm17 => write!(f, "JVM_17"),
+            TransformationJavaRuntimeEnv::Jvm21 => write!(f, "JVM_21"),
             TransformationJavaRuntimeEnv::Jvm8 => write!(f, "JVM_8"),
             TransformationJavaRuntimeEnv::Unknown(value) => write!(f, "{}", value),
         }

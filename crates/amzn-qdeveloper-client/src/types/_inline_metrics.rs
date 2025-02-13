@@ -9,6 +9,8 @@ pub struct InlineMetrics {
     pub acceptance_count: ::std::option::Option<i64>,
     #[allow(missing_docs)] // documentation missing in model
     pub ai_code_lines: ::std::option::Option<i64>,
+    #[allow(missing_docs)] // documentation missing in model
+    pub characters_of_code_accepted: i32,
 }
 impl InlineMetrics {
     #[allow(missing_docs)] // documentation missing in model
@@ -24,6 +26,11 @@ impl InlineMetrics {
     #[allow(missing_docs)] // documentation missing in model
     pub fn ai_code_lines(&self) -> ::std::option::Option<i64> {
         self.ai_code_lines
+    }
+
+    #[allow(missing_docs)] // documentation missing in model
+    pub fn characters_of_code_accepted(&self) -> i32 {
+        self.characters_of_code_accepted
     }
 }
 impl InlineMetrics {
@@ -41,6 +48,7 @@ pub struct InlineMetricsBuilder {
     pub(crate) suggestions_count: ::std::option::Option<i64>,
     pub(crate) acceptance_count: ::std::option::Option<i64>,
     pub(crate) ai_code_lines: ::std::option::Option<i64>,
+    pub(crate) characters_of_code_accepted: ::std::option::Option<i32>,
 }
 impl InlineMetricsBuilder {
     #[allow(missing_docs)] // documentation missing in model
@@ -94,12 +102,30 @@ impl InlineMetricsBuilder {
         &self.ai_code_lines
     }
 
+    #[allow(missing_docs)] // documentation missing in model
+    pub fn characters_of_code_accepted(mut self, input: i32) -> Self {
+        self.characters_of_code_accepted = ::std::option::Option::Some(input);
+        self
+    }
+
+    #[allow(missing_docs)] // documentation missing in model
+    pub fn set_characters_of_code_accepted(mut self, input: ::std::option::Option<i32>) -> Self {
+        self.characters_of_code_accepted = input;
+        self
+    }
+
+    #[allow(missing_docs)] // documentation missing in model
+    pub fn get_characters_of_code_accepted(&self) -> &::std::option::Option<i32> {
+        &self.characters_of_code_accepted
+    }
+
     /// Consumes the builder and constructs a [`InlineMetrics`](crate::types::InlineMetrics).
     pub fn build(self) -> crate::types::InlineMetrics {
         crate::types::InlineMetrics {
             suggestions_count: self.suggestions_count,
             acceptance_count: self.acceptance_count,
             ai_code_lines: self.ai_code_lines,
+            characters_of_code_accepted: self.characters_of_code_accepted.unwrap_or_default(),
         }
     }
 }

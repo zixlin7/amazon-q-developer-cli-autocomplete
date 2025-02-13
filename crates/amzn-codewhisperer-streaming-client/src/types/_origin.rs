@@ -44,6 +44,7 @@
 /// be avoided for two reasons:
 /// - The inner data `UnknownVariantValue` is opaque, and no further information can be extracted.
 /// - It might inadvertently shadow other intended match arms.
+///
 /// Enum to represent the origin application conversing with Sidekick.
 ///
 /// _Note: `Origin::Unknown` has been renamed to `::UnknownValue`._

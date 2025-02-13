@@ -207,6 +207,10 @@ pub(crate) mod shape_customization;
 
 pub(crate) mod shape_doc_generation_event;
 
+pub(crate) mod shape_doc_v2_acceptance_event;
+
+pub(crate) mod shape_doc_v2_generation_event;
+
 pub(crate) mod shape_documentation_intent_context;
 
 pub(crate) mod shape_feature_dev_code_acceptance_event;
@@ -220,6 +224,8 @@ pub(crate) mod shape_feature_evaluation;
 pub(crate) mod shape_inline_chat_event;
 
 pub(crate) mod shape_metric_data;
+
+pub(crate) mod shape_package_info_list;
 
 pub(crate) mod shape_position;
 
@@ -251,6 +257,8 @@ pub(crate) mod shape_feature_value;
 
 pub(crate) mod shape_imports;
 
+pub(crate) mod shape_package_info;
+
 pub(crate) mod shape_reference;
 
 pub(crate) mod shape_transformation_platform_config;
@@ -273,9 +281,13 @@ pub(crate) mod shape_span;
 
 pub(crate) mod shape_supplementary_web_link;
 
+pub(crate) mod shape_target_file_info_list;
+
 pub(crate) mod shape_transformation_source_code_artifact_descriptor;
 
 pub(crate) mod shape_user_input_message_context;
+
+pub(crate) mod shape_additional_content_entry;
 
 pub(crate) mod shape_app_studio_state;
 
@@ -290,6 +302,12 @@ pub(crate) mod shape_env_state;
 pub(crate) mod shape_git_state;
 
 pub(crate) mod shape_shell_state;
+
+pub(crate) mod shape_target_file_info;
+
+pub(crate) mod shape_tool;
+
+pub(crate) mod shape_tool_result;
 
 pub(crate) mod shape_transformation_progress_update;
 
@@ -309,10 +327,16 @@ pub(crate) mod shape_text_document;
 
 pub(crate) mod shape_text_document_diagnostic;
 
+pub(crate) mod shape_tool_result_content_block;
+
+pub(crate) mod shape_tool_specification;
+
 pub(crate) mod shape_transformation_download_artifacts;
 
 pub(crate) mod shape_transformation_languages;
 
 pub(crate) mod shape_document_symbol;
+
+pub(crate) mod shape_tool_input_schema;
 
 pub(crate) mod shape_transformation_download_artifact;

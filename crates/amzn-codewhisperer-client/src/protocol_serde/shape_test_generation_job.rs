@@ -66,6 +66,32 @@ where
                                         .transpose()?,
                                 );
                             },
+                            "jobStatusReason" => {
+                                builder = builder.set_job_status_reason(
+                                    ::aws_smithy_json::deserialize::token::expect_string_or_null(tokens.next())?
+                                        .map(|s| s.to_unescaped().map(|u| u.into_owned()))
+                                        .transpose()?,
+                                );
+                            },
+                            "jobSummary" => {
+                                builder = builder.set_job_summary(
+                                    ::aws_smithy_json::deserialize::token::expect_string_or_null(tokens.next())?
+                                        .map(|s| s.to_unescaped().map(|u| u.into_owned()))
+                                        .transpose()?,
+                                );
+                            },
+                            "jobPlan" => {
+                                builder = builder.set_job_plan(
+                                    ::aws_smithy_json::deserialize::token::expect_string_or_null(tokens.next())?
+                                        .map(|s| s.to_unescaped().map(|u| u.into_owned()))
+                                        .transpose()?,
+                                );
+                            },
+                            "packageInfoList" => {
+                                builder = builder.set_package_info_list(
+                                    crate::protocol_serde::shape_package_info_list::de_package_info_list(tokens)?,
+                                );
+                            },
                             _ => ::aws_smithy_json::deserialize::token::skip_value(tokens)?,
                         }
                     },

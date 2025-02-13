@@ -12,6 +12,7 @@ pub use crate::types::_chat_metrics::ChatMetrics;
 pub use crate::types::_cli_command::CliCommand;
 pub use crate::types::_cli_resolution::CliResolution;
 pub use crate::types::_cloud_watch_troubleshooting_link::CloudWatchTroubleshootingLink;
+pub use crate::types::_code_coverage_metrics::CodeCoverageMetrics;
 pub use crate::types::_code_fix_metrics::CodeFixMetrics;
 pub use crate::types::_code_review_metrics::CodeReviewMetrics;
 pub use crate::types::_command_execution_status::CommandExecutionStatus;
@@ -19,7 +20,6 @@ pub use crate::types::_conflict_exception_reason::ConflictExceptionReason;
 pub use crate::types::_connector_resource::ConnectorResource;
 pub use crate::types::_console_context::ConsoleContext;
 pub use crate::types::_conversation_metadata::ConversationMetadata;
-pub use crate::types::_cross_region_calls_consent::CrossRegionCallsConsent;
 pub use crate::types::_dashboard_metric::DashboardMetric;
 pub use crate::types::_detailed_resolution::DetailedResolution;
 pub use crate::types::_dev_metrics::DevMetrics;
@@ -130,6 +130,8 @@ mod _cli_resolution;
 
 mod _cloud_watch_troubleshooting_link;
 
+mod _code_coverage_metrics;
+
 mod _code_fix_metrics;
 
 mod _code_review_metrics;
@@ -143,8 +145,6 @@ mod _connector_resource;
 mod _console_context;
 
 mod _conversation_metadata;
-
-mod _cross_region_calls_consent;
 
 mod _dashboard_metric;
 

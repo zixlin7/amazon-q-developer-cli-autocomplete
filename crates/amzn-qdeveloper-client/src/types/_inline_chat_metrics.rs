@@ -11,6 +11,10 @@ pub struct InlineChatMetrics {
     pub suggestions_count: ::std::option::Option<i64>,
     #[allow(missing_docs)] // documentation missing in model
     pub acceptance_count: ::std::option::Option<i64>,
+    #[allow(missing_docs)] // documentation missing in model
+    pub characters_added_from_suggestions_accepted: i32,
+    #[allow(missing_docs)] // documentation missing in model
+    pub characters_added_from_suggestions_total: i32,
 }
 impl InlineChatMetrics {
     #[allow(missing_docs)] // documentation missing in model
@@ -32,6 +36,16 @@ impl InlineChatMetrics {
     pub fn acceptance_count(&self) -> ::std::option::Option<i64> {
         self.acceptance_count
     }
+
+    #[allow(missing_docs)] // documentation missing in model
+    pub fn characters_added_from_suggestions_accepted(&self) -> i32 {
+        self.characters_added_from_suggestions_accepted
+    }
+
+    #[allow(missing_docs)] // documentation missing in model
+    pub fn characters_added_from_suggestions_total(&self) -> i32 {
+        self.characters_added_from_suggestions_total
+    }
 }
 impl InlineChatMetrics {
     /// Creates a new builder-style object to manufacture
@@ -49,6 +63,8 @@ pub struct InlineChatMetricsBuilder {
     pub(crate) total_num_suggestion_add_lines: ::std::option::Option<i64>,
     pub(crate) suggestions_count: ::std::option::Option<i64>,
     pub(crate) acceptance_count: ::std::option::Option<i64>,
+    pub(crate) characters_added_from_suggestions_accepted: ::std::option::Option<i32>,
+    pub(crate) characters_added_from_suggestions_total: ::std::option::Option<i32>,
 }
 impl InlineChatMetricsBuilder {
     #[allow(missing_docs)] // documentation missing in model
@@ -119,6 +135,40 @@ impl InlineChatMetricsBuilder {
         &self.acceptance_count
     }
 
+    #[allow(missing_docs)] // documentation missing in model
+    pub fn characters_added_from_suggestions_accepted(mut self, input: i32) -> Self {
+        self.characters_added_from_suggestions_accepted = ::std::option::Option::Some(input);
+        self
+    }
+
+    #[allow(missing_docs)] // documentation missing in model
+    pub fn set_characters_added_from_suggestions_accepted(mut self, input: ::std::option::Option<i32>) -> Self {
+        self.characters_added_from_suggestions_accepted = input;
+        self
+    }
+
+    #[allow(missing_docs)] // documentation missing in model
+    pub fn get_characters_added_from_suggestions_accepted(&self) -> &::std::option::Option<i32> {
+        &self.characters_added_from_suggestions_accepted
+    }
+
+    #[allow(missing_docs)] // documentation missing in model
+    pub fn characters_added_from_suggestions_total(mut self, input: i32) -> Self {
+        self.characters_added_from_suggestions_total = ::std::option::Option::Some(input);
+        self
+    }
+
+    #[allow(missing_docs)] // documentation missing in model
+    pub fn set_characters_added_from_suggestions_total(mut self, input: ::std::option::Option<i32>) -> Self {
+        self.characters_added_from_suggestions_total = input;
+        self
+    }
+
+    #[allow(missing_docs)] // documentation missing in model
+    pub fn get_characters_added_from_suggestions_total(&self) -> &::std::option::Option<i32> {
+        &self.characters_added_from_suggestions_total
+    }
+
     /// Consumes the builder and constructs a
     /// [`InlineChatMetrics`](crate::types::InlineChatMetrics).
     pub fn build(self) -> crate::types::InlineChatMetrics {
@@ -127,6 +177,10 @@ impl InlineChatMetricsBuilder {
             total_num_suggestion_add_lines: self.total_num_suggestion_add_lines,
             suggestions_count: self.suggestions_count,
             acceptance_count: self.acceptance_count,
+            characters_added_from_suggestions_accepted: self
+                .characters_added_from_suggestions_accepted
+                .unwrap_or_default(),
+            characters_added_from_suggestions_total: self.characters_added_from_suggestions_total.unwrap_or_default(),
         }
     }
 }

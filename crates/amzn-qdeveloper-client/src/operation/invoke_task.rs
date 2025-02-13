@@ -285,6 +285,8 @@ impl ::aws_smithy_runtime_api::client::interceptors::Intercept for InvokeTaskEnd
 #[non_exhaustive]
 #[derive(::std::fmt::Debug)]
 pub enum InvokeTaskError {
+    /// This exception is thrown when describing a resource that does not exist.
+    ResourceNotFoundError(crate::types::error::ResourceNotFoundError),
     /// This exception is thrown when an unexpected error occurred during the processing of a
     /// request.
     InternalServerError(crate::types::error::InternalServerError),
@@ -337,6 +339,7 @@ impl InvokeTaskError {
     /// request ID, and potentially additional information.
     pub fn meta(&self) -> &::aws_smithy_types::error::ErrorMetadata {
         match self {
+            Self::ResourceNotFoundError(e) => ::aws_smithy_types::error::metadata::ProvideErrorMetadata::meta(e),
             Self::InternalServerError(e) => ::aws_smithy_types::error::metadata::ProvideErrorMetadata::meta(e),
             Self::AccessDeniedError(e) => ::aws_smithy_types::error::metadata::ProvideErrorMetadata::meta(e),
             Self::ConflictError(e) => ::aws_smithy_types::error::metadata::ProvideErrorMetadata::meta(e),
@@ -344,6 +347,11 @@ impl InvokeTaskError {
             Self::ThrottlingError(e) => ::aws_smithy_types::error::metadata::ProvideErrorMetadata::meta(e),
             Self::Unhandled(e) => &e.meta,
         }
+    }
+
+    /// Returns `true` if the error kind is `InvokeTaskError::ResourceNotFoundError`.
+    pub fn is_resource_not_found_error(&self) -> bool {
+        matches!(self, Self::ResourceNotFoundError(_))
     }
 
     /// Returns `true` if the error kind is `InvokeTaskError::InternalServerError`.
@@ -374,6 +382,7 @@ impl InvokeTaskError {
 impl ::std::error::Error for InvokeTaskError {
     fn source(&self) -> ::std::option::Option<&(dyn ::std::error::Error + 'static)> {
         match self {
+            Self::ResourceNotFoundError(_inner) => ::std::option::Option::Some(_inner),
             Self::InternalServerError(_inner) => ::std::option::Option::Some(_inner),
             Self::AccessDeniedError(_inner) => ::std::option::Option::Some(_inner),
             Self::ConflictError(_inner) => ::std::option::Option::Some(_inner),
@@ -386,6 +395,7 @@ impl ::std::error::Error for InvokeTaskError {
 impl ::std::fmt::Display for InvokeTaskError {
     fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
         match self {
+            Self::ResourceNotFoundError(_inner) => _inner.fmt(f),
             Self::InternalServerError(_inner) => _inner.fmt(f),
             Self::AccessDeniedError(_inner) => _inner.fmt(f),
             Self::ConflictError(_inner) => _inner.fmt(f),
@@ -419,6 +429,9 @@ impl ::aws_smithy_types::retry::ProvideErrorKind for InvokeTaskError {
 impl ::aws_smithy_types::error::metadata::ProvideErrorMetadata for InvokeTaskError {
     fn meta(&self) -> &::aws_smithy_types::error::ErrorMetadata {
         match self {
+            Self::ResourceNotFoundError(_inner) => {
+                ::aws_smithy_types::error::metadata::ProvideErrorMetadata::meta(_inner)
+            },
             Self::InternalServerError(_inner) => {
                 ::aws_smithy_types::error::metadata::ProvideErrorMetadata::meta(_inner)
             },

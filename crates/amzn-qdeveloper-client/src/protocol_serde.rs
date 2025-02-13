@@ -55,8 +55,6 @@ pub(crate) mod shape_get_task;
 
 pub(crate) mod shape_get_troubleshooting_results;
 
-pub(crate) mod shape_get_user_settings;
-
 pub(crate) mod shape_invoke_task;
 
 pub(crate) mod shape_list_conversations;
@@ -94,8 +92,6 @@ pub(crate) mod shape_tag_resource;
 pub(crate) mod shape_untag_resource;
 
 pub(crate) mod shape_update_troubleshooting_command_result;
-
-pub(crate) mod shape_update_user_settings;
 
 pub(crate) mod shape_use_plugin;
 
@@ -182,8 +178,6 @@ pub(crate) mod shape_throttling_exception;
 pub(crate) mod shape_untag_resource_input;
 
 pub(crate) mod shape_update_troubleshooting_command_result_input;
-
-pub(crate) mod shape_update_user_settings_input;
 
 pub(crate) mod shape_use_plugin_input;
 
@@ -292,6 +286,8 @@ pub(crate) mod shape_task_overview;
 pub(crate) mod shape_task_summary;
 
 pub(crate) mod shape_chat_metrics;
+
+pub(crate) mod shape_code_coverage_metrics;
 
 pub(crate) mod shape_code_fix_metrics;
 

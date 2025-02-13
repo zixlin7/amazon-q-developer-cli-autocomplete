@@ -34,6 +34,13 @@ where
                                         .transpose()?,
                                 );
                             },
+                            "charactersOfCodeChanged" => {
+                                builder = builder.set_characters_of_code_changed(
+                                    ::aws_smithy_json::deserialize::token::expect_number_or_null(tokens.next())?
+                                        .map(i32::try_from)
+                                        .transpose()?,
+                                );
+                            },
                             "linesOfCodeSubmitted" => {
                                 builder = builder.set_lines_of_code_submitted(
                                     ::aws_smithy_json::deserialize::token::expect_number_or_null(tokens.next())?

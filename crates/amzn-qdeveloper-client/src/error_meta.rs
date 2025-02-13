@@ -715,50 +715,6 @@ impl From<crate::operation::get_troubleshooting_results::GetTroubleshootingResul
         }
     }
 }
-impl<R>
-    From<
-        ::aws_smithy_runtime_api::client::result::SdkError<
-            crate::operation::get_user_settings::GetUserSettingsError,
-            R,
-        >,
-    > for Error
-where
-    R: Send + Sync + std::fmt::Debug + 'static,
-{
-    fn from(
-        err: ::aws_smithy_runtime_api::client::result::SdkError<
-            crate::operation::get_user_settings::GetUserSettingsError,
-            R,
-        >,
-    ) -> Self {
-        match err {
-            ::aws_smithy_runtime_api::client::result::SdkError::ServiceError(context) => Self::from(context.into_err()),
-            _ => Error::Unhandled(crate::error::sealed_unhandled::Unhandled {
-                meta: ::aws_smithy_types::error::metadata::ProvideErrorMetadata::meta(&err).clone(),
-                source: err.into(),
-            }),
-        }
-    }
-}
-impl From<crate::operation::get_user_settings::GetUserSettingsError> for Error {
-    fn from(err: crate::operation::get_user_settings::GetUserSettingsError) -> Self {
-        match err {
-            crate::operation::get_user_settings::GetUserSettingsError::InternalServerError(inner) => {
-                Error::InternalServerError(inner)
-            },
-            crate::operation::get_user_settings::GetUserSettingsError::AccessDeniedError(inner) => {
-                Error::AccessDeniedError(inner)
-            },
-            crate::operation::get_user_settings::GetUserSettingsError::ValidationError(inner) => {
-                Error::ValidationError(inner)
-            },
-            crate::operation::get_user_settings::GetUserSettingsError::ThrottlingError(inner) => {
-                Error::ThrottlingError(inner)
-            },
-            crate::operation::get_user_settings::GetUserSettingsError::Unhandled(inner) => Error::Unhandled(inner),
-        }
-    }
-}
 impl<R> From<::aws_smithy_runtime_api::client::result::SdkError<crate::operation::invoke_task::InvokeTaskError, R>>
     for Error
 where
@@ -779,6 +735,9 @@ where
 impl From<crate::operation::invoke_task::InvokeTaskError> for Error {
     fn from(err: crate::operation::invoke_task::InvokeTaskError) -> Self {
         match err {
+            crate::operation::invoke_task::InvokeTaskError::ResourceNotFoundError(inner) => {
+                Error::ResourceNotFoundError(inner)
+            },
             crate::operation::invoke_task::InvokeTaskError::InternalServerError(inner) => {
                 Error::InternalServerError(inner)
             },
@@ -1560,52 +1519,6 @@ impl From<crate::operation::update_troubleshooting_command_result::UpdateTrouble
             crate::operation::update_troubleshooting_command_result::UpdateTroubleshootingCommandResultError::Unhandled(inner) => {
                 Error::Unhandled(inner)
             }
-        }
-    }
-}
-impl<R>
-    From<
-        ::aws_smithy_runtime_api::client::result::SdkError<
-            crate::operation::update_user_settings::UpdateUserSettingsError,
-            R,
-        >,
-    > for Error
-where
-    R: Send + Sync + std::fmt::Debug + 'static,
-{
-    fn from(
-        err: ::aws_smithy_runtime_api::client::result::SdkError<
-            crate::operation::update_user_settings::UpdateUserSettingsError,
-            R,
-        >,
-    ) -> Self {
-        match err {
-            ::aws_smithy_runtime_api::client::result::SdkError::ServiceError(context) => Self::from(context.into_err()),
-            _ => Error::Unhandled(crate::error::sealed_unhandled::Unhandled {
-                meta: ::aws_smithy_types::error::metadata::ProvideErrorMetadata::meta(&err).clone(),
-                source: err.into(),
-            }),
-        }
-    }
-}
-impl From<crate::operation::update_user_settings::UpdateUserSettingsError> for Error {
-    fn from(err: crate::operation::update_user_settings::UpdateUserSettingsError) -> Self {
-        match err {
-            crate::operation::update_user_settings::UpdateUserSettingsError::InternalServerError(inner) => {
-                Error::InternalServerError(inner)
-            },
-            crate::operation::update_user_settings::UpdateUserSettingsError::AccessDeniedError(inner) => {
-                Error::AccessDeniedError(inner)
-            },
-            crate::operation::update_user_settings::UpdateUserSettingsError::ValidationError(inner) => {
-                Error::ValidationError(inner)
-            },
-            crate::operation::update_user_settings::UpdateUserSettingsError::ThrottlingError(inner) => {
-                Error::ThrottlingError(inner)
-            },
-            crate::operation::update_user_settings::UpdateUserSettingsError::Unhandled(inner) => {
-                Error::Unhandled(inner)
-            },
         }
     }
 }

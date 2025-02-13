@@ -46,9 +46,6 @@ pub mod get_task;
 /// Types for the `GetTroubleshootingResults` operation.
 pub mod get_troubleshooting_results;
 
-/// Types for the `GetUserSettings` operation.
-pub mod get_user_settings;
-
 /// Types for the `InvokeTask` operation.
 pub mod invoke_task;
 
@@ -105,9 +102,6 @@ pub mod untag_resource;
 
 /// Types for the `UpdateTroubleshootingCommandResult` operation.
 pub mod update_troubleshooting_command_result;
-
-/// Types for the `UpdateUserSettings` operation.
-pub mod update_user_settings;
 
 /// Types for the `UsePlugin` operation.
 pub mod use_plugin;

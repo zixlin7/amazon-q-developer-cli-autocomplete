@@ -24,6 +24,8 @@ pub enum ChatResponseStream {
     MessageMetadataEvent(crate::types::MessageMetadataEvent),
     /// Web Reference links event
     SupplementaryWebLinksEvent(crate::types::SupplementaryWebLinksEvent),
+    /// ToolUse event
+    ToolUseEvent(crate::types::ToolUseEvent),
     /// The `Unknown` variant represents cases where new union variant was received. Consider
     /// upgrading the SDK to the latest available version. An unknown enum variant
     ///
@@ -217,6 +219,23 @@ impl ChatResponseStream {
     /// [`SupplementaryWebLinksEvent`](crate::types::ChatResponseStream::SupplementaryWebLinksEvent).
     pub fn is_supplementary_web_links_event(&self) -> bool {
         self.as_supplementary_web_links_event().is_ok()
+    }
+
+    /// Tries to convert the enum instance into
+    /// [`ToolUseEvent`](crate::types::ChatResponseStream::ToolUseEvent), extracting the inner
+    /// [`ToolUseEvent`](crate::types::ToolUseEvent). Returns `Err(&Self)` if it can't be
+    /// converted.
+    pub fn as_tool_use_event(&self) -> ::std::result::Result<&crate::types::ToolUseEvent, &Self> {
+        if let ChatResponseStream::ToolUseEvent(val) = &self {
+            ::std::result::Result::Ok(val)
+        } else {
+            ::std::result::Result::Err(self)
+        }
+    }
+
+    /// Returns true if this is a [`ToolUseEvent`](crate::types::ChatResponseStream::ToolUseEvent).
+    pub fn is_tool_use_event(&self) -> bool {
+        self.as_tool_use_event().is_ok()
     }
 
     /// Returns true if the enum instance is the `Unknown` variant.

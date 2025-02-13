@@ -27,6 +27,8 @@ pub struct DashboardMetric {
     pub code_fix_metrics: ::std::option::Option<crate::types::CodeFixMetrics>,
     #[allow(missing_docs)] // documentation missing in model
     pub code_review_metrics: ::std::option::Option<crate::types::CodeReviewMetrics>,
+    #[allow(missing_docs)] // documentation missing in model
+    pub code_coverage_metrics: ::std::option::Option<crate::types::CodeCoverageMetrics>,
 }
 impl DashboardMetric {
     #[allow(missing_docs)] // documentation missing in model
@@ -88,6 +90,11 @@ impl DashboardMetric {
     pub fn code_review_metrics(&self) -> ::std::option::Option<&crate::types::CodeReviewMetrics> {
         self.code_review_metrics.as_ref()
     }
+
+    #[allow(missing_docs)] // documentation missing in model
+    pub fn code_coverage_metrics(&self) -> ::std::option::Option<&crate::types::CodeCoverageMetrics> {
+        self.code_coverage_metrics.as_ref()
+    }
 }
 impl DashboardMetric {
     /// Creates a new builder-style object to manufacture
@@ -113,6 +120,7 @@ pub struct DashboardMetricBuilder {
     pub(crate) test_metrics: ::std::option::Option<crate::types::TestMetrics>,
     pub(crate) code_fix_metrics: ::std::option::Option<crate::types::CodeFixMetrics>,
     pub(crate) code_review_metrics: ::std::option::Option<crate::types::CodeReviewMetrics>,
+    pub(crate) code_coverage_metrics: ::std::option::Option<crate::types::CodeCoverageMetrics>,
 }
 impl DashboardMetricBuilder {
     #[allow(missing_docs)] // documentation missing in model
@@ -323,6 +331,26 @@ impl DashboardMetricBuilder {
         &self.code_review_metrics
     }
 
+    #[allow(missing_docs)] // documentation missing in model
+    pub fn code_coverage_metrics(mut self, input: crate::types::CodeCoverageMetrics) -> Self {
+        self.code_coverage_metrics = ::std::option::Option::Some(input);
+        self
+    }
+
+    #[allow(missing_docs)] // documentation missing in model
+    pub fn set_code_coverage_metrics(
+        mut self,
+        input: ::std::option::Option<crate::types::CodeCoverageMetrics>,
+    ) -> Self {
+        self.code_coverage_metrics = input;
+        self
+    }
+
+    #[allow(missing_docs)] // documentation missing in model
+    pub fn get_code_coverage_metrics(&self) -> &::std::option::Option<crate::types::CodeCoverageMetrics> {
+        &self.code_coverage_metrics
+    }
+
     /// Consumes the builder and constructs a [`DashboardMetric`](crate::types::DashboardMetric).
     /// This method will fail if any of the following fields are not set:
     /// - [`dimensions`](crate::types::builders::DashboardMetricBuilder::dimensions)
@@ -347,6 +375,7 @@ impl DashboardMetricBuilder {
             test_metrics: self.test_metrics,
             code_fix_metrics: self.code_fix_metrics,
             code_review_metrics: self.code_review_metrics,
+            code_coverage_metrics: self.code_coverage_metrics,
         })
     }
 }

@@ -50,5 +50,17 @@ pub fn ser_code_coverage_event(
             ::aws_smithy_types::Number::NegInt((input.total_new_code_line_count).into()),
         );
     }
+    if input.user_written_code_character_count != 0 {
+        object.key("userWrittenCodeCharacterCount").number(
+            #[allow(clippy::useless_conversion)]
+            ::aws_smithy_types::Number::NegInt((input.user_written_code_character_count).into()),
+        );
+    }
+    if input.user_written_code_line_count != 0 {
+        object.key("userWrittenCodeLineCount").number(
+            #[allow(clippy::useless_conversion)]
+            ::aws_smithy_types::Number::NegInt((input.user_written_code_line_count).into()),
+        );
+    }
     Ok(())
 }

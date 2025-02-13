@@ -37,6 +37,7 @@
 /// be avoided for two reasons:
 /// - The inner data `UnknownVariantValue` is opaque, and no further information can be extracted.
 /// - It might inadvertently shadow other intended match arms.
+///
 /// Action for task assist plan step
 ///
 /// _Note: `TaskAssistPlanStepAction::Unknown` has been renamed to `::UnknownValue`._

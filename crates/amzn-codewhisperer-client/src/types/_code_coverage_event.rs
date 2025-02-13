@@ -19,6 +19,10 @@ pub struct CodeCoverageEvent {
     pub total_new_code_character_count: i32,
     #[allow(missing_docs)] // documentation missing in model
     pub total_new_code_line_count: i32,
+    #[allow(missing_docs)] // documentation missing in model
+    pub user_written_code_character_count: i32,
+    #[allow(missing_docs)] // documentation missing in model
+    pub user_written_code_line_count: i32,
 }
 impl CodeCoverageEvent {
     #[allow(missing_docs)] // documentation missing in model
@@ -60,6 +64,16 @@ impl CodeCoverageEvent {
     pub fn total_new_code_line_count(&self) -> i32 {
         self.total_new_code_line_count
     }
+
+    #[allow(missing_docs)] // documentation missing in model
+    pub fn user_written_code_character_count(&self) -> i32 {
+        self.user_written_code_character_count
+    }
+
+    #[allow(missing_docs)] // documentation missing in model
+    pub fn user_written_code_line_count(&self) -> i32 {
+        self.user_written_code_line_count
+    }
 }
 impl CodeCoverageEvent {
     /// Creates a new builder-style object to manufacture
@@ -81,6 +95,8 @@ pub struct CodeCoverageEventBuilder {
     pub(crate) unmodified_accepted_character_count: ::std::option::Option<i32>,
     pub(crate) total_new_code_character_count: ::std::option::Option<i32>,
     pub(crate) total_new_code_line_count: ::std::option::Option<i32>,
+    pub(crate) user_written_code_character_count: ::std::option::Option<i32>,
+    pub(crate) user_written_code_line_count: ::std::option::Option<i32>,
 }
 impl CodeCoverageEventBuilder {
     #[allow(missing_docs)] // documentation missing in model
@@ -223,6 +239,40 @@ impl CodeCoverageEventBuilder {
         &self.total_new_code_line_count
     }
 
+    #[allow(missing_docs)] // documentation missing in model
+    pub fn user_written_code_character_count(mut self, input: i32) -> Self {
+        self.user_written_code_character_count = ::std::option::Option::Some(input);
+        self
+    }
+
+    #[allow(missing_docs)] // documentation missing in model
+    pub fn set_user_written_code_character_count(mut self, input: ::std::option::Option<i32>) -> Self {
+        self.user_written_code_character_count = input;
+        self
+    }
+
+    #[allow(missing_docs)] // documentation missing in model
+    pub fn get_user_written_code_character_count(&self) -> &::std::option::Option<i32> {
+        &self.user_written_code_character_count
+    }
+
+    #[allow(missing_docs)] // documentation missing in model
+    pub fn user_written_code_line_count(mut self, input: i32) -> Self {
+        self.user_written_code_line_count = ::std::option::Option::Some(input);
+        self
+    }
+
+    #[allow(missing_docs)] // documentation missing in model
+    pub fn set_user_written_code_line_count(mut self, input: ::std::option::Option<i32>) -> Self {
+        self.user_written_code_line_count = input;
+        self
+    }
+
+    #[allow(missing_docs)] // documentation missing in model
+    pub fn get_user_written_code_line_count(&self) -> &::std::option::Option<i32> {
+        &self.user_written_code_line_count
+    }
+
     /// Consumes the builder and constructs a
     /// [`CodeCoverageEvent`](crate::types::CodeCoverageEvent). This method will fail if any of
     /// the following fields are not set:
@@ -250,6 +300,8 @@ impl CodeCoverageEventBuilder {
             unmodified_accepted_character_count: self.unmodified_accepted_character_count.unwrap_or_default(),
             total_new_code_character_count: self.total_new_code_character_count.unwrap_or_default(),
             total_new_code_line_count: self.total_new_code_line_count.unwrap_or_default(),
+            user_written_code_character_count: self.user_written_code_character_count.unwrap_or_default(),
+            user_written_code_line_count: self.user_written_code_line_count.unwrap_or_default(),
         })
     }
 }

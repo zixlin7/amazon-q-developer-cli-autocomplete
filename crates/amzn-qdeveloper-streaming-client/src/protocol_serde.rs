@@ -87,6 +87,8 @@ pub(crate) mod shape_message_metadata_event;
 
 pub(crate) mod shape_supplementary_web_links_event;
 
+pub(crate) mod shape_tool_use_event;
+
 pub(crate) mod shape_assistant_response_message;
 
 pub(crate) mod shape_user_input_message;
@@ -106,6 +108,8 @@ pub(crate) mod shape_supplementary_web_link;
 pub(crate) mod shape_supplementary_web_links;
 
 pub(crate) mod shape_user_input_message_context;
+
+pub(crate) mod shape_additional_content_entry;
 
 pub(crate) mod shape_app_studio_state;
 
@@ -127,6 +131,10 @@ pub(crate) mod shape_shell_state;
 
 pub(crate) mod shape_span;
 
+pub(crate) mod shape_tool;
+
+pub(crate) mod shape_tool_result;
+
 pub(crate) mod shape_user_settings;
 
 pub(crate) mod shape_cursor_state;
@@ -146,6 +154,10 @@ pub(crate) mod shape_shell_history_entry;
 pub(crate) mod shape_text_document;
 
 pub(crate) mod shape_text_document_diagnostic;
+
+pub(crate) mod shape_tool_result_content_block;
+
+pub(crate) mod shape_tool_specification;
 
 pub(crate) mod shape_action;
 
@@ -178,6 +190,8 @@ pub(crate) mod shape_task_details;
 pub(crate) mod shape_task_reference;
 
 pub(crate) mod shape_text;
+
+pub(crate) mod shape_tool_input_schema;
 
 pub(crate) mod shape_alert_component_list;
 

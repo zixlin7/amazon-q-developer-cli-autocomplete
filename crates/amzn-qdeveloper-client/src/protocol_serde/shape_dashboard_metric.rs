@@ -79,6 +79,11 @@ where
                                 crate::protocol_serde::shape_code_review_metrics::de_code_review_metrics(tokens)?,
                             );
                         },
+                        "codeCoverageMetrics" => {
+                            builder = builder.set_code_coverage_metrics(
+                                crate::protocol_serde::shape_code_coverage_metrics::de_code_coverage_metrics(tokens)?,
+                            );
+                        },
                         _ => ::aws_smithy_json::deserialize::token::skip_value(tokens)?,
                     },
                     other => {

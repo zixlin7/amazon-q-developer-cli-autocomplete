@@ -9,6 +9,12 @@ pub struct CodeReviewMetrics {
     pub number_of_failed_code_reviews: ::std::option::Option<i64>,
     #[allow(missing_docs)] // documentation missing in model
     pub number_of_findings: ::std::option::Option<i64>,
+    #[allow(missing_docs)] // documentation missing in model
+    pub number_of_failed_manual_code_reviews: ::std::option::Option<i64>,
+    #[allow(missing_docs)] // documentation missing in model
+    pub number_of_manual_findings: ::std::option::Option<i64>,
+    #[allow(missing_docs)] // documentation missing in model
+    pub number_of_succeeded_manual_code_reviews: ::std::option::Option<i64>,
 }
 impl CodeReviewMetrics {
     #[allow(missing_docs)] // documentation missing in model
@@ -24,6 +30,21 @@ impl CodeReviewMetrics {
     #[allow(missing_docs)] // documentation missing in model
     pub fn number_of_findings(&self) -> ::std::option::Option<i64> {
         self.number_of_findings
+    }
+
+    #[allow(missing_docs)] // documentation missing in model
+    pub fn number_of_failed_manual_code_reviews(&self) -> ::std::option::Option<i64> {
+        self.number_of_failed_manual_code_reviews
+    }
+
+    #[allow(missing_docs)] // documentation missing in model
+    pub fn number_of_manual_findings(&self) -> ::std::option::Option<i64> {
+        self.number_of_manual_findings
+    }
+
+    #[allow(missing_docs)] // documentation missing in model
+    pub fn number_of_succeeded_manual_code_reviews(&self) -> ::std::option::Option<i64> {
+        self.number_of_succeeded_manual_code_reviews
     }
 }
 impl CodeReviewMetrics {
@@ -41,6 +62,9 @@ pub struct CodeReviewMetricsBuilder {
     pub(crate) number_of_succeeded_code_reviews: ::std::option::Option<i64>,
     pub(crate) number_of_failed_code_reviews: ::std::option::Option<i64>,
     pub(crate) number_of_findings: ::std::option::Option<i64>,
+    pub(crate) number_of_failed_manual_code_reviews: ::std::option::Option<i64>,
+    pub(crate) number_of_manual_findings: ::std::option::Option<i64>,
+    pub(crate) number_of_succeeded_manual_code_reviews: ::std::option::Option<i64>,
 }
 impl CodeReviewMetricsBuilder {
     #[allow(missing_docs)] // documentation missing in model
@@ -94,6 +118,57 @@ impl CodeReviewMetricsBuilder {
         &self.number_of_findings
     }
 
+    #[allow(missing_docs)] // documentation missing in model
+    pub fn number_of_failed_manual_code_reviews(mut self, input: i64) -> Self {
+        self.number_of_failed_manual_code_reviews = ::std::option::Option::Some(input);
+        self
+    }
+
+    #[allow(missing_docs)] // documentation missing in model
+    pub fn set_number_of_failed_manual_code_reviews(mut self, input: ::std::option::Option<i64>) -> Self {
+        self.number_of_failed_manual_code_reviews = input;
+        self
+    }
+
+    #[allow(missing_docs)] // documentation missing in model
+    pub fn get_number_of_failed_manual_code_reviews(&self) -> &::std::option::Option<i64> {
+        &self.number_of_failed_manual_code_reviews
+    }
+
+    #[allow(missing_docs)] // documentation missing in model
+    pub fn number_of_manual_findings(mut self, input: i64) -> Self {
+        self.number_of_manual_findings = ::std::option::Option::Some(input);
+        self
+    }
+
+    #[allow(missing_docs)] // documentation missing in model
+    pub fn set_number_of_manual_findings(mut self, input: ::std::option::Option<i64>) -> Self {
+        self.number_of_manual_findings = input;
+        self
+    }
+
+    #[allow(missing_docs)] // documentation missing in model
+    pub fn get_number_of_manual_findings(&self) -> &::std::option::Option<i64> {
+        &self.number_of_manual_findings
+    }
+
+    #[allow(missing_docs)] // documentation missing in model
+    pub fn number_of_succeeded_manual_code_reviews(mut self, input: i64) -> Self {
+        self.number_of_succeeded_manual_code_reviews = ::std::option::Option::Some(input);
+        self
+    }
+
+    #[allow(missing_docs)] // documentation missing in model
+    pub fn set_number_of_succeeded_manual_code_reviews(mut self, input: ::std::option::Option<i64>) -> Self {
+        self.number_of_succeeded_manual_code_reviews = input;
+        self
+    }
+
+    #[allow(missing_docs)] // documentation missing in model
+    pub fn get_number_of_succeeded_manual_code_reviews(&self) -> &::std::option::Option<i64> {
+        &self.number_of_succeeded_manual_code_reviews
+    }
+
     /// Consumes the builder and constructs a
     /// [`CodeReviewMetrics`](crate::types::CodeReviewMetrics).
     pub fn build(self) -> crate::types::CodeReviewMetrics {
@@ -101,6 +176,9 @@ impl CodeReviewMetricsBuilder {
             number_of_succeeded_code_reviews: self.number_of_succeeded_code_reviews,
             number_of_failed_code_reviews: self.number_of_failed_code_reviews,
             number_of_findings: self.number_of_findings,
+            number_of_failed_manual_code_reviews: self.number_of_failed_manual_code_reviews,
+            number_of_manual_findings: self.number_of_manual_findings,
+            number_of_succeeded_manual_code_reviews: self.number_of_succeeded_manual_code_reviews,
         }
     }
 }

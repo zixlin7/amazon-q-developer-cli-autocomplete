@@ -23,8 +23,13 @@ pub enum TelemetryEvent {
     CodeScanRemediationsEvent(crate::types::CodeScanRemediationsEvent),
     /// Published when a security scan or code review completes successfully
     CodeScanSucceededEvent(crate::types::CodeScanSucceededEvent),
-    #[allow(missing_docs)] // documentation missing in model
+    /// Deprecated: use DocV2AcceptanceEvent for tracking acceptance and DocV2GenerationEvent for
+    /// tracking generation
     DocGenerationEvent(crate::types::DocGenerationEvent),
+    /// Interaction event for /doc, emitted when user accepts or rejects the generated content
+    DocV2AcceptanceEvent(crate::types::DocV2AcceptanceEvent),
+    /// Generation event for /doc, emitted when user requests document generation
+    DocV2GenerationEvent(crate::types::DocV2GenerationEvent),
     #[allow(missing_docs)] // documentation missing in model
     FeatureDevCodeAcceptanceEvent(crate::types::FeatureDevCodeAcceptanceEvent),
     #[allow(missing_docs)] // documentation missing in model
@@ -259,6 +264,42 @@ impl TelemetryEvent {
     /// [`DocGenerationEvent`](crate::types::TelemetryEvent::DocGenerationEvent).
     pub fn is_doc_generation_event(&self) -> bool {
         self.as_doc_generation_event().is_ok()
+    }
+
+    /// Tries to convert the enum instance into
+    /// [`DocV2AcceptanceEvent`](crate::types::TelemetryEvent::DocV2AcceptanceEvent), extracting the
+    /// inner [`DocV2AcceptanceEvent`](crate::types::DocV2AcceptanceEvent). Returns `Err(&Self)`
+    /// if it can't be converted.
+    pub fn as_doc_v2_acceptance_event(&self) -> ::std::result::Result<&crate::types::DocV2AcceptanceEvent, &Self> {
+        if let TelemetryEvent::DocV2AcceptanceEvent(val) = &self {
+            ::std::result::Result::Ok(val)
+        } else {
+            ::std::result::Result::Err(self)
+        }
+    }
+
+    /// Returns true if this is a
+    /// [`DocV2AcceptanceEvent`](crate::types::TelemetryEvent::DocV2AcceptanceEvent).
+    pub fn is_doc_v2_acceptance_event(&self) -> bool {
+        self.as_doc_v2_acceptance_event().is_ok()
+    }
+
+    /// Tries to convert the enum instance into
+    /// [`DocV2GenerationEvent`](crate::types::TelemetryEvent::DocV2GenerationEvent), extracting the
+    /// inner [`DocV2GenerationEvent`](crate::types::DocV2GenerationEvent). Returns `Err(&Self)`
+    /// if it can't be converted.
+    pub fn as_doc_v2_generation_event(&self) -> ::std::result::Result<&crate::types::DocV2GenerationEvent, &Self> {
+        if let TelemetryEvent::DocV2GenerationEvent(val) = &self {
+            ::std::result::Result::Ok(val)
+        } else {
+            ::std::result::Result::Err(self)
+        }
+    }
+
+    /// Returns true if this is a
+    /// [`DocV2GenerationEvent`](crate::types::TelemetryEvent::DocV2GenerationEvent).
+    pub fn is_doc_v2_generation_event(&self) -> bool {
+        self.as_doc_v2_generation_event().is_ok()
     }
 
     /// Tries to convert the enum instance into

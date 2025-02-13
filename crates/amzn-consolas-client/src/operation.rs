@@ -40,9 +40,6 @@ pub mod list_customization_versions;
 /// Types for the `ListCustomizations` operation.
 pub mod list_customizations;
 
-/// Types for the `ListDashboardMetrics` operation.
-pub mod list_dashboard_metrics;
-
 /// Types for the `ListProfiles` operation.
 pub mod list_profiles;
 

@@ -41,6 +41,27 @@ where
                                         .transpose()?,
                                 );
                             },
+                            "numberOfFailedManualCodeReviews" => {
+                                builder = builder.set_number_of_failed_manual_code_reviews(
+                                    ::aws_smithy_json::deserialize::token::expect_number_or_null(tokens.next())?
+                                        .map(i64::try_from)
+                                        .transpose()?,
+                                );
+                            },
+                            "numberOfManualFindings" => {
+                                builder = builder.set_number_of_manual_findings(
+                                    ::aws_smithy_json::deserialize::token::expect_number_or_null(tokens.next())?
+                                        .map(i64::try_from)
+                                        .transpose()?,
+                                );
+                            },
+                            "numberOfSucceededManualCodeReviews" => {
+                                builder = builder.set_number_of_succeeded_manual_code_reviews(
+                                    ::aws_smithy_json::deserialize::token::expect_number_or_null(tokens.next())?
+                                        .map(i64::try_from)
+                                        .transpose()?,
+                                );
+                            },
                             _ => ::aws_smithy_json::deserialize::token::skip_value(tokens)?,
                         }
                     },

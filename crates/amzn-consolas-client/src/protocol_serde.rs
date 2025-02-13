@@ -51,8 +51,6 @@ pub(crate) mod shape_list_customization_versions;
 
 pub(crate) mod shape_list_customizations;
 
-pub(crate) mod shape_list_dashboard_metrics;
-
 pub(crate) mod shape_list_profiles;
 
 pub(crate) mod shape_list_tags_for_resource;
@@ -107,8 +105,6 @@ pub(crate) mod shape_list_customization_versions_input;
 
 pub(crate) mod shape_list_customizations_input;
 
-pub(crate) mod shape_list_dashboard_metrics_input;
-
 pub(crate) mod shape_list_profiles_input;
 
 pub(crate) mod shape_list_tags_for_resource_input;
@@ -142,8 +138,6 @@ pub(crate) mod shape_customization_permission;
 pub(crate) mod shape_customization_summary_list;
 
 pub(crate) mod shape_customization_version_summary_list;
-
-pub(crate) mod shape_dashboard_metric_list;
 
 pub(crate) mod shape_data_reference;
 
@@ -185,8 +179,6 @@ pub(crate) mod shape_customization_version_summary;
 
 pub(crate) mod shape_dashboard_analytics;
 
-pub(crate) mod shape_dashboard_metric;
-
 pub(crate) mod shape_notifications_feature;
 
 pub(crate) mod shape_profile;
@@ -205,39 +197,15 @@ pub(crate) mod shape_active_functionality_list;
 
 pub(crate) mod shape_application_properties_list;
 
-pub(crate) mod shape_chat_metrics;
-
-pub(crate) mod shape_code_fix_metrics;
-
-pub(crate) mod shape_code_review_metrics;
-
-pub(crate) mod shape_dev_metrics;
-
-pub(crate) mod shape_dimensions;
-
-pub(crate) mod shape_doc_metrics;
-
 pub(crate) mod shape_identity_details;
 
 pub(crate) mod shape_imports;
 
-pub(crate) mod shape_inline_chat_metrics;
-
-pub(crate) mod shape_inline_metrics;
-
 pub(crate) mod shape_references;
-
-pub(crate) mod shape_test_metrics;
-
-pub(crate) mod shape_transform_metrics;
-
-pub(crate) mod shape_user_activity_metrics;
 
 pub(crate) mod shape_application_properties;
 
 pub(crate) mod shape_import;
-
-pub(crate) mod shape_monostate;
 
 pub(crate) mod shape_notifications;
 

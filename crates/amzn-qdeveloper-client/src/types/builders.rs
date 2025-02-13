@@ -8,6 +8,7 @@ pub use crate::types::_chat_metrics::ChatMetricsBuilder;
 pub use crate::types::_cli_command::CliCommandBuilder;
 pub use crate::types::_cli_resolution::CliResolutionBuilder;
 pub use crate::types::_cloud_watch_troubleshooting_link::CloudWatchTroubleshootingLinkBuilder;
+pub use crate::types::_code_coverage_metrics::CodeCoverageMetricsBuilder;
 pub use crate::types::_code_fix_metrics::CodeFixMetricsBuilder;
 pub use crate::types::_code_review_metrics::CodeReviewMetricsBuilder;
 pub use crate::types::_console_context::ConsoleContextBuilder;

@@ -2,9 +2,6 @@
 pub use crate::types::_access_denied_exception_reason::AccessDeniedExceptionReason;
 pub use crate::types::_application_properties::ApplicationProperties;
 pub use crate::types::_by_user_analytics::ByUserAnalytics;
-pub use crate::types::_chat_metrics::ChatMetrics;
-pub use crate::types::_code_fix_metrics::CodeFixMetrics;
-pub use crate::types::_code_review_metrics::CodeReviewMetrics;
 pub use crate::types::_code_star_reference::CodeStarReference;
 pub use crate::types::_conflict_exception_reason::ConflictExceptionReason;
 pub use crate::types::_customization_permission::CustomizationPermission;
@@ -12,22 +9,14 @@ pub use crate::types::_customization_status::CustomizationStatus;
 pub use crate::types::_customization_summary::CustomizationSummary;
 pub use crate::types::_customization_version_summary::CustomizationVersionSummary;
 pub use crate::types::_dashboard_analytics::DashboardAnalytics;
-pub use crate::types::_dashboard_metric::DashboardMetric;
 pub use crate::types::_data_reference::DataReference;
 pub use crate::types::_deletion_status::DeletionStatus;
-pub use crate::types::_dev_metrics::DevMetrics;
-pub use crate::types::_dimensions::Dimensions;
-pub use crate::types::_doc_metrics::DocMetrics;
 pub use crate::types::_evaluation_metrics::EvaluationMetrics;
 pub use crate::types::_file_context::FileContext;
 pub use crate::types::_functionality_name::FunctionalityName;
-pub use crate::types::_ide_category::IdeCategory;
 pub use crate::types::_identity_details::IdentityDetails;
 pub use crate::types::_identity_source::IdentitySource;
 pub use crate::types::_import::Import;
-pub use crate::types::_inline_chat_metrics::InlineChatMetrics;
-pub use crate::types::_inline_metrics::InlineMetrics;
-pub use crate::types::_monostate::Monostate;
 pub use crate::types::_notifications_feature::NotificationsFeature;
 pub use crate::types::_opt_in_feature_toggle::OptInFeatureToggle;
 pub use crate::types::_opt_in_features::OptInFeatures;
@@ -48,11 +37,8 @@ pub use crate::types::_sso_identity_details::SsoIdentityDetails;
 pub use crate::types::_sso_identity_source::SsoIdentitySource;
 pub use crate::types::_supplemental_context::SupplementalContext;
 pub use crate::types::_tag::Tag;
-pub use crate::types::_test_metrics::TestMetrics;
 pub use crate::types::_throttling_exception_reason::ThrottlingExceptionReason;
-pub use crate::types::_transform_metrics::TransformMetrics;
 pub use crate::types::_update_operation::UpdateOperation;
-pub use crate::types::_user_activity_metrics::UserActivityMetrics;
 pub use crate::types::_validation_exception_reason::ValidationExceptionReason;
 pub use crate::types::_vend_key_grant_use_case::VendKeyGrantUseCase;
 
@@ -61,12 +47,6 @@ mod _access_denied_exception_reason;
 mod _application_properties;
 
 mod _by_user_analytics;
-
-mod _chat_metrics;
-
-mod _code_fix_metrics;
-
-mod _code_review_metrics;
 
 mod _code_star_reference;
 
@@ -82,17 +62,9 @@ mod _customization_version_summary;
 
 mod _dashboard_analytics;
 
-mod _dashboard_metric;
-
 mod _data_reference;
 
 mod _deletion_status;
-
-mod _dev_metrics;
-
-mod _dimensions;
-
-mod _doc_metrics;
 
 mod _evaluation_metrics;
 
@@ -100,19 +72,11 @@ mod _file_context;
 
 mod _functionality_name;
 
-mod _ide_category;
-
 mod _identity_details;
 
 mod _identity_source;
 
 mod _import;
-
-mod _inline_chat_metrics;
-
-mod _inline_metrics;
-
-mod _monostate;
 
 mod _notifications_feature;
 
@@ -154,15 +118,9 @@ mod _supplemental_context;
 
 mod _tag;
 
-mod _test_metrics;
-
 mod _throttling_exception_reason;
 
-mod _transform_metrics;
-
 mod _update_operation;
-
-mod _user_activity_metrics;
 
 mod _validation_exception_reason;
 

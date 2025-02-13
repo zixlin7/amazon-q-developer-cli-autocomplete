@@ -101,6 +101,18 @@ pub(crate) fn invalid_state_event_correct_errors(
     builder
 }
 
+pub(crate) fn tool_use_event_correct_errors(
+    mut builder: crate::types::builders::ToolUseEventBuilder,
+) -> crate::types::builders::ToolUseEventBuilder {
+    if builder.tool_use_id.is_none() {
+        builder.tool_use_id = Some(Default::default())
+    }
+    if builder.name.is_none() {
+        builder.name = Some(Default::default())
+    }
+    builder
+}
+
 pub(crate) fn followup_prompt_correct_errors(
     mut builder: crate::types::builders::FollowupPromptBuilder,
 ) -> crate::types::builders::FollowupPromptBuilder {

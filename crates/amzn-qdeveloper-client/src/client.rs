@@ -133,8 +133,6 @@ mod get_task;
 
 mod get_troubleshooting_results;
 
-mod get_user_settings;
-
 mod invoke_task;
 
 mod list_conversations;
@@ -172,7 +170,5 @@ mod tag_resource;
 mod untag_resource;
 
 mod update_troubleshooting_command_result;
-
-mod update_user_settings;
 
 mod use_plugin;

@@ -24,6 +24,9 @@ use tracing::warn;
 /// string. This is used in AWS CloudShell where they want to track usage by version.
 const AWS_TOOLING_USER_AGENT: &str = "AWS_TOOLING_USER_AGENT";
 
+const VERSION_HEADER: &str = "Version";
+const VERSION_VALUE: &str = env!("CARGO_PKG_VERSION");
+
 #[derive(Debug)]
 enum UserAgentOverrideInterceptorError {
     MissingApiMetadata,
@@ -95,6 +98,14 @@ impl Intercept for UserAgentOverrideInterceptor {
 
                 let aws_tooling_user_agent = env.get(AWS_TOOLING_USER_AGENT);
                 let mut ua = AwsUserAgent::new_from_environment(env, api_metadata.clone());
+
+                let ver = format!("{VERSION_HEADER}/{VERSION_VALUE}");
+                match AdditionalMetadata::new(clean_metadata(&ver)) {
+                    Ok(md) => {
+                        ua.add_additional_metadata(md);
+                    },
+                    Err(err) => panic!("Failed to parse version: {err}"),
+                };
 
                 let maybe_app_name = cfg.load::<AppName>();
                 if let Some(app_name) = maybe_app_name {
@@ -186,6 +197,8 @@ mod tests {
         let ua = context.request().headers().get(USER_AGENT).unwrap();
         println!("User-Agent: {ua}");
         assert!(ua.contains(&format!("app/{APP_NAME_STR}")));
+        assert!(ua.contains(VERSION_HEADER));
+        assert!(ua.contains(VERSION_VALUE));
     }
 
     #[test]
@@ -207,5 +220,7 @@ mod tests {
         assert!(ua.contains(&format!("app/{APP_NAME_STR}")));
         assert!(ua.contains("exec-env/CloudShell"));
         assert!(ua.contains("md/AWS-CloudShell-2024.08.29"));
+        assert!(ua.contains(VERSION_HEADER));
+        assert!(ua.contains(VERSION_VALUE));
     }
 }

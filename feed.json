@@ -12,6 +12,22 @@
     },
     {
       "type": "release",
+      "date": "2025-02-19",
+      "version": "1.6.2",
+      "title": "Version 1.6.2",
+      "changes": [
+        {
+          "type": "added",
+          "description": "Support for Trae [#488](https://github.com/aws/amazon-q-developer-cli/pull/488)"
+        },
+        {
+          "type": "fixed",
+          "description": "Minor issues"
+        }
+      ]
+    },
+    {
+      "type": "release",
       "date": "2025-02-03",
       "version": "1.6.1",
       "title": "Version 1.6.1",

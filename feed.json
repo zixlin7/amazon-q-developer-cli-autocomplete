@@ -12,6 +12,18 @@
     },
     {
       "type": "release",
+      "date": "2025-02-20",
+      "version": "1.6.3",
+      "title": "Version 1.6.3",
+      "changes": [
+        {
+          "type": "fixed",
+          "description": "Minor issues"
+        }
+      ]
+    },
+    {
+      "type": "release",
       "date": "2025-02-19",
       "version": "1.6.2",
       "title": "Version 1.6.2",

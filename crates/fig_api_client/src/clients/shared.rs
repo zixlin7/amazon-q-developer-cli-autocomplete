@@ -15,7 +15,8 @@ use crate::{
     Error,
 };
 
-const DEFAULT_TIMEOUT_DURATION: Duration = Duration::from_millis(10100);
+// TODO(bskiser): Update timeout
+const DEFAULT_TIMEOUT_DURATION: Duration = Duration::from_millis(60100);
 
 pub(crate) fn timeout_config() -> TimeoutConfig {
     let timeout = fig_settings::settings::get_int("api.timeout")

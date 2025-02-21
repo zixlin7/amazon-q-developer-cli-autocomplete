@@ -1,3 +1,8 @@
+use std::sync::{
+    Arc,
+    Mutex,
+};
+
 use amzn_codewhisperer_streaming_client::Client as CodewhispererStreamingClient;
 use amzn_qdeveloper_streaming_client::Client as QDeveloperStreamingClient;
 use aws_types::request_id::RequestId;
@@ -6,6 +11,7 @@ use fig_aws_common::{
     UserAgentOverrideInterceptor,
     app_name,
 };
+use tracing::debug;
 
 use super::shared::{
     bearer_sdk_config,
@@ -23,6 +29,11 @@ use crate::{
 };
 
 mod inner {
+    use std::sync::{
+        Arc,
+        Mutex,
+    };
+
     use amzn_codewhisperer_streaming_client::Client as CodewhispererStreamingClient;
     use amzn_qdeveloper_streaming_client::Client as QDeveloperStreamingClient;
 
@@ -32,7 +43,7 @@ mod inner {
     pub enum Inner {
         Codewhisperer(CodewhispererStreamingClient),
         QDeveloper(QDeveloperStreamingClient),
-        Mock(Vec<ChatResponseStream>),
+        Mock(Arc<Mutex<std::vec::IntoIter<Vec<ChatResponseStream>>>>),
     }
 }
 
@@ -49,8 +60,8 @@ impl StreamingClient {
         Ok(client)
     }
 
-    pub fn mock(events: Vec<ChatResponseStream>) -> Self {
-        Self(inner::Inner::Mock(events))
+    pub fn mock(events: Vec<Vec<ChatResponseStream>>) -> Self {
+        Self(inner::Inner::Mock(Arc::new(Mutex::new(events.into_iter()))))
     }
 
     pub async fn new_codewhisperer_client(endpoint: &Endpoint) -> Self {
@@ -83,6 +94,8 @@ impl StreamingClient {
     }
 
     pub async fn send_message(&self, conversation_state: ConversationState) -> Result<SendMessageOutput, Error> {
+        // TODO(bskiser): remove debug
+        debug!("Sending conversation: {:#?}", conversation_state);
         let ConversationState {
             conversation_id,
             user_input_message,
@@ -91,25 +104,26 @@ impl StreamingClient {
 
         match &self.0 {
             inner::Inner::Codewhisperer(client) => {
-                let conversation_state_builder =
-                    amzn_codewhisperer_streaming_client::types::ConversationState::builder()
-                        .set_conversation_id(conversation_id)
-                        .current_message(
-                            amzn_codewhisperer_streaming_client::types::ChatMessage::UserInputMessage(
-                                user_input_message.into(),
-                            ),
-                        )
-                        .chat_trigger_type(amzn_codewhisperer_streaming_client::types::ChatTriggerType::Manual)
-                        .set_history(
-                            history
-                                .map(|v| v.into_iter().map(|i| i.try_into()).collect::<Result<Vec<_>, _>>())
-                                .transpose()?,
-                        );
+                let conversation_state = amzn_codewhisperer_streaming_client::types::ConversationState::builder()
+                    .set_conversation_id(conversation_id)
+                    .current_message(
+                        amzn_codewhisperer_streaming_client::types::ChatMessage::UserInputMessage(
+                            user_input_message.into(),
+                        ),
+                    )
+                    .chat_trigger_type(amzn_codewhisperer_streaming_client::types::ChatTriggerType::Manual)
+                    .set_history(
+                        history
+                            .map(|v| v.into_iter().map(|i| i.try_into()).collect::<Result<Vec<_>, _>>())
+                            .transpose()?,
+                    )
+                    .build()
+                    .expect("building conversation_state should not fail");
 
                 Ok(SendMessageOutput::Codewhisperer(
                     client
                         .generate_assistant_response()
-                        .conversation_state(conversation_state_builder.build().expect("fix me"))
+                        .conversation_state(conversation_state)
                         .send()
                         .await?,
                 ))
@@ -136,7 +150,7 @@ impl StreamingClient {
                 ))
             },
             inner::Inner::Mock(events) => {
-                let mut new_events = events.clone();
+                let mut new_events = events.lock().unwrap().next().unwrap().clone();
                 new_events.reverse();
                 Ok(SendMessageOutput::Mock(new_events))
             },
@@ -144,6 +158,7 @@ impl StreamingClient {
     }
 }
 
+#[derive(Debug)]
 pub enum SendMessageOutput {
     Codewhisperer(
         amzn_codewhisperer_streaming_client::operation::generate_assistant_response::GenerateAssistantResponseOutput,
@@ -196,11 +211,11 @@ mod tests {
 
     #[tokio::test]
     async fn test_mock() {
-        let client = StreamingClient::mock(vec![
+        let client = StreamingClient::mock(vec![vec![
             ChatResponseStream::assistant_response("Hello!"),
             ChatResponseStream::assistant_response(" How can I"),
             ChatResponseStream::assistant_response(" assist you today?"),
-        ]);
+        ]]);
         let mut output = client
             .send_message(ConversationState {
                 conversation_id: None,
@@ -242,6 +257,7 @@ mod tests {
                     ChatMessage::AssistantResponseMessage(AssistantResponseMessage {
                         content: "It is written in C by Linus Torvalds.".into(),
                         message_id: None,
+                        tool_uses: None,
                     }),
                 ]),
             })

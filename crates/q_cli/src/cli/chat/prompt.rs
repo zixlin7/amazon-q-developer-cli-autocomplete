@@ -22,8 +22,6 @@ use rustyline::{
 };
 use winnow::stream::AsChar;
 
-pub const PROMPT: &str = "> ";
-
 const MODIFIERS: &[&str] = &["@history", "@git", "@env"];
 
 pub struct ChatCompleater {}
@@ -72,7 +70,7 @@ pub struct ChatHelper {
 impl Highlighter for ChatHelper {
     fn highlight_prompt<'b, 's: 'b, 'p: 'b>(&'s self, prompt: &'p str, default: bool) -> Cow<'b, str> {
         if default {
-            Cow::Owned(PROMPT.magenta().to_string())
+            Cow::Owned(prompt.magenta().to_string())
         } else {
             Cow::Borrowed(prompt)
         }

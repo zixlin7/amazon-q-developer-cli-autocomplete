@@ -8,4 +8,7 @@ pub use client::{
     FILE_CONTEXT_LEFT_FILE_CONTENT_MAX_LEN,
     FILE_CONTEXT_RIGHT_FILE_CONTENT_MAX_LEN,
 };
-pub use streaming_client::StreamingClient;
+pub use streaming_client::{
+    SendMessageOutput,
+    StreamingClient,
+};

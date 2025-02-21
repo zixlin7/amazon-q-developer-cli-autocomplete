@@ -114,6 +114,41 @@
       "name": "reason",
       "type": "string",
       "description": "Description of what caused an error, if any"
+    },
+    {
+      "name": "codewhispererterminal_toolUseId",
+      "type": "string",
+      "description": "The id assigned to the client by the model representing a tool use event"
+    },
+    {
+      "name": "codewhispererterminal_toolName",
+      "type": "string",
+      "description": "The name associated with a tool"
+    },
+    {
+      "name": "codewhispererterminal_isToolUseAccepted",
+      "type": "boolean",
+      "description": "Denotes if a tool use event has been fulfilled"
+    },
+    {
+      "name": "codewhispererterminal_toolUseIsSuccess",
+      "type": "boolean",
+      "description": "The outcome of a tool use"
+    },
+    {
+      "name": "codewhispererterminal_utteranceId",
+      "type": "string",
+      "description": "Id associated with a given response from the model"
+    },
+    {
+      "name": "codewhispererterminal_userInputId",
+      "type": "string",
+      "description": "Id associated with a given user input. This is used to differentiate responses to user input and that of retries from tool uses. This id is the utterance id of the first response following an user input"
+    },
+    {
+      "name": "codewhispererterminal_isToolValid",
+      "type": "boolean",
+      "description": "If the use of tool as instructed by the model is valid"
     }
   ],
   "metrics": [
@@ -274,6 +309,22 @@
       "metadata": [
         { "type": "credentialStartUrl" },
         { "type": "codewhispererterminal_oldClientId" }
+      ]
+    },
+    {
+      "name": "codewhispererterminal_toolUseSuggested",
+      "description": "Emitted once per tool use to report outcome of tool use suggested",
+      "passive": false,
+      "metadata": [
+        { "type": "credentialStartUrl" },
+        { "type": "amazonqConversationId" },
+        { "type": "codewhispererterminal_utteranceId" },
+        { "type": "codewhispererterminal_userInputId" },
+        { "type": "codewhispererterminal_toolUseId" },
+        { "type": "codewhispererterminal_toolName" },
+        { "type": "codewhispererterminal_isToolUseAccepted" },
+        { "type": "codewhispererterminal_isToolValid"},
+        { "type": "codewhispererterminal_toolUseIsSuccess", "required": false }
       ]
     }
   ]

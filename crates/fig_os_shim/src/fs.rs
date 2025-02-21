@@ -67,6 +67,15 @@ impl Fs {
         Self(Inner::Fake(Arc::new(Mutex::new(map))))
     }
 
+    pub async fn create_new(&self, path: impl AsRef<Path>) -> io::Result<fs::File> {
+        use inner::Inner;
+        match &self.0 {
+            Inner::Real => fs::File::create_new(path).await,
+            Inner::Chroot(root) => fs::File::create_new(append(root.path(), path)).await,
+            Inner::Fake(_) => Err(io::Error::new(io::ErrorKind::Other, "unimplemented")),
+        }
+    }
+
     pub async fn create_dir(&self, path: impl AsRef<Path>) -> io::Result<()> {
         use inner::Inner;
         match &self.0 {
@@ -81,6 +90,18 @@ impl Fs {
         match &self.0 {
             Inner::Real => fs::create_dir_all(path).await,
             Inner::Chroot(root) => fs::create_dir_all(append(root.path(), path)).await,
+            Inner::Fake(_) => Err(io::Error::new(io::ErrorKind::Other, "unimplemented")),
+        }
+    }
+
+    /// Attempts to open a file in read-only mode.
+    ///
+    /// This is a proxy to [`tokio::fs::File::open`].
+    pub async fn open(&self, path: impl AsRef<Path>) -> io::Result<fs::File> {
+        use inner::Inner;
+        match &self.0 {
+            Inner::Real => fs::File::open(path).await,
+            Inner::Chroot(root) => fs::File::open(append(root.path(), path)).await,
             Inner::Fake(_) => Err(io::Error::new(io::ErrorKind::Other, "unimplemented")),
         }
     }
@@ -564,6 +585,10 @@ mod tests {
         fs.write("/rename_2", "123").await.unwrap();
         fs.rename("/rename_2", "/rename_1").await.unwrap();
         assert_eq!(fs.read_to_string("/rename_1").await.unwrap(), "123");
+
+        // Checking open
+        assert!(fs.open("/does_not_exist").await.is_err());
+        assert!(fs.open("/rename_1").await.is_ok());
     }
 
     #[tokio::test]
@@ -575,5 +600,12 @@ mod tests {
         } else {
             panic!("tempdir should be created under root");
         }
+    }
+
+    #[tokio::test]
+    async fn test_create_new() {
+        let fs = Fs::new_chroot();
+        fs.create_new("my_file.txt").await.unwrap();
+        assert!(fs.create_new("my_file.txt").await.is_err());
     }
 }

@@ -16,6 +16,12 @@ pub trait ContextArcProvider {
     fn context_arc(&self) -> Arc<Context>;
 }
 
+impl ContextArcProvider for Arc<Context> {
+    fn context_arc(&self) -> Arc<Context> {
+        Arc::clone(self)
+    }
+}
+
 macro_rules! impl_context_provider {
     ($a:ty) => {
         impl ContextProvider for $a {

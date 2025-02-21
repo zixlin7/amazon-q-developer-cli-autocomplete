@@ -40,7 +40,7 @@ pub enum FsWrite {
 
 impl FsWrite {
     pub fn display_name() -> String {
-        "Write to filesystem".to_owned()
+        "File System Write".to_owned()
     }
 
     pub async fn invoke(&self, ctx: &Context, updates: &mut impl Write) -> Result<InvokeOutput> {
@@ -57,6 +57,7 @@ impl FsWrite {
                 )?;
                 let mut file = fs.create_new(path).await?;
                 file.write_all(file_text.as_bytes()).await?;
+                file.sync_data().await?;
                 Ok(Default::default())
             },
             FsWrite::StrReplace { path, old_str, new_str } => {

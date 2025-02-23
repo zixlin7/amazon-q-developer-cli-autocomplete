@@ -627,7 +627,23 @@ Hi, I'm <g>Amazon Q</g>. Ask me anything.
                     self.spinner = Some(Spinner::new(Spinners::Dots, "Thinking...".to_owned()));
                 }
 
-                self.conversation_state.append_new_user_message(user_input).await;
+                let should_abandon_tool_use = self
+                    .conversation_state
+                    .history
+                    .back()
+                    .and_then(|last_msg| match &last_msg.0 {
+                        fig_api_client::model::ChatMessage::AssistantResponseMessage(msg) => Some(msg),
+                        fig_api_client::model::ChatMessage::UserInputMessage(_) => None,
+                    })
+                    .and_then(|msg| msg.tool_uses.as_ref())
+                    .is_some_and(|tool_use| !tool_use.is_empty());
+
+                if should_abandon_tool_use {
+                    self.conversation_state.abandon_tool_use(queued_tools, user_input);
+                } else {
+                    self.conversation_state.append_new_user_message(user_input).await;
+                }
+
                 self.send_tool_use_telemetry().await;
                 Ok(Some(
                     self.client

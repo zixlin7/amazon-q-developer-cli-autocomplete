@@ -117,7 +117,13 @@ pub async fn chat(initial_input: Option<String>) -> Result<ExitCode> {
     .await;
 
     if is_interactive {
-        queue!(output, style::SetAttribute(Attribute::Reset), style::ResetColor).ok();
+        queue!(
+            output,
+            style::SetAttribute(Attribute::Reset),
+            style::ResetColor,
+            cursor::Show
+        )
+        .ok();
     }
     output.flush().ok();
 

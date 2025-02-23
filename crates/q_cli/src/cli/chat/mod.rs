@@ -533,25 +533,37 @@ Hi, I'm <g>Amazon Q</g>. I can answer questions about your workspace and tooling
                     match tool.1.invoke(&self.ctx, self.output).await {
                         Ok(result) => {
                             debug!("tool result output: {:#?}", result);
+                            if let Some(builder) = corresponding_builder {
+                                builder.is_success = Some(true);
+                            }
+
                             tool_results.push(ToolResult {
                                 tool_use_id: tool.0,
                                 content: vec![result.into()],
                                 status: ToolResultStatus::Success,
                             });
-                            if let Some(builder) = corresponding_builder {
-                                builder.is_success = Some(true);
-                            }
                         },
                         Err(err) => {
                             error!(?err, "An error occurred processing the tool");
                             tool_results.push(ToolResult {
                                 tool_use_id: tool.0,
                                 content: vec![ToolResultContentBlock::Text(format!(
-                                    "An error occurred processing the tool: {}",
+                                    "An error occurred processing the tool: \n{}",
                                     err
                                 ))],
                                 status: ToolResultStatus::Error,
                             });
+
+                            execute!(
+                                self.output,
+                                style::SetAttribute(Attribute::Bold),
+                                style::Print("Tool execution failed: "),
+                                style::SetAttribute(Attribute::Reset),
+                                style::SetForegroundColor(Color::Red),
+                                style::Print(err),
+                                style::SetForegroundColor(Color::Reset)
+                            )?;
+
                             if let Some(builder) = corresponding_builder {
                                 builder.is_success = Some(false);
                             }

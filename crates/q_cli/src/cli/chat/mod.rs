@@ -547,13 +547,13 @@ Hi, I'm <g>Amazon Q</g>. Ask me anything.
                 .is_ok_and(|s| !s.is_empty() && !queued_tools.is_empty())
                 || queued_tools.iter().all(|tool| !tool.1.requires_consent(&self.ctx));
 
-            let user_input = match self.initial_input.take() {
-                Some(input) => input,
+            let (user_input, is_initial_input) = match self.initial_input.take() {
+                Some(input) => (input, true),
                 None => match (skip_consent, queued_tools.is_empty()) {
                     // Skip prompting the user if consent is not required.
                     // TODO(bskiser): we should not set user input here so we can potentially have telemetry distinguish
                     // between tool uses that the user accepts vs automatically consents to.
-                    (true, false) => "y".to_string(),
+                    (true, false) => ("y".to_string(), false),
                     // Otherwise, read input.
                     _ => {
                         if !queued_tools.is_empty() {
@@ -577,7 +577,7 @@ Hi, I'm <g>Amazon Q</g>. Ask me anything.
                             )?;
                         }
                         match self.input_source.read_line(Some("> "))? {
-                            Some(line) => line,
+                            Some(line) => (line, false),
                             None => return Ok(None),
                         }
                     },
@@ -700,6 +700,17 @@ Hi, I'm <g>Amazon Q</g>. Ask me anything.
                 // New user prompt.
                 _ => {
                     self.tool_use_recursions = 0;
+
+                    if is_initial_input {
+                        queue!(
+                            self.output,
+                            style::SetForegroundColor(Color::Magenta),
+                            style::Print("> "),
+                            style::SetAttribute(Attribute::Reset),
+                            style::Print(&user_input),
+                            style::Print("\n")
+                        )?;
+                    }
 
                     if self.is_interactive {
                         queue!(self.output, style::SetForegroundColor(Color::Magenta))?;

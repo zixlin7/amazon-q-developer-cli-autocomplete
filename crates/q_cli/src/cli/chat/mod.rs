@@ -1,4 +1,5 @@
 mod conversation_state;
+mod error;
 mod input_source;
 mod parse;
 mod parser;
@@ -28,6 +29,7 @@ use crossterm::{
     style,
     terminal,
 };
+use error::PromptAndSendError;
 use eyre::{
     Result,
     bail,
@@ -147,6 +149,29 @@ fn load_tools() -> Result<ToolConfiguration> {
     })
 }
 
+fn print_error<W: Write>(
+    output: &mut W,
+    prepend_msg: &str,
+    report: Option<eyre::Report>,
+) -> Result<(), std::io::Error> {
+    queue!(
+        output,
+        style::SetAttribute(Attribute::Bold),
+        style::SetForegroundColor(Color::Red),
+    )?;
+    if let Some(report) = report {
+        queue!(output, style::Print(format!("{}: {:?}\n", prepend_msg, report)),)?;
+    } else {
+        queue!(output, style::Print(prepend_msg), style::Print("\n"))?;
+    }
+    queue!(
+        output,
+        style::SetForegroundColor(Color::Reset),
+        style::SetAttribute(Attribute::Reset),
+    )?;
+    output.flush()
+}
+
 /// Required fields for initializing a new chat session.
 struct ChatArgs<'o, W> {
     /// The [Write] destination for printing conversation text.
@@ -250,15 +275,26 @@ Hi, I'm <g>Amazon Q</g>. Ask me anything.
                                 cursor::Show
                             )?;
                         }
-                        execute!(
-                            self.output,
-                            style::SetAttribute(Attribute::Bold),
-                            style::SetForegroundColor(Color::Red),
-                            style::Print(format!("Amazon Q is having trouble responding right now: {:?}\n", e)),
-                            style::Print("Please try again later.\n\n"),
-                            style::SetForegroundColor(Color::Reset),
-                            style::SetAttribute(Attribute::Reset),
-                        )?;
+                        match e {
+                            PromptAndSendError::FigClientError(err) => {
+                                if let fig_api_client::Error::QuotaBreach(msg) = err {
+                                    print_error(self.output, msg, None)?;
+                                } else {
+                                    print_error(
+                                        self.output,
+                                        "Amazon Q is having trouble responding right now",
+                                        Some(err.into()),
+                                    )?;
+                                }
+                            },
+                            _ => {
+                                print_error(
+                                    self.output,
+                                    "Amazon Q is having trouble responding right now",
+                                    Some(e.into()),
+                                )?;
+                            },
+                        }
                         if self.conversation_state.next_message.is_none() {
                             self.conversation_state.history.pop_back();
                         }
@@ -445,7 +481,7 @@ Hi, I'm <g>Amazon Q</g>. Ask me anything.
         &mut self,
         sigint_recver: &mut tokio::sync::mpsc::Receiver<()>,
         should_terminate: &Arc<AtomicBool>,
-    ) -> Result<Option<SendMessageOutput>> {
+    ) -> Result<Option<SendMessageOutput>, error::PromptAndSendError> {
         loop {
             // Tool uses that need to be executed.
             let mut queued_tools: Vec<(String, Tool)> = Vec::new();
@@ -548,7 +584,9 @@ Hi, I'm <g>Amazon Q</g>. Ask me anything.
                 self.tool_use_recursions += 1;
                 let terminal_width = self.terminal_width();
                 if self.tool_use_recursions > MAX_TOOL_USE_RECURSIONS {
-                    bail!("Exceeded max tool use recursion limit: {}", MAX_TOOL_USE_RECURSIONS);
+                    return Err(
+                        eyre::eyre!("Exceeded max tool use recursion limit: {}", MAX_TOOL_USE_RECURSIONS).into(),
+                    );
                 }
 
                 for (i, (_, tool)) in queued_tools.iter().enumerate() {

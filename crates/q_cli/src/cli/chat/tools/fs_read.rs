@@ -19,6 +19,7 @@ use tracing::warn;
 
 use super::{
     InvokeOutput,
+    MAX_TOOL_RESPONSE_SIZE,
     OutputKind,
     format_path,
     sanitize_path_tool_arg,
@@ -78,22 +79,31 @@ impl FsRead {
                     .take(end - start + 1)
                     .collect::<Vec<_>>()
                     .join("\n");
-                queue!(
-                    updates,
-                    style::SetForegroundColor(Color::Green),
-                    style::Print("Reading:\n"),
-                    style::ResetColor,
-                    style::Print("\n"),
-                )?;
 
                 let formatted = stylize_output_if_able(ctx, &path, file_contents.as_str(), Some(start + 1), None);
                 queue!(updates, style::Print(formatted), style::ResetColor, style::Print("\n"))?;
+
+                // TODO: We copy and paste this below so the control flow needs work in this tool
+                let byte_count = file_contents.len();
+                if byte_count > MAX_TOOL_RESPONSE_SIZE {
+                    bail!(
+                        "This tool only supports reading {MAX_TOOL_RESPONSE_SIZE} bytes at a time. You tried to read {byte_count} bytes. Try executing with fewer lines specified."
+                    );
+                }
+
                 return Ok(InvokeOutput {
                     output: OutputKind::Text(file_contents),
                 });
             }
 
             let file = ctx.fs().read_to_string(&path).await?;
+            let byte_count = file.len();
+            if byte_count > MAX_TOOL_RESPONSE_SIZE {
+                bail!(
+                    "This tool only supports reading up to {MAX_TOOL_RESPONSE_SIZE} bytes at a time. You tried to read {byte_count} bytes. Try executing with fewer lines specified."
+                );
+            }
+
             let file_text = stylize_output_if_able(ctx, path, file.as_str(), None, None);
             queue!(
                 updates,
@@ -157,8 +167,17 @@ impl FsRead {
                     }
                 }
             }
+
+            let result = result.join("\n");
+            let byte_count = result.len();
+            if byte_count > MAX_TOOL_RESPONSE_SIZE {
+                bail!(
+                    "This tool only supports reading up to {MAX_TOOL_RESPONSE_SIZE} bytes at a time. You tried to read {byte_count} bytes. Try executing with fewer lines specified."
+                );
+            }
+
             Ok(InvokeOutput {
-                output: OutputKind::Text(result.join("\n")),
+                output: OutputKind::Text(result),
             })
         }
     }
@@ -243,6 +262,7 @@ impl FsRead {
         }
 
         let is_file = ctx.fs().symlink_metadata(&path).await?.is_file();
+
         self.ty = Some(is_file);
 
         Ok(())

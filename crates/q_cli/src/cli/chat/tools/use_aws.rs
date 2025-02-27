@@ -20,6 +20,7 @@ use serde::Deserialize;
 
 use super::{
     InvokeOutput,
+    MAX_TOOL_RESPONSE_SIZE,
     OutputKind,
 };
 
@@ -66,16 +67,36 @@ impl UseAws {
         let stdout = output.stdout.to_str_lossy();
         let stderr = output.stderr.to_str_lossy();
 
+        let stdout = format!(
+            "{}{}",
+            &stdout[0..stdout.len().min(MAX_TOOL_RESPONSE_SIZE / 3)],
+            if stdout.len() > MAX_TOOL_RESPONSE_SIZE / 3 {
+                " ... truncated"
+            } else {
+                ""
+            }
+        );
+
+        let stderr = format!(
+            "{}{}",
+            &stderr[0..stderr.len().min(MAX_TOOL_RESPONSE_SIZE / 3)],
+            if stderr.len() > MAX_TOOL_RESPONSE_SIZE / 3 {
+                " ... truncated"
+            } else {
+                ""
+            }
+        );
+
         if status.eq("0") {
             Ok(InvokeOutput {
                 output: OutputKind::Json(serde_json::json!({
                     "exit_status": status,
                     "stdout": stdout,
-                    "stderr": stderr
+                    "stderr": stderr.clone()
                 })),
             })
         } else {
-            Err(eyre::eyre!(stderr.to_string()))
+            Err(eyre::eyre!(stderr))
         }
     }
 

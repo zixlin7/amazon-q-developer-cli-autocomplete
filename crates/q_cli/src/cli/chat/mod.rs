@@ -15,6 +15,7 @@ use std::io::{
 use std::process::ExitCode;
 use std::sync::Arc;
 use std::sync::atomic::AtomicBool;
+use std::time::Duration;
 
 use conversation_state::ConversationState;
 use crossterm::style::{
@@ -430,15 +431,21 @@ Hi, I'm <g>Amazon Q</g>. Ask me anything.
                             None => break, // Data was incomplete
                         },
                     }
+
+                    // TODO: We should buffer output based on how much we have to parse, not as a constant
+                    // Do not remove unless you are nabochay :)
+                    std::thread::sleep(Duration::from_millis(8));
                 }
 
                 // Set spinner after showing all of the assistant text content so far.
                 if let (Some(name), true) = (&tool_name_being_recvd, self.is_interactive) {
-                    execute!(self.output, style::Print("\n"))?;
-                    self.spinner = Some(Spinner::new(
-                        Spinners::Dots,
-                        format!("Creating tool {}...", name.clone().green()),
-                    ));
+                    queue!(
+                        self.output,
+                        style::SetForegroundColor(Color::Blue),
+                        style::Print(format!("\n{name}: ")),
+                        style::SetForegroundColor(Color::Reset),
+                    )?;
+                    self.spinner = Some(Spinner::new(Spinners::Dots, "Thinking...".to_string()));
                 }
 
                 if ended {
@@ -676,11 +683,11 @@ Hi, I'm <g>Amazon Q</g>. Ask me anything.
                         let tool_start = std::time::Instant::now();
                         queue!(
                             self.output,
-                            style::Print("\n"),
-                            style::Print("▔".repeat(terminal_width)),
-                            style::Print("\nExecuting "),
+                            style::Print("\n\nExecuting "),
                             style::SetForegroundColor(Color::Cyan),
-                            style::Print(format!("{}...\n\n", tool.1.display_name())),
+                            style::Print(format!("{}...\n", tool.1.display_name())),
+                            style::SetForegroundColor(Color::DarkGrey),
+                            style::Print(format!("{}\n", "▔".repeat(terminal_width))),
                             style::SetForegroundColor(Color::Reset),
                         )?;
                         should_terminate.store(false, std::sync::atomic::Ordering::SeqCst);
@@ -711,7 +718,7 @@ Hi, I'm <g>Amazon Q</g>. Ask me anything.
                                     style::SetForegroundColor(Color::Green),
                                     style::Print(format!("🟢 Completed in {}s", tool_time)),
                                     style::SetForegroundColor(Color::Reset),
-                                    style::Print("\n\n"),
+                                    style::Print("\n"),
                                 )?;
                                 if let Some(builder) = corresponding_builder {
                                     builder.is_success = Some(true);

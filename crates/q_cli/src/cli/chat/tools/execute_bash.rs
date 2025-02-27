@@ -19,6 +19,7 @@ use serde::Deserialize;
 
 use super::{
     InvokeOutput,
+    MAX_TOOL_RESPONSE_SIZE,
     OutputKind,
 };
 
@@ -38,15 +39,15 @@ impl ExecuteBash {
             style::Print("\n"),
         )?;
 
-        let (stdin, stdout, stderr) = match self.interactive {
-            Some(true) => (Stdio::inherit(), Stdio::inherit(), Stdio::inherit()),
-            _ => (Stdio::piped(), Stdio::piped(), Stdio::piped()),
+        let (stdout, stderr) = match self.interactive {
+            Some(true) => (Stdio::inherit(), Stdio::inherit()),
+            _ => (Stdio::piped(), Stdio::piped()),
         };
 
         let output = tokio::process::Command::new("bash")
             .arg("-c")
             .arg(&self.command)
-            .stdin(stdin)
+            .stdin(Stdio::inherit())
             .stdout(stdout)
             .stderr(stderr)
             .spawn()
@@ -62,12 +63,34 @@ impl ExecuteBash {
             execute!(updates, style::Print(&stdout))?;
         }
 
+        let stdout = format!(
+            "{}{}",
+            &stdout[0..stdout.len().min(MAX_TOOL_RESPONSE_SIZE / 3)],
+            if stdout.len() > MAX_TOOL_RESPONSE_SIZE / 3 {
+                " ... truncated"
+            } else {
+                ""
+            }
+        );
+
+        let stderr = format!(
+            "{}{}",
+            &stderr[0..stderr.len().min(MAX_TOOL_RESPONSE_SIZE / 3)],
+            if stderr.len() > MAX_TOOL_RESPONSE_SIZE / 3 {
+                " ... truncated"
+            } else {
+                ""
+            }
+        );
+
+        let output = serde_json::json!({
+            "exit_status": status,
+            "stdout": stdout,
+            "stderr": stderr,
+        });
+
         Ok(InvokeOutput {
-            output: OutputKind::Json(serde_json::json!({
-                "exit_status": status,
-                "stdout": stdout,
-                "stderr": stderr,
-            })),
+            output: OutputKind::Json(output),
         })
     }
 

@@ -44,6 +44,8 @@ use use_aws::UseAws;
 
 use super::parser::ToolUse;
 
+pub const MAX_TOOL_RESPONSE_SIZE: usize = 30720;
+
 static SYNTAX_SET: LazyLock<SyntaxSet> = LazyLock::new(SyntaxSet::load_defaults_newlines);
 static THEME_SET: LazyLock<ThemeSet> = LazyLock::new(ThemeSet::load_defaults);
 

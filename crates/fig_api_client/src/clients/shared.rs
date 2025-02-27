@@ -15,8 +15,8 @@ use crate::{
     Error,
 };
 
-// TODO(bskiser): Update timeout
-const DEFAULT_TIMEOUT_DURATION: Duration = Duration::from_millis(60100);
+// TODO(bskiser): confirm timeout is updated to an appropriate value?
+const DEFAULT_TIMEOUT_DURATION: Duration = Duration::from_secs(60 * 5);
 
 pub(crate) fn timeout_config() -> TimeoutConfig {
     let timeout = fig_settings::settings::get_int("api.timeout")
@@ -35,7 +35,7 @@ pub(crate) fn timeout_config() -> TimeoutConfig {
 
 pub(crate) fn stalled_stream_protection_config() -> StalledStreamProtectionConfig {
     StalledStreamProtectionConfig::enabled()
-        .grace_period(Duration::from_secs(100))
+        .grace_period(Duration::from_secs(60 * 5))
         .build()
 }
 

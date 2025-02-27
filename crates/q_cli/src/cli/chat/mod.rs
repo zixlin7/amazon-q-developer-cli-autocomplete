@@ -444,6 +444,7 @@ Hi, I'm <g>Amazon Q</g>. Ask me anything.
                         style::SetForegroundColor(Color::Blue),
                         style::Print(format!("\n{name}: ")),
                         style::SetForegroundColor(Color::Reset),
+                        cursor::Hide,
                     )?;
                     self.spinner = Some(Spinner::new(Spinners::Dots, "Thinking...".to_string()));
                 }

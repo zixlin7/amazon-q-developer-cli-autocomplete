@@ -207,6 +207,10 @@ struct ChatContext<'o, W> {
     tool_use_recursions: u32,
     current_user_input_id: Option<String>,
     tool_use_events: Vec<ToolUseEventBuilder>,
+
+    /// Whether or not an unexpected end of chat stream was encountered while consuming the model
+    /// response's tool use data. Pair of (tool_use_id, name) for the tool that was being received.
+    encountered_tool_use_eos: Option<(String, String)>,
 }
 
 impl<'o, W> ChatContext<'o, W>
@@ -228,6 +232,7 @@ where
             tool_use_recursions: 0,
             current_user_input_id: None,
             tool_use_events: vec![],
+            encountered_tool_use_eos: None,
         }
     }
 
@@ -381,19 +386,43 @@ Hi, I'm <g>Amazon Q</g>. Ask me anything.
                                 cursor::Show
                             )?;
                         }
-                        execute!(
-                            self.output,
-                            style::SetAttribute(Attribute::Bold),
-                            style::SetForegroundColor(Color::Red),
-                            style::Print(format!(
-                                "We're having trouble responding right now, please try again later: {:?}",
-                                err
-                            )),
-                            style::SetForegroundColor(Color::Reset),
-                            style::SetAttribute(Attribute::Reset),
-                        )?;
-                        if self.conversation_state.next_message.is_none() {
-                            self.conversation_state.history.pop_back();
+                        match err {
+                            parser::RecvError::UnexpectedToolUseEos {
+                                tool_use_id,
+                                name,
+                                message,
+                            } => {
+                                error!(
+                                    tool_use_id,
+                                    name, "The response stream ended before the entire tool use was received"
+                                );
+                                self.conversation_state.push_assistant_message(*message);
+                                self.encountered_tool_use_eos = Some((tool_use_id, name));
+                                if self.is_interactive {
+                                    execute!(self.output, cursor::Hide)?;
+                                    self.spinner = Some(Spinner::new(
+                                        Spinners::Dots,
+                                        "The generated tool use was too large, trying to divide up the work..."
+                                            .to_string(),
+                                    ));
+                                }
+                            },
+                            err => {
+                                execute!(
+                                    self.output,
+                                    style::SetAttribute(Attribute::Bold),
+                                    style::SetForegroundColor(Color::Red),
+                                    style::Print(format!(
+                                        "We're having trouble responding right now, please try again later: {:?}",
+                                        err
+                                    )),
+                                    style::SetForegroundColor(Color::Reset),
+                                    style::SetAttribute(Attribute::Reset),
+                                )?;
+                                if self.conversation_state.next_message.is_none() {
+                                    self.conversation_state.history.pop_back();
+                                }
+                            },
                         }
                         break;
                     },
@@ -490,6 +519,23 @@ Hi, I'm <g>Amazon Q</g>. Ask me anything.
         sigint_recver: &mut tokio::sync::mpsc::Receiver<()>,
         should_terminate: &Arc<AtomicBool>,
     ) -> Result<Option<SendMessageOutput>, error::PromptAndSendError> {
+        if let Some((tool_use_id, _)) = self.encountered_tool_use_eos.take() {
+            let tool_results = vec![ToolResult {
+                tool_use_id,
+                content: vec![ToolResultContentBlock::Text(
+                    "The generated tool was too large, try again but this time split up the work between multiple tool uses".to_string(),
+                )],
+                status: ToolResultStatus::Error,
+            }];
+            self.conversation_state.add_tool_results(tool_results);
+            self.send_tool_use_telemetry().await;
+            return Ok(Some(
+                self.client
+                    .send_message(self.conversation_state.as_sendable_conversation_state())
+                    .await?,
+            ));
+        }
+
         loop {
             // Tool uses that need to be executed.
             let mut queued_tools: Vec<(String, Tool)> = Vec::new();

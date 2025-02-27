@@ -1,3 +1,5 @@
+use std::time::Instant;
+
 use eyre::Result;
 use fig_api_client::clients::SendMessageOutput;
 use fig_api_client::model::{
@@ -6,6 +8,7 @@ use fig_api_client::model::{
     ChatResponseStream,
     ToolUse as FigToolUse,
 };
+use thiserror::Error;
 use tracing::{
     error,
     trace,
@@ -32,6 +35,21 @@ impl From<ToolUse> for FigToolUse {
             input: serde_value_to_document(value.args),
         }
     }
+}
+
+#[derive(Debug, Error)]
+pub enum RecvError {
+    #[error("{0}")]
+    Client(#[from] fig_api_client::Error),
+    #[error("{0}")]
+    Json(#[from] serde_json::Error),
+    /// Unexpected end of stream while receiving a tool use.
+    #[error("Unexpected end of stream for tool: {} with id: {}", .name, .tool_use_id)]
+    UnexpectedToolUseEos {
+        tool_use_id: String,
+        name: String,
+        message: Box<Message>,
+    },
 }
 
 /// State associated with parsing a [ConverseStreamResponse] into a [Message].
@@ -70,7 +88,7 @@ impl ResponseParser {
     }
 
     /// Consumes the associated [ConverseStreamResponse] until a valid [ResponseEvent] is parsed.
-    pub async fn recv(&mut self) -> Result<ResponseEvent> {
+    pub async fn recv(&mut self) -> Result<ResponseEvent, RecvError> {
         if let Some((id, name)) = self.parsing_tool_use.take() {
             let tool_use = self.parse_tool_use(id, name).await?;
             self.tool_uses.push(tool_use.clone());
@@ -150,19 +168,63 @@ impl ResponseParser {
     /// Consumes the response stream until a valid [ToolUse] is parsed.
     ///
     /// The arguments are the fields from the first [ChatResponseStream::ToolUseEvent] consumed.
-    async fn parse_tool_use(&mut self, id: String, name: String) -> Result<ToolUse> {
+    async fn parse_tool_use(&mut self, id: String, name: String) -> Result<ToolUse, RecvError> {
         let mut tool_string = String::new();
+        let mut stop_seen = false;
+        let start = Instant::now();
         while let Some(ChatResponseStream::ToolUseEvent { .. }) = self.peek().await? {
             if let Some(ChatResponseStream::ToolUseEvent { input, stop, .. }) = self.next().await? {
                 if let Some(i) = input {
                     tool_string.push_str(&i);
                 }
                 if let Some(true) = stop {
+                    stop_seen = true;
                     break;
                 }
             }
         }
-        let args = serde_json::from_str(&tool_string)?;
+        let args = match serde_json::from_str(&tool_string) {
+            Ok(args) => args,
+            Err(err) => {
+                // If the stream ended before we saw the final tool use event (and thus failed
+                // deserializing the tool use), this is most likely due to the backend dropping the
+                // connection. The tool was too large!
+                if self.peek().await?.is_none() && !stop_seen {
+                    error!(
+                        "Received an unexpected end of stream after spending ~{}s receiving tool events",
+                        Instant::now().duration_since(start).as_secs_f64()
+                    );
+                    self.tool_uses.push(ToolUse {
+                        id: id.clone(),
+                        name: name.clone(),
+                        args: serde_json::Value::Object(
+                            [(
+                                "key".to_string(),
+                                serde_json::Value::String(
+                                    "fake tool use args - actual tool use was too large to include".to_string(),
+                                ),
+                            )]
+                            .into_iter()
+                            .collect(),
+                        ),
+                    });
+                    let message = Box::new(Message(ChatMessage::AssistantResponseMessage(
+                        AssistantResponseMessage {
+                            message_id: self.message_id.take(),
+                            content: std::mem::take(&mut self.assistant_text),
+                            tool_uses: Some(self.tool_uses.clone().into_iter().map(Into::into).collect()),
+                        },
+                    )));
+                    return Err(RecvError::UnexpectedToolUseEos {
+                        tool_use_id: id,
+                        name,
+                        message,
+                    });
+                } else {
+                    return Err(err.into());
+                }
+            },
+        };
         Ok(ToolUse { id, name, args })
     }
 

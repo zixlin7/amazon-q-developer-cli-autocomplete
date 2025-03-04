@@ -1,7 +1,7 @@
+use std::collections::VecDeque;
 use std::io::Write;
 use std::process::Stdio;
 
-use bstr::ByteSlice;
 use crossterm::style::{
     self,
     Color,
@@ -16,22 +16,25 @@ use eyre::{
 };
 use fig_os_shim::Context;
 use serde::Deserialize;
+use tokio::io::AsyncBufReadExt;
+use tokio::select;
+use tracing::error;
 
 use super::{
     InvokeOutput,
     MAX_TOOL_RESPONSE_SIZE,
     OutputKind,
 };
+use crate::cli::chat::truncate_safe;
 
 #[derive(Debug, Clone, Deserialize)]
 pub struct ExecuteBash {
     pub command: String,
-    pub interactive: Option<bool>,
 }
 
 impl ExecuteBash {
     pub async fn invoke(&self, mut updates: impl Write) -> Result<InvokeOutput> {
-        queue!(
+        execute!(
             updates,
             style::SetForegroundColor(Color::Green),
             style::Print(format!("Executing `{}`", &self.command)),
@@ -39,54 +42,87 @@ impl ExecuteBash {
             style::Print("\n"),
         )?;
 
-        let (stdout, stderr) = match self.interactive {
-            Some(true) => (Stdio::inherit(), Stdio::inherit()),
-            _ => (Stdio::piped(), Stdio::piped()),
-        };
-
-        let output = tokio::process::Command::new("bash")
+        // We need to maintain a handle on stderr and stdout, but pipe it to the terminal as well
+        let mut child = tokio::process::Command::new("bash")
             .arg("-c")
             .arg(&self.command)
             .stdin(Stdio::inherit())
-            .stdout(stdout)
-            .stderr(stderr)
+            .stdout(Stdio::piped())
+            .stderr(Stdio::piped())
             .spawn()
-            .wrap_err_with(|| format!("Unable to spawn command '{}'", &self.command))?
-            .wait_with_output()
-            .await
-            .wrap_err_with(|| format!("Unable to wait on subprocess for command '{}'", &self.command))?;
-        let status = output.status.code().unwrap_or(0).to_string();
-        let stdout = output.stdout.to_str_lossy();
-        let stderr = output.stderr.to_str_lossy();
+            .wrap_err_with(|| format!("Unable to spawn command '{}'", &self.command))?;
 
-        if let Some(false) = self.interactive {
-            execute!(updates, style::Print(&stdout))?;
+        let stdout = child.stdout.take().unwrap();
+        let stdout = tokio::io::BufReader::new(stdout);
+        let mut stdout = stdout.lines();
+
+        let stderr = child.stderr.take().unwrap();
+        let stderr = tokio::io::BufReader::new(stderr);
+        let mut stderr = stderr.lines();
+
+        const LINE_COUNT: usize = 1024;
+        let mut stdout_buf = VecDeque::with_capacity(LINE_COUNT);
+        let mut stderr_buf = VecDeque::with_capacity(LINE_COUNT);
+
+        let exit_status = loop {
+            child.stdin.take();
+
+            select! {
+                biased;
+                line = stdout.next_line() => match line {
+                    Ok(Some(line)) => {
+                        writeln!(updates, "{line}")?;
+                        if stdout_buf.len() >= LINE_COUNT {
+                            stdout_buf.pop_front();
+                        }
+                        stdout_buf.push_back(line);
+                    },
+                    Ok(None) => {},
+                    Err(err) => error!(%err, "Failed to read stdout of child process"),
+                },
+                line = stderr.next_line() => match line {
+                    Ok(Some(line)) => {
+                        writeln!(updates, "{line}")?;
+                        if stderr_buf.len() >= LINE_COUNT {
+                            stderr_buf.pop_front();
+                        }
+                        stderr_buf.push_back(line);
+                    },
+                    Ok(None) => {},
+                    Err(err) => error!(%err, "Failed to read stderr of child process"),
+                },
+                exit_status = child.wait() => {
+                    break exit_status;
+                },
+            };
         }
+        .wrap_err_with(|| format!("No exit status for '{}'", &self.command))?;
 
-        let stdout = format!(
-            "{}{}",
-            &stdout[0..stdout.len().min(MAX_TOOL_RESPONSE_SIZE / 3)],
-            if stdout.len() > MAX_TOOL_RESPONSE_SIZE / 3 {
-                " ... truncated"
-            } else {
-                ""
-            }
-        );
+        updates.flush()?;
 
-        let stderr = format!(
-            "{}{}",
-            &stderr[0..stderr.len().min(MAX_TOOL_RESPONSE_SIZE / 3)],
-            if stderr.len() > MAX_TOOL_RESPONSE_SIZE / 3 {
-                " ... truncated"
-            } else {
-                ""
-            }
-        );
+        let stdout = stdout_buf.into_iter().collect::<Vec<_>>().join("\n");
+        let stderr = stderr_buf.into_iter().collect::<Vec<_>>().join("\n");
 
         let output = serde_json::json!({
-            "exit_status": status,
-            "stdout": stdout,
-            "stderr": stderr,
+            "exit_status": exit_status.code().unwrap_or(0).to_string(),
+            "stdout": format!(
+                "{}{}",
+                truncate_safe(&stdout, MAX_TOOL_RESPONSE_SIZE / 3),
+                if stdout.len() > MAX_TOOL_RESPONSE_SIZE / 3 {
+                    " ... truncated"
+                } else {
+                    ""
+                }
+            ),
+            "stderr": format!(
+                "{}{}",
+                truncate_safe(&stderr, MAX_TOOL_RESPONSE_SIZE / 3),
+                if stderr.len() > MAX_TOOL_RESPONSE_SIZE / 3 {
+                    " ... truncated"
+                } else {
+                    ""
+                }
+            ),
         });
 
         Ok(InvokeOutput {
@@ -127,7 +163,6 @@ mod tests {
         // Verifying stdout
         let v = serde_json::json!({
             "command": "echo Hello, world!",
-            "interactive": false
         });
         let out = serde_json::from_value::<ExecuteBash>(v)
             .unwrap()
@@ -137,7 +172,7 @@ mod tests {
 
         if let OutputKind::Json(json) = out.output {
             assert_eq!(json.get("exit_status").unwrap(), &0.to_string());
-            assert_eq!(json.get("stdout").unwrap(), "Hello, world!\n");
+            assert_eq!(json.get("stdout").unwrap(), "Hello, world!");
             assert_eq!(json.get("stderr").unwrap(), "");
         } else {
             panic!("Expected JSON output");
@@ -157,7 +192,7 @@ mod tests {
         if let OutputKind::Json(json) = out.output {
             assert_eq!(json.get("exit_status").unwrap(), &0.to_string());
             assert_eq!(json.get("stdout").unwrap(), "");
-            assert_eq!(json.get("stderr").unwrap(), "Hello, world!\n");
+            assert_eq!(json.get("stderr").unwrap(), "Hello, world!");
         } else {
             panic!("Expected JSON output");
         }

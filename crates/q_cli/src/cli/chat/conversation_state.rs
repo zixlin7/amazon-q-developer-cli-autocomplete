@@ -32,6 +32,7 @@ use tracing::{
 };
 
 use super::tools::ToolSpec;
+use super::truncate_safe;
 use crate::cli::chat::tools::{
     InputSchema,
     InvokeOutput,
@@ -86,7 +87,7 @@ impl ConversationState {
         self.history.clear();
     }
 
-    pub async fn append_new_user_message(&mut self, input: String) {
+    pub fn append_new_user_message(&mut self, input: String) {
         debug_assert!(self.next_message.is_none(), "next_message should not exist");
         if let Some(next_message) = self.next_message.as_ref() {
             warn!(?next_message, "next_message should not exist");
@@ -338,24 +339,6 @@ fn build_shell_state() -> ShellState {
     }
 }
 
-fn truncate_safe(s: &str, max_bytes: usize) -> &str {
-    if s.len() <= max_bytes {
-        return s;
-    }
-
-    let mut byte_count = 0;
-    let mut char_indices = s.char_indices();
-
-    for (byte_idx, _) in &mut char_indices {
-        if byte_count + (byte_idx - byte_count) > max_bytes {
-            break;
-        }
-        byte_count = byte_idx;
-    }
-
-    &s[..byte_count]
-}
-
 #[cfg(test)]
 mod tests {
     use fig_api_client::model::{
@@ -388,7 +371,7 @@ mod tests {
 
         // First, build a large conversation history. We need to ensure that the order is always
         // User -> Assistant -> User -> Assistant ...and so on.
-        conversation_state.append_new_user_message("start".to_string()).await;
+        conversation_state.append_new_user_message("start".to_string());
         for i in 0..=100 {
             let s = conversation_state.as_sendable_conversation_state();
             assert!(
@@ -408,7 +391,7 @@ mod tests {
                 content: i.to_string(),
                 tool_uses: None,
             });
-            conversation_state.append_new_user_message(i.to_string()).await;
+            conversation_state.append_new_user_message(i.to_string());
         }
 
         let s = conversation_state.as_sendable_conversation_state();
@@ -441,7 +424,7 @@ mod tests {
         let mut conversation_state = ConversationState::new(load_tools().unwrap());
 
         // Build a long conversation history of tool use results.
-        conversation_state.append_new_user_message("start".to_string()).await;
+        conversation_state.append_new_user_message("start".to_string());
         for i in 0..=(MAX_CONVERSATION_STATE_HISTORY_LEN + 100) {
             let _ = conversation_state.as_sendable_conversation_state();
             conversation_state.push_assistant_message(AssistantResponseMessage {

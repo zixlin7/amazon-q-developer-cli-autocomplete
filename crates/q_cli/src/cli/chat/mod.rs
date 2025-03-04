@@ -464,7 +464,7 @@ Hi, I'm <g>Amazon Q</g>. Ask me anything.
                 if !tool_uses.is_empty() {
                     self.conversation_state.abandon_tool_use(tool_uses, user_input);
                 } else {
-                    self.conversation_state.append_new_user_message(user_input).await;
+                    self.conversation_state.append_new_user_message(user_input);
                 }
 
                 self.send_tool_use_telemetry().await;
@@ -872,6 +872,24 @@ Hi, I'm <g>Amazon Q</g>. Ask me anything.
     fn terminal_width(&self) -> usize {
         (self.terminal_width_provider)().unwrap_or(80)
     }
+}
+
+pub fn truncate_safe(s: &str, max_bytes: usize) -> &str {
+    if s.len() <= max_bytes {
+        return s;
+    }
+
+    let mut byte_count = 0;
+    let mut char_indices = s.char_indices();
+
+    for (byte_idx, _) in &mut char_indices {
+        if byte_count + (byte_idx - byte_count) > max_bytes {
+            break;
+        }
+        byte_count = byte_idx;
+    }
+
+    &s[..byte_count]
 }
 
 #[derive(Debug)]

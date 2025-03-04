@@ -274,8 +274,13 @@ where
             execute!(
                 self.output,
                 style::Print(color_print::cstr! {"
-Hi, I'm <g>Amazon Q</g>. Ask me anything.
-
+Hi, I'm <g>Amazon Q</g>, your AI Developer Assistant.
+\n<yellow>Try asking me:</yellow>\n\n\
+                <green>• 🔍 What tools do you have?\n\
+                • 🛠️ Fix the build failures in this project\n\
+                • ✅ Write unit tests and markdown docs for my application\n\
+ • ☁️ List the s3 buckets I have in us-west-2</green>
+\n<dim>Type <green>/exit</green> to quit</dim>\n
 "
                 })
             )?;

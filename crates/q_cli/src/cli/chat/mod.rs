@@ -105,9 +105,12 @@ const HELP_TEXT: &str = color_print::cstr! {"
 
 <em>!{command}</em>    <black!>Quickly execute a command in your current session</black!>
 
+<black!>Use the following dangerous command at your own discretion.</black!>
+<em>/acceptall</em>    <black!>Disables acceptance prompting for the session.</black!>
+
 "};
 
-pub async fn chat(input: Option<String>) -> Result<ExitCode> {
+pub async fn chat(input: Option<String>, accept_all: bool) -> Result<ExitCode> {
     if !fig_util::system_info::in_cloudshell() && !fig_auth::is_logged_in().await {
         bail!(
             "You are not logged in, please log in with {}",
@@ -136,9 +139,16 @@ pub async fn chat(input: Option<String>) -> Result<ExitCode> {
         _ => StreamingClient::new().await?,
     };
 
-    let mut chat = ChatContext::new(ctx, output, input, InputSource::new()?, interactive, client, || {
-        terminal::window_size().map(|s| s.columns.into()).ok()
-    })?;
+    let mut chat = ChatContext::new(
+        ctx,
+        output,
+        input,
+        InputSource::new()?,
+        interactive,
+        client,
+        || terminal::window_size().map(|s| s.columns.into()).ok(),
+        accept_all,
+    )?;
 
     let result = chat.try_chat().await.map(|_| ExitCode::SUCCESS);
     drop(chat); // Explicit drop for clarity
@@ -191,9 +201,11 @@ pub struct ChatContext<W: Write> {
     tool_use_telemetry_events: HashMap<String, ToolUseEventBuilder>,
     /// State used to keep track of tool use relation
     tool_use_status: ToolUseStatus,
+    accept_all: bool,
 }
 
 impl<W: Write> ChatContext<W> {
+    #[allow(clippy::too_many_arguments)]
     pub fn new(
         ctx: Arc<Context>,
         output: W,
@@ -202,6 +214,7 @@ impl<W: Write> ChatContext<W> {
         interactive: bool,
         client: StreamingClient,
         terminal_width_provider: fn() -> Option<usize>,
+        accept_all: bool,
     ) -> Result<Self> {
         Ok(Self {
             ctx,
@@ -215,6 +228,7 @@ impl<W: Write> ChatContext<W> {
             conversation_state: ConversationState::new(load_tools()?),
             tool_use_telemetry_events: HashMap::new(),
             tool_use_status: ToolUseStatus::Idle,
+            accept_all,
         })
     }
 }
@@ -429,7 +443,7 @@ where
                 style::Print("y"),
                 style::SetForegroundColor(Color::DarkGrey),
                 style::Print(format!(
-                    " to run {}, otherwise continue without.\n\n",
+                    " to run {}, otherwise continue chatting.\n\n",
                     match tool_uses.len() == 1 {
                         true => "this tool",
                         false => "these tools",
@@ -499,7 +513,7 @@ where
                 execute!(
                     self.output,
                     style::SetForegroundColor(Color::Green),
-                    style::Print("\nConversation history cleared\n\n"),
+                    style::Print("\nConversation history cleared.\n\n"),
                     style::SetForegroundColor(Color::Reset)
                 )?;
 
@@ -507,6 +521,21 @@ where
             },
             Command::Help => {
                 execute!(self.output, style::Print(HELP_TEXT))?;
+                ChatState::PromptUser { tool_uses: None }
+            },
+            Command::AcceptAll => {
+                self.accept_all = !self.accept_all;
+
+                execute!(
+                    self.output,
+                    style::SetForegroundColor(Color::Green),
+                    style::Print(format!("\n{} acceptance prompting.\n\n", match self.accept_all {
+                        true => "Disabled",
+                        false => "Enabled",
+                    })),
+                    style::SetForegroundColor(Color::Reset)
+                )?;
+
                 ChatState::PromptUser { tool_uses: None }
             },
             Command::Quit => ChatState::Exit,
@@ -851,20 +880,16 @@ where
             return Ok(ChatState::HandleResponseStream(response));
         }
 
-        let skip_consent = self
-            .ctx
-            .env()
-            .get("Q_CHAT_SKIP_TOOL_CONSENT")
-            .is_ok_and(|s| !s.is_empty() && !queued_tools.is_empty())
-            || queued_tools.iter().all(|tool| !tool.1.requires_consent(&self.ctx));
+        let skip_acceptance = self.accept_all || queued_tools.iter().all(|tool| !tool.1.requires_acceptance(&self.ctx));
 
-        if skip_consent {
-            self.print_tool_descriptions(&queued_tools)?;
-            Ok(ChatState::ExecuteTools(queued_tools))
-        } else {
-            Ok(ChatState::PromptUser {
+        match skip_acceptance {
+            true => {
+                self.print_tool_descriptions(&queued_tools)?;
+                Ok(ChatState::ExecuteTools(queued_tools))
+            },
+            false => Ok(ChatState::PromptUser {
                 tool_uses: Some(queued_tools),
-            })
+            }),
         }
     }
 
@@ -1080,6 +1105,7 @@ mod tests {
             true,
             test_client,
             || Some(80),
+            false,
         )
         .unwrap()
         .try_chat()

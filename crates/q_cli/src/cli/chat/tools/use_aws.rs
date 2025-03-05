@@ -39,7 +39,7 @@ pub struct UseAws {
 }
 
 impl UseAws {
-    pub fn requires_consent(&self) -> bool {
+    pub fn requires_acceptance(&self) -> bool {
         !READONLY_OPS.iter().any(|op| self.operation_name.starts_with(op))
     }
 
@@ -160,7 +160,7 @@ mod tests {
     }
 
     #[test]
-    fn test_requires_consent() {
+    fn test_requires_acceptance() {
         let cmd = use_aws! {{
             "service_name": "ecs",
             "operation_name": "list-task-definitions",
@@ -168,7 +168,7 @@ mod tests {
             "profile_name": "default",
             "label": ""
         }};
-        assert!(!cmd.requires_consent());
+        assert!(!cmd.requires_acceptance());
         let cmd = use_aws! {{
             "service_name": "lambda",
             "operation_name": "list-functions",
@@ -176,7 +176,7 @@ mod tests {
             "profile_name": "default",
             "label": ""
         }};
-        assert!(!cmd.requires_consent());
+        assert!(!cmd.requires_acceptance());
         let cmd = use_aws! {{
             "service_name": "s3",
             "operation_name": "put-object",
@@ -184,7 +184,7 @@ mod tests {
             "profile_name": "default",
             "label": ""
         }};
-        assert!(cmd.requires_consent());
+        assert!(cmd.requires_acceptance());
     }
 
     #[test]

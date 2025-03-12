@@ -8,18 +8,13 @@ use std::path::{
     Path,
     PathBuf,
 };
-use std::sync::LazyLock;
 
 use aws_smithy_types::{
     Document,
     Number as SmithyNumber,
 };
 use execute_bash::ExecuteBash;
-use eyre::{
-    ContextCompat as _,
-    Result,
-    bail,
-};
+use eyre::Result;
 use fig_api_client::model::{
     ToolResult,
     ToolResultContentBlock,
@@ -29,25 +24,11 @@ use fig_os_shim::Context;
 use fs_read::FsRead;
 use fs_write::FsWrite;
 use serde::Deserialize;
-use syntect::easy::HighlightLines;
-use syntect::highlighting::ThemeSet;
-use syntect::parsing::SyntaxSet;
-use syntect::util::{
-    LinesWithEndings,
-    as_24_bit_terminal_escaped,
-};
-use tracing::{
-    error,
-    warn,
-};
 use use_aws::UseAws;
 
 use super::parser::ToolUse;
 
 pub const MAX_TOOL_RESPONSE_SIZE: usize = 30720;
-
-static SYNTAX_SET: LazyLock<SyntaxSet> = LazyLock::new(SyntaxSet::load_defaults_newlines);
-static THEME_SET: LazyLock<ThemeSet> = LazyLock::new(ThemeSet::load_defaults);
 
 /// Represents an executable tool use.
 #[derive(Debug, Clone)]
@@ -276,119 +257,10 @@ fn format_path(cwd: impl AsRef<Path>, path: impl AsRef<Path>) -> String {
         .unwrap_or(path.as_ref().to_string_lossy().to_string())
 }
 
-/// Returns the number of characters required for displaying line numbers for `file_text`.
-fn terminal_width(line_count: usize) -> usize {
-    ((line_count as f32 + 0.1).log10().ceil()) as usize
-}
-
-fn stylize_output_if_able(
-    ctx: &Context,
-    path: impl AsRef<Path>,
-    file_text: &str,
-    starting_line: Option<usize>,
-    gutter_prefix: Option<&str>,
-) -> String {
-    match ctx.env().get("COLORTERM") {
-        Ok(s) if s == "truecolor" => match stylized_file(path, file_text, starting_line, gutter_prefix) {
-            Ok(s) => return s,
-            Err(err) => {
-                error!(?err, "unable to syntax highlight the output");
-            },
-        },
-        _ => {
-            warn!("24bit color is not supported, falling back to nonstylized syntax highlighting");
-        },
-    }
-    format!("\n{}", nonstylized_file(file_text))
-}
-
-fn nonstylized_file(file_text: impl AsRef<str>) -> String {
-    let file_text = file_text.as_ref();
-    let line_count = file_text.lines().count();
-    let width = terminal_width(line_count);
-    let lines = LinesWithEndings::from(file_text);
-    let mut f = String::new();
-    for (i, line) in lines.enumerate() {
-        f.push_str(&format!(" {:>width$}: {}", i + 1, line, width = width));
-    }
-    f
-}
-
-/// Returns a 24bit terminal escaped syntax-highlighted [String] of the file pointed to by `path`,
-/// if able.
-///
-/// Params:
-/// - `starting_line` - 1-indexed line to start the line number at.
-/// - `gutter_prefix` - character to display in the first cell of the gutter, before the file
-///   number.
-fn stylized_file(
-    path: impl AsRef<Path>,
-    file_text: impl AsRef<str>,
-    starting_line: Option<usize>,
-    gutter_prefix: Option<&str>,
-) -> Result<String> {
-    let starting_line = starting_line.unwrap_or(1);
-    let gutter_prefix = gutter_prefix.unwrap_or(" ");
-
-    let ps = &*SYNTAX_SET;
-    let ts = &*THEME_SET;
-
-    let extension = path
-        .as_ref()
-        .extension()
-        .wrap_err("missing extension")?
-        .to_str()
-        .wrap_err("not utf8")?;
-
-    let syntax = ps
-        .find_syntax_by_extension(extension)
-        .wrap_err_with(|| format!("missing extension: {}", extension))?;
-
-    let theme = &ts.themes["base16-ocean.dark"];
-    let mut h = HighlightLines::new(syntax, theme);
-    let gutter_width = terminal_width(file_text.as_ref().lines().count()) + terminal_width(starting_line);
-    let file_text = LinesWithEndings::from(file_text.as_ref());
-    let (gutter_fg, gutter_bg) = match (
-        theme.settings.gutter_foreground,
-        theme.settings.gutter,
-        theme.settings.foreground,
-        theme.settings.background,
-    ) {
-        (Some(gutter_fg), Some(gutter_bg), _, _) => (gutter_fg, gutter_bg),
-        (_, _, Some(fg), Some(bg)) => (fg, bg),
-        _ => bail!("missing theme"),
-    };
-    let gutter_prefix_style = syntect::highlighting::Style {
-        foreground: gutter_fg,
-        background: gutter_bg,
-        font_style: syntect::highlighting::FontStyle::BOLD,
-    };
-    let gutter_linenum_style = syntect::highlighting::Style {
-        foreground: gutter_fg,
-        background: gutter_bg,
-        font_style: syntect::highlighting::FontStyle::default(),
-    };
-
-    let mut file = String::new();
-    // We need to append newlines here for some reason, otherwise the highlighting ends at the end
-    // of the content for the first line.
-    file.push_str(&as_24_bit_terminal_escaped(&[(gutter_linenum_style, "\n\n")], true));
-    for (i, line) in file_text.enumerate() {
-        let i = (i + starting_line).to_string();
-        let gutter_content = format!("{:>width$} ", i, width = gutter_width);
-        let mut ranges = vec![
-            (gutter_prefix_style, gutter_prefix),
-            (gutter_linenum_style, gutter_content.as_str()),
-        ];
-        ranges.append(&mut h.highlight_line(line, ps)?);
-        let escaped_line = as_24_bit_terminal_escaped(&ranges[..], true);
-        file.push_str(&escaped_line);
-    }
-    if !file.ends_with("\n") {
-        file.push('\n');
-    }
-
-    Ok(file)
+fn supports_truecolor(ctx: &Context) -> bool {
+    // Simple override to disable truecolor since shell_color doesn't use Context.
+    !ctx.env().get("Q_DISABLE_TRUECOLOR").is_ok_and(|s| !s.is_empty())
+        && shell_color::get_color_support().contains(shell_color::ColorSupport::TERM24BIT)
 }
 
 #[cfg(test)]
@@ -396,16 +268,6 @@ mod tests {
     use fig_os_shim::EnvProvider;
 
     use super::*;
-
-    #[test]
-    fn test_gutter_width() {
-        assert_eq!(terminal_width(1), 1);
-        assert_eq!(terminal_width(9), 1);
-        assert_eq!(terminal_width(10), 2);
-        assert_eq!(terminal_width(99), 2);
-        assert_eq!(terminal_width(100), 3);
-        assert_eq!(terminal_width(999), 3);
-    }
 
     #[tokio::test]
     async fn test_tilde_path_expansion() {

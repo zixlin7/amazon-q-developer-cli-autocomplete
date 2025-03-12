@@ -1,8 +1,0 @@
-[Trigger]
-Operation = Remove
-Type = Package
-Target = amazon-q 
-
-[Action]
-When = PreTransaction
-Exec = q _ uninstall-for-all-users

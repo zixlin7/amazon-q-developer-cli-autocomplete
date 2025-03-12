@@ -1,8 +1,0 @@
-[Trigger]
-Operation = Remove
-Type = Package
-Target = amazon-q
-
-[Action]
-When = PostTransaction
-Exec = killall q-desktop

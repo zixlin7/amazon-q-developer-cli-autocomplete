@@ -186,11 +186,12 @@ impl FsRead {
                 }
             }
 
+            let file_count = result.len();
             let result = result.join("\n");
             let byte_count = result.len();
             if byte_count > MAX_TOOL_RESPONSE_SIZE {
                 bail!(
-                    "This tool only supports reading up to {MAX_TOOL_RESPONSE_SIZE} bytes at a time. You tried to read {byte_count} bytes. Try executing with fewer lines specified."
+                    "This tool only supports reading up to {MAX_TOOL_RESPONSE_SIZE} bytes at a time. You tried to read {byte_count} bytes ({file_count} files). Try executing with fewer lines specified."
                 );
             }
 

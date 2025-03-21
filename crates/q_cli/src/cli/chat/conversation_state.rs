@@ -525,7 +525,7 @@ mod tests {
 
     use super::*;
     use crate::cli::chat::context::AMAZONQ_FILENAME;
-    use crate::cli::chat::load_tools;
+    use crate::cli::chat::tool_manager::ToolManager;
 
     #[test]
     fn test_truncate_safe() {
@@ -587,7 +587,9 @@ mod tests {
 
     #[tokio::test]
     async fn test_conversation_state_history_handling_truncation() {
-        let mut conversation_state = ConversationState::new(Context::new_fake(), load_tools().unwrap(), None).await;
+        let tool_manager = ToolManager::default();
+        let mut conversation_state =
+            ConversationState::new(Context::new_fake(), tool_manager.load_tools().await.unwrap(), None).await;
 
         // First, build a large conversation history. We need to ensure that the order is always
         // User -> Assistant -> User -> Assistant ...and so on.
@@ -607,7 +609,9 @@ mod tests {
     #[tokio::test]
     async fn test_conversation_state_history_handling_with_tool_results() {
         // Build a long conversation history of tool use results.
-        let mut conversation_state = ConversationState::new(Context::new_fake(), load_tools().unwrap(), None).await;
+        let tool_manager = ToolManager::default();
+        let mut conversation_state =
+            ConversationState::new(Context::new_fake(), tool_manager.load_tools().await.unwrap(), None).await;
         conversation_state.append_new_user_message("start".to_string()).await;
         for i in 0..=(MAX_CONVERSATION_STATE_HISTORY_LEN + 100) {
             let s = conversation_state.as_sendable_conversation_state().await;
@@ -629,7 +633,8 @@ mod tests {
         }
 
         // Build a long conversation history of user messages mixed in with tool results.
-        let mut conversation_state = ConversationState::new(Context::new_fake(), load_tools().unwrap(), None).await;
+        let mut conversation_state =
+            ConversationState::new(Context::new_fake(), tool_manager.load_tools().await.unwrap(), None).await;
         conversation_state.append_new_user_message("start".to_string()).await;
         for i in 0..=(MAX_CONVERSATION_STATE_HISTORY_LEN + 100) {
             let s = conversation_state.as_sendable_conversation_state().await;
@@ -665,7 +670,8 @@ mod tests {
         let ctx = Context::builder().with_test_home().await.unwrap().build_fake();
         ctx.fs().write(AMAZONQ_FILENAME, "test context").await.unwrap();
 
-        let mut conversation_state = ConversationState::new(ctx, load_tools().unwrap(), None).await;
+        let tool_manager = ToolManager::default();
+        let mut conversation_state = ConversationState::new(ctx, tool_manager.load_tools().await.unwrap(), None).await;
 
         // First, build a large conversation history. We need to ensure that the order is always
         // User -> Assistant -> User -> Assistant ...and so on.

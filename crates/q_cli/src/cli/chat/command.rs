@@ -313,7 +313,11 @@ impl Command {
                         },
                     }
                 },
-                _ => return Err(format!("Unknown command: {}", input)),
+                _ => {
+                    return Ok(Self::Ask {
+                        prompt: input.to_string(),
+                    });
+                },
             });
         }
 

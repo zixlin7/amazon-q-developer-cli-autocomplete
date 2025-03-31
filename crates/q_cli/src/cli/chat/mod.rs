@@ -1425,6 +1425,8 @@ where
                     context_manager: self.conversation_state.context_manager.clone(),
                     transcript: self.conversation_state.transcript.clone(),
                     failed_request_ids: self.failed_request_ids.clone(),
+                    accept_all: self.accept_all,
+                    interactive: self.interactive,
                 });
             },
             _ => (),

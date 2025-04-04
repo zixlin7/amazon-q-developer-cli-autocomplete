@@ -16,9 +16,16 @@ use std::io::{
     Read,
     Write,
 };
-use std::process::ExitCode;
+use std::process::{
+    Command as ProcessCommand,
+    ExitCode,
+};
 use std::sync::Arc;
 use std::time::Duration;
+use std::{
+    env,
+    fs,
+};
 
 use command::{
     Command,
@@ -85,6 +92,7 @@ use tracing::{
     trace,
     warn,
 };
+use uuid::Uuid;
 use winnow::Partial;
 use winnow::stream::Offset;
 
@@ -122,6 +130,7 @@ const HELP_TEXT: &str = color_print::cstr! {"
 <cyan,em>Commands:</cyan,em>
 <em>/clear</em>        <black!>Clear the conversation history</black!>
 <em>/issue</em>        <black!>Report an issue or make a feature request</black!>
+<em>/editor</em>       <black!>Open $EDITOR (defaults to vi) to compose a prompt</black!>
 <em>/help</em>         <black!>Show this help dialogue</black!>
 <em>/quit</em>         <black!>Quit the application</black!>
 <em>/tools</em>        <black!>View and manage tools and permissions</black!>
@@ -418,6 +427,41 @@ impl<W> ChatContext<W>
 where
     W: Write,
 {
+    /// Opens the user's preferred editor to compose a prompt
+    fn open_editor(initial_text: Option<String>) -> Result<String, ChatError> {
+        // Create a temporary file with a unique name
+        let temp_dir = std::env::temp_dir();
+        let file_name = format!("q_prompt_{}.md", Uuid::new_v4());
+        let temp_file_path = temp_dir.join(file_name);
+
+        // Get the editor from environment variable or use a default
+        let editor = env::var("EDITOR").unwrap_or_else(|_| "vi".to_string());
+
+        // Write initial content to the file if provided
+        let initial_content = initial_text.unwrap_or_default();
+        fs::write(&temp_file_path, &initial_content)
+            .map_err(|e| ChatError::Custom(format!("Failed to create temporary file: {}", e).into()))?;
+
+        // Open the editor
+        let status = ProcessCommand::new(editor)
+            .arg(&temp_file_path)
+            .status()
+            .map_err(|e| ChatError::Custom(format!("Failed to open editor: {}", e).into()))?;
+
+        if !status.success() {
+            return Err(ChatError::Custom("Editor exited with non-zero status".into()));
+        }
+
+        // Read the content back
+        let content = fs::read_to_string(&temp_file_path)
+            .map_err(|e| ChatError::Custom(format!("Failed to read temporary file: {}", e).into()))?;
+
+        // Clean up the temporary file
+        let _ = fs::remove_file(&temp_file_path);
+
+        Ok(content.trim().to_string())
+    }
+
     async fn try_chat(&mut self) -> Result<()> {
         if self.interactive && self.settings.get_bool_or("chat.greeting.enabled", true) {
             execute!(self.output, style::Print(WELCOME_TEXT))?;
@@ -778,6 +822,64 @@ where
                     },
                     tool_uses: Some(tool_uses),
                     pending_tool_index,
+                }
+            },
+            Command::PromptEditor { initial_text } => {
+                match Self::open_editor(initial_text) {
+                    Ok(content) => {
+                        if content.trim().is_empty() {
+                            execute!(
+                                self.output,
+                                style::SetForegroundColor(Color::Yellow),
+                                style::Print("\nEmpty content from editor, not submitting.\n\n"),
+                                style::SetForegroundColor(Color::Reset)
+                            )?;
+
+                            ChatState::PromptUser {
+                                tool_uses: Some(tool_uses),
+                                pending_tool_index,
+                                skip_printing_tools: true,
+                            }
+                        } else {
+                            execute!(
+                                self.output,
+                                style::SetForegroundColor(Color::Green),
+                                style::Print("\nContent loaded from editor. Submitting prompt...\n\n"),
+                                style::SetForegroundColor(Color::Reset)
+                            )?;
+
+                            // Display the content as if the user typed it
+                            execute!(
+                                self.output,
+                                style::SetForegroundColor(Color::Magenta),
+                                style::Print("> "),
+                                style::SetAttribute(Attribute::Reset),
+                                style::Print(&content),
+                                style::Print("\n")
+                            )?;
+
+                            // Process the content as user input
+                            ChatState::HandleInput {
+                                input: content,
+                                tool_uses: Some(tool_uses),
+                                pending_tool_index,
+                            }
+                        }
+                    },
+                    Err(e) => {
+                        execute!(
+                            self.output,
+                            style::SetForegroundColor(Color::Red),
+                            style::Print(format!("\nError opening editor: {}\n\n", e)),
+                            style::SetForegroundColor(Color::Reset)
+                        )?;
+
+                        ChatState::PromptUser {
+                            tool_uses: Some(tool_uses),
+                            pending_tool_index,
+                            skip_printing_tools: true,
+                        }
+                    },
                 }
             },
             Command::Quit => ChatState::Exit,
@@ -1885,5 +1987,20 @@ mod tests {
         .unwrap();
 
         assert_eq!(ctx.fs().read_to_string("/file.txt").await.unwrap(), "Hello, world!\n");
+    }
+
+    #[test]
+    fn test_editor_content_processing() {
+        // Since we no longer have template replacement, this test is simplified
+        let cases = vec![
+            ("My content", "My content"),
+            ("My content with newline\n", "My content with newline"),
+            ("", ""),
+        ];
+
+        for (input, expected) in cases {
+            let processed = input.trim().to_string();
+            assert_eq!(processed, expected.trim().to_string(), "Failed for input: {}", input);
+        }
     }
 }

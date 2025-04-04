@@ -38,6 +38,7 @@ use winnow::stream::AsChar;
 const COMMANDS: &[&str] = &[
     "/clear",
     "/help",
+    "/editor",
     "/issue",
     // "/acceptall", /// Functional, but deprecated in favor of /tools trustall
     "/quit",

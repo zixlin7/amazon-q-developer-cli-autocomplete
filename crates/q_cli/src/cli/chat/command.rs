@@ -17,6 +17,7 @@ pub enum Command {
     Quit,
     Profile { subcommand: ProfileSubcommand },
     Context { subcommand: ContextSubcommand },
+    PromptEditor { initial_text: Option<String> },
     Tools { subcommand: Option<ToolsSubcommand> },
 }
 
@@ -230,6 +231,15 @@ impl Command {
 
                     Self::Tools {
                         subcommand: Some(ToolsSubcommand::TrustAll),
+                    }
+                },
+                "editor" => {
+                    if parts.len() > 1 {
+                        Self::PromptEditor {
+                            initial_text: Some(parts[1..].join(" ")),
+                        }
+                    } else {
+                        Self::PromptEditor { initial_text: None }
                     }
                 },
                 "issue" => {

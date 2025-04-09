@@ -42,6 +42,10 @@
         },
         {
           "type": "added",
+          "description": "Optional terminal notifications on completed responses - [#1135](https://github.com/aws/amazon-q-developer-cli/pull/1135)"
+        },
+        {
+          "type": "added",
           "description": "An option `--no-interactive` to invoke `q chat` in a non-interactive mode - [#878](https://github.com/aws/amazon-q-developer-cli/pull/878)"
         },
         {

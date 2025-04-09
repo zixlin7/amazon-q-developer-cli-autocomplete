@@ -18,7 +18,11 @@
       "changes": [
         {
           "type": "added",
-          "description": "Granular tool permissioning in `q chat` with a new command `/tools` - [#1054](https://github.com/aws/amazon-q-developer-cli/pull/1054)"
+          "description": "A new command `/tools` in `q chat` for granular tool permissioning - [#1054](https://github.com/aws/amazon-q-developer-cli/pull/1054)"
+        },
+        {
+          "type": "added",
+          "description": "A new command `/compact` in `q chat` for summarizing the conversation history - [#1128](https://github.com/aws/amazon-q-developer-cli/pull/1128)"
         },
         {
           "type": "added",

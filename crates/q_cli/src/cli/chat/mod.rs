@@ -101,6 +101,7 @@ use crate::cli::chat::parse::{
     interpret_markdown,
 };
 use crate::util::region_check;
+use crate::util::spinner::play_notification_bell;
 use crate::util::token_counter::TokenCounter;
 
 const WELCOME_TEXT: &str = color_print::cstr! {"
@@ -1698,7 +1699,13 @@ where
                     )
                     .await;
                 }
+
                 if self.interactive {
+                    // Play notification bell when response is complete
+                    // Use the chat context's settings to determine if notifications are enabled
+                    if self.settings.get_bool_or("chat.enableNotifications", false) {
+                        play_notification_bell();
+                    }
                     queue!(self.output, style::ResetColor, style::SetAttribute(Attribute::Reset))?;
                     execute!(self.output, style::Print("\n"))?;
 

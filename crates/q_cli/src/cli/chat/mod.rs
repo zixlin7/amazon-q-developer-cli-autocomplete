@@ -6,6 +6,7 @@ mod input_source;
 mod parse;
 mod parser;
 mod prompt;
+mod skim_integration;
 mod summarization_state;
 mod tools;
 
@@ -161,6 +162,7 @@ const WELCOME_TEXT: &str = color_print::cstr! {"
 <em>/quit</em>         <black!>Quit the application</black!>
 
 <cyan!>Use Ctrl(^) + j to provide multi-line prompts.</cyan!>
+<cyan!>Use Ctrl(^) + k to fuzzily search commands and context (use tab to select multiple files).</cyan!>
 
 "};
 
@@ -731,6 +733,14 @@ where
                 style::Print("]:\n\n"),
                 style::SetForegroundColor(Color::Reset),
             )?;
+        }
+
+        // Do this here so that the skim integration sees an updated view of the context *during the current
+        // q session*. (e.g., if I add files to context, that won't show up for skim for the current
+        // q session unless we do this in prompt_user... unless you can find a better way)
+        if let Some(ref context_manager) = self.conversation_state.context_manager {
+            self.input_source
+                .put_skim_command_selector(Arc::new(context_manager.clone()));
         }
 
         let user_input = match self.read_user_input(&self.generate_tool_trust_prompt(), false) {
@@ -2359,7 +2369,7 @@ fn create_stream(model_responses: serde_json::Value) -> StreamingClient {
 }
 
 /// Returns all tools supported by Q chat.
-fn load_tools() -> Result<HashMap<String, ToolSpec>> {
+pub fn load_tools() -> Result<HashMap<String, ToolSpec>> {
     Ok(serde_json::from_str(include_str!("tools/tool_index.json"))?)
 }
 

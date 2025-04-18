@@ -878,6 +878,7 @@ mod tests {
                 .as_sendable_conversation_state(Some(conversation_start_context.to_string()))
                 .await;
             let hist = s.history.as_ref().unwrap();
+            #[allow(clippy::match_wildcard_for_single_variants)]
             match &hist[0] {
                 ChatMessage::UserInputMessage(user) => {
                     assert!(
@@ -886,7 +887,6 @@ mod tests {
                         user.content
                     );
                 },
-                #[allow(clippy::match_wildcard_for_single_variants)]
                 _ => panic!("Expected user message."),
             }
             assert!(

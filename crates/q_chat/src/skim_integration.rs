@@ -25,6 +25,13 @@ use tempfile::NamedTempFile;
 
 use super::context::ContextManager;
 
+pub fn select_profile_with_skim(context_manager: &ContextManager) -> Result<Option<String>> {
+    let profiles = context_manager.list_profiles_blocking()?;
+
+    launch_skim_selector(&profiles, "Select profile: ", false)
+        .map(|selected| selected.and_then(|s| s.into_iter().next()))
+}
+
 pub struct SkimCommandSelector {
     context_manager: Arc<ContextManager>,
     tool_names: Vec<String>,
@@ -268,9 +275,18 @@ pub fn select_command(context_manager: &ContextManager, tools: &[String]) -> Res
                                                                      * command */
                     }
                 },
+                Some(cmd @ CommandType::Profile(_)) if cmd.needs_profile_selection() => {
+                    // For profile operations that need a profile name, show profile selector
+                    match select_profile_with_skim(context_manager)? {
+                        Some(profile) => {
+                            let full_cmd = format!("{} {}", selected_command, profile);
+                            Ok(Some(full_cmd))
+                        },
+                        None => Ok(Some(selected_command.clone())), // User cancelled profile selection
+                    }
+                },
                 Some(CommandType::Profile(_)) => {
-                    // For profile operations, we'd need to prompt for the name
-                    // For now, just return the command and let the user type the name
+                    // For other profile operations (like create), just return the command
                     Ok(Some(selected_command.clone()))
                 },
                 None => {
@@ -292,6 +308,10 @@ enum CommandType {
 }
 
 impl CommandType {
+    fn needs_profile_selection(&self) -> bool {
+        matches!(self, CommandType::Profile("set" | "delete" | "rename"))
+    }
+
     fn from_str(cmd: &str) -> Option<CommandType> {
         if cmd.starts_with("/context add") {
             Some(CommandType::ContextAdd(cmd.to_string()))

@@ -825,6 +825,7 @@ impl ChatContext {
             if self.interactive {
                 execute!(
                     self.output,
+                    style::SetAttribute(Attribute::Reset),
                     style::SetForegroundColor(Color::Magenta),
                     style::Print("> "),
                     style::SetAttribute(Attribute::Reset),
@@ -1282,7 +1283,11 @@ impl ChatContext {
             self.input_source
                 .put_skim_command_selector(Arc::new(context_manager.clone()), tool_names);
         }
-
+        execute!(
+            self.output,
+            style::SetForegroundColor(Color::Reset),
+            style::SetAttribute(Attribute::Reset)
+        )?;
         let user_input = match self.read_user_input(&self.generate_tool_trust_prompt(), false) {
             Some(input) => input,
             None => return Ok(ChatState::Exit),
@@ -1480,6 +1485,7 @@ impl ChatContext {
                             // Display the content as if the user typed it
                             execute!(
                                 self.output,
+                                style::SetAttribute(Attribute::Reset),
                                 style::SetForegroundColor(Color::Magenta),
                                 style::Print("> "),
                                 style::SetAttribute(Attribute::Reset),

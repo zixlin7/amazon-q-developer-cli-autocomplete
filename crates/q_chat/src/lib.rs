@@ -254,7 +254,6 @@ const HELP_TEXT: &str = color_print::cstr! {"
   <em>help</em>        <black!>Show prompts help</black!>
   <em>list</em>        <black!>List or search available prompts</black!>
   <em>get</em>         <black!>Retrieve and send a prompt</black!>
-<em>/context</em>      <black!>Manage context files for the chat session</black!>
 <em>/context</em>      <black!>Manage context files and hooks for the chat session</black!>
   <em>help</em>        <black!>Show context help</black!>
   <em>show</em>        <black!>Display current context rules configuration [--expand]</black!>

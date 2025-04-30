@@ -786,20 +786,22 @@ impl ChatContext {
                 .set_value("chat.greeting.rotating_tips_current_index", next_tip_index)?;
         }
 
-        execute!(
-            self.output,
-            style::Print(if is_small_screen {
-                SMALL_SCREEN_POPULAR_SHORTCUTS
-            } else {
-                POPULAR_SHORTCUTS
-            }),
-            style::Print(
-                "━"
-                    .repeat(if is_small_screen { 0 } else { GREETING_BREAK_POINT })
-                    .dark_grey()
-            )
-        )?;
-        execute!(self.output, style::Print("\n"), style::SetForegroundColor(Color::Reset))?;
+        if self.interactive {
+            execute!(
+                self.output,
+                style::Print(if is_small_screen {
+                    SMALL_SCREEN_POPULAR_SHORTCUTS
+                } else {
+                    POPULAR_SHORTCUTS
+                }),
+                style::Print(
+                    "━"
+                        .repeat(if is_small_screen { 0 } else { GREETING_BREAK_POINT })
+                        .dark_grey()
+                )
+            )?;
+            execute!(self.output, style::Print("\n"), style::SetForegroundColor(Color::Reset))?;
+        }
         if self.interactive && self.all_tools_trusted() {
             queue!(
                 self.output,

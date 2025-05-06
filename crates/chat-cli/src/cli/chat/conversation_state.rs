@@ -38,8 +38,7 @@ use super::tools::{
     ToolSpec,
     serde_value_to_document,
 };
-use crate::cli::chat::util::shared_writer::SharedWriter;
-use crate::fig_api_client::model::{
+use crate::api_client::model::{
     AssistantResponseMessage,
     ChatMessage,
     ConversationState as FigConversationState,
@@ -52,8 +51,9 @@ use crate::fig_api_client::model::{
     UserInputMessage,
     UserInputMessageContext,
 };
-use crate::fig_os_shim::Context;
+use crate::cli::chat::util::shared_writer::SharedWriter;
 use crate::mcp_client::Prompt;
+use crate::platform::Context;
 
 const CONTEXT_ENTRY_START_HEADER: &str = "--- CONTEXT ENTRY BEGIN ---\n";
 const CONTEXT_ENTRY_END_HEADER: &str = "--- CONTEXT ENTRY END ---\n\n";
@@ -302,7 +302,7 @@ impl ConversationState {
         ));
     }
 
-    /// Returns a [FigConversationState] capable of being sent by [fig_api_client::StreamingClient].
+    /// Returns a [FigConversationState] capable of being sent by [api_client::StreamingClient].
     ///
     /// Params:
     /// - `run_hooks` - whether hooks should be executed and included as context
@@ -584,7 +584,7 @@ impl ConversationState {
                                 content: vec![ToolResultContentBlock::Text(
                                     "Tool use was cancelled by the user".to_string(),
                                 )],
-                                status: crate::fig_api_client::model::ToolResultStatus::Error,
+                                status: crate::api_client::model::ToolResultStatus::Error,
                             })
                             .collect::<Vec<_>>(),
                     );
@@ -601,7 +601,7 @@ impl ConversationState {
                         content: vec![ToolResultContentBlock::Text(
                             "Tool use was cancelled by the user".to_string(),
                         )],
-                        status: crate::fig_api_client::model::ToolResultStatus::Error,
+                        status: crate::api_client::model::ToolResultStatus::Error,
                     })
                     .collect::<Vec<_>>();
                 let user_input_message_context = UserInputMessageContext {
@@ -761,11 +761,11 @@ mod tests {
     };
     use super::super::message::AssistantToolUse;
     use super::*;
-    use crate::cli::chat::tool_manager::ToolManager;
-    use crate::fig_api_client::model::{
+    use crate::api_client::model::{
         AssistantResponseMessage,
         ToolResultStatus,
     };
+    use crate::cli::chat::tool_manager::ToolManager;
 
     fn assert_conversation_state_invariants(state: FigConversationState, assertion_iteration: usize) {
         if let Some(Some(msg)) = state.history.as_ref().map(|h| h.first()) {

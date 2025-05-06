@@ -4,7 +4,7 @@ use anstream::println;
 use crossterm::style::Stylize;
 use eyre::Result;
 
-use crate::fig_util::{
+use crate::util::{
     CLI_BINARY_NAME,
     PRODUCT_NAME,
     dialoguer_theme,
@@ -43,8 +43,8 @@ pub async fn uninstall_command(no_confirm: bool) -> Result<ExitCode> {
 
 #[cfg(target_os = "macos")]
 async fn uninstall() -> Result<()> {
-    crate::fig_auth::logout().await.ok();
-    crate::fig_install::uninstall().await?;
+    crate::auth::logout().await.ok();
+    crate::install::uninstall().await?;
     Ok(())
 }
 
@@ -52,4 +52,3 @@ async fn uninstall() -> Result<()> {
 async fn uninstall() -> Result<()> {
     eyre::bail!("Guided uninstallation is not supported on this platform. Please uninstall manually.");
 }
-

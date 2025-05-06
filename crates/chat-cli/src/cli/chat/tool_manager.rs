@@ -49,16 +49,16 @@ use super::tools::{
     ToolOrigin,
     ToolSpec,
 };
-use crate::fig_api_client::model::{
+use crate::api_client::model::{
     ToolResult,
     ToolResultContentBlock,
     ToolResultStatus,
 };
-use crate::fig_telemetry::send_mcp_server_init;
 use crate::mcp_client::{
     JsonRpcResponse,
     PromptGet,
 };
+use crate::telemetry::send_mcp_server_init;
 
 const NAMESPACE_DELIMITER: &str = "___";
 // This applies for both mcp server and tool name since in the end the tool name as seen by the

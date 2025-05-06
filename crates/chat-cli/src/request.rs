@@ -19,8 +19,8 @@ pub enum RequestError {
     Reqwest(reqwest::Error),
     Serde(serde_json::Error),
     Io(std::io::Error),
-    Dir(crate::fig_util::directories::DirectoryError),
-    Settings(crate::fig_settings::SettingsError),
+    Dir(crate::util::directories::DirectoryError),
+    Settings(crate::settings::SettingsError),
     UrlParseError(ParseError),
 }
 
@@ -57,14 +57,14 @@ impl From<std::io::Error> for RequestError {
     }
 }
 
-impl From<crate::fig_util::directories::DirectoryError> for RequestError {
-    fn from(e: crate::fig_util::directories::DirectoryError) -> Self {
+impl From<crate::util::directories::DirectoryError> for RequestError {
+    fn from(e: crate::util::directories::DirectoryError) -> Self {
         RequestError::Dir(e)
     }
 }
 
-impl From<crate::fig_settings::SettingsError> for RequestError {
-    fn from(e: crate::fig_settings::SettingsError) -> Self {
+impl From<crate::settings::SettingsError> for RequestError {
+    fn from(e: crate::settings::SettingsError) -> Self {
         RequestError::Settings(e)
     }
 }
@@ -91,7 +91,7 @@ pub fn create_default_root_cert_store() -> RootCertStore {
 
     let custom_cert = std::env::var("Q_CUSTOM_CERT")
         .ok()
-        .or_else(|| crate::fig_settings::state::get_string("Q_CUSTOM_CERT").ok().flatten());
+        .or_else(|| crate::settings::state::get_string("Q_CUSTOM_CERT").ok().flatten());
 
     if let Some(custom_cert) = custom_cert {
         match File::open(Path::new(&custom_cert)) {

@@ -84,20 +84,20 @@ use tokio::signal::ctrl_c;
 use util::shared_writer::SharedWriter;
 use util::ui::draw_box;
 
-use crate::fig_api_client::StreamingClient;
-use crate::fig_api_client::clients::SendMessageOutput;
-use crate::fig_api_client::model::{
+use crate::api_client::StreamingClient;
+use crate::api_client::clients::SendMessageOutput;
+use crate::api_client::model::{
     ChatResponseStream,
     Tool as FigTool,
     ToolResultStatus,
 };
-use crate::fig_os_shim::Context;
-use crate::fig_settings::{
+use crate::platform::Context;
+use crate::settings::{
     Settings,
     State,
 };
-use crate::fig_telemetry_core::Event;
-use crate::fig_util::CHAT_BINARY_NAME;
+use crate::telemetry::core::Event;
+use crate::util::CHAT_BINARY_NAME;
 
 /// Help text for the compact command
 fn compact_help_text() -> String {
@@ -309,7 +309,7 @@ pub async fn chat(
     trust_all_tools: bool,
     trust_tools: Option<Vec<String>>,
 ) -> Result<ExitCode> {
-    if !crate::fig_util::system_info::in_cloudshell() && !crate::fig_auth::is_logged_in().await {
+    if !crate::util::system_info::in_cloudshell() && !crate::auth::is_logged_in().await {
         bail!(
             "You are not logged in, please log in with {}",
             format!("{CHAT_BINARY_NAME} login",).bold()
@@ -455,7 +455,7 @@ enum ToolUseStatus {
 #[derive(Debug, Error)]
 pub enum ChatError {
     #[error("{0}")]
-    Client(#[from] crate::fig_api_client::ApiClientError),
+    Client(#[from] crate::api_client::ApiClientError),
     #[error("{0}")]
     ResponseStream(#[from] parser::RecvError),
     #[error("{0}")]
@@ -909,7 +909,7 @@ impl ChatContext {
                     ChatError::Client(err) => match err {
                         // Errors from attempting to send too large of a conversation history. In
                         // this case, attempt to automatically compact the history for the user.
-                        crate::fig_api_client::ApiClientError::ContextWindowOverflow => {
+                        crate::api_client::ApiClientError::ContextWindowOverflow => {
                             let history_too_small = self
                                 .conversation_state
                                 .backend_conversation_state(false, true)
@@ -938,7 +938,7 @@ impl ChatContext {
                                 help: false,
                             });
                         },
-                        crate::fig_api_client::ApiClientError::QuotaBreach(msg) => {
+                        crate::api_client::ApiClientError::QuotaBreach(msg) => {
                             print_err!(msg, err);
                         },
                         _ => {
@@ -1022,7 +1022,7 @@ impl ChatContext {
         let response = match response {
             Ok(res) => res,
             Err(e) => match e {
-                crate::fig_api_client::ApiClientError::ContextWindowOverflow => {
+                crate::api_client::ApiClientError::ContextWindowOverflow => {
                     self.conversation_state.clear(true);
                     if self.interactive {
                         self.spinner.take();
@@ -1076,7 +1076,7 @@ impl ChatContext {
         }
 
         if let Some(message_id) = self.conversation_state.message_id() {
-            crate::fig_telemetry::send_chat_added_message(
+            crate::telemetry::send_chat_added_message(
                 self.conversation_state.conversation_id().to_owned(),
                 message_id.to_owned(),
                 self.conversation_state.context_message_length(),
@@ -2072,7 +2072,7 @@ impl ChatContext {
                             }
                         },
                     }
-                    // crate::fig_telemetry::send_context_command_executed
+                    // crate::telemetry::send_context_command_executed
                 } else {
                     execute!(
                         self.output,
@@ -2962,7 +2962,7 @@ impl ChatContext {
 
             if ended {
                 if let Some(message_id) = self.conversation_state.message_id() {
-                    crate::fig_telemetry::send_chat_added_message(
+                    crate::telemetry::send_chat_added_message(
                         self.conversation_state.conversation_id().to_owned(),
                         message_id.to_owned(),
                         self.conversation_state.context_message_length(),
@@ -3207,7 +3207,7 @@ impl ChatContext {
             }
             .map(|v| v.to_string());
 
-            crate::fig_telemetry::client()
+            crate::telemetry::client()
                 .await
                 .send_event(Event::new(event.into()))
                 .await;
@@ -3302,9 +3302,9 @@ impl ToolUseEventBuilder {
     }
 }
 
-impl From<ToolUseEventBuilder> for crate::fig_telemetry::EventType {
+impl From<ToolUseEventBuilder> for crate::telemetry::EventType {
     fn from(val: ToolUseEventBuilder) -> Self {
-        crate::fig_telemetry::EventType::ToolUseSuggested {
+        crate::telemetry::EventType::ToolUseSuggested {
             conversation_id: val.conversation_id,
             utterance_id: val.utterance_id,
             user_input_id: val.user_input_id,

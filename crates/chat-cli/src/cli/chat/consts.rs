@@ -20,6 +20,8 @@ pub const CONTEXT_FILES_MAX_SIZE: usize = 150_000;
 
 pub const MAX_CHARS: usize = TokenCounter::token_to_chars(CONTEXT_WINDOW_SIZE); // Character-based warning threshold
 
+pub const DUMMY_TOOL_NAME: &str = "dummy";
+
 pub const MAX_NUMBER_OF_IMAGES_PER_REQUEST: usize = 10;
 
 /// In bytes - 10 MB

@@ -46,6 +46,7 @@ use command::{
 use consts::{
     CONTEXT_FILES_MAX_SIZE,
     CONTEXT_WINDOW_SIZE,
+    DUMMY_TOOL_NAME,
 };
 use context::ContextManager;
 use conversation_state::{
@@ -1214,7 +1215,13 @@ impl ChatContext {
         // q session unless we do this in prompt_user... unless you can find a better way)
         #[cfg(unix)]
         if let Some(ref context_manager) = self.conversation_state.context_manager {
-            let tool_names = self.tool_manager.tn_map.keys().cloned().collect::<Vec<_>>();
+            let tool_names = self
+                .tool_manager
+                .tn_map
+                .keys()
+                .filter(|name| *name != DUMMY_TOOL_NAME)
+                .cloned()
+                .collect::<Vec<_>>();
             self.input_source
                 .put_skim_command_selector(Arc::new(context_manager.clone()), tool_names);
         }
@@ -2300,23 +2307,23 @@ impl ChatContext {
                         )?;
 
                         self.conversation_state.tools.iter().for_each(|(origin, tools)| {
-                            let to_display =
-                                tools
-                                    .iter()
-                                    .fold(String::new(), |mut acc, FigTool::ToolSpecification(spec)| {
-                                        let width = longest - spec.name.len() + 4;
-                                        acc.push_str(
-                                            format!(
-                                                "- {}{:>width$}{}\n",
-                                                spec.name,
-                                                "",
-                                                self.tool_permissions.display_label(&spec.name),
-                                                width = width
-                                            )
-                                            .as_str(),
-                                        );
-                                        acc
-                                    });
+                            let to_display = tools
+                                .iter()
+                                .filter(|FigTool::ToolSpecification(spec)| spec.name != DUMMY_TOOL_NAME)
+                                .fold(String::new(), |mut acc, FigTool::ToolSpecification(spec)| {
+                                    let width = longest - spec.name.len() + 4;
+                                    acc.push_str(
+                                        format!(
+                                            "- {}{:>width$}{}\n",
+                                            spec.name,
+                                            "",
+                                            self.tool_permissions.display_label(&spec.name),
+                                            width = width
+                                        )
+                                        .as_str(),
+                                    );
+                                    acc
+                                });
                             let _ = queue!(
                                 self.output,
                                 style::SetAttribute(Attribute::Bold),

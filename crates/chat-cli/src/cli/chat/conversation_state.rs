@@ -837,6 +837,9 @@ mod tests {
         ToolResultStatus,
     };
     use crate::cli::chat::tool_manager::ToolManager;
+    use crate::database::Database;
+    use crate::platform::Env;
+    use crate::telemetry::TelemetryThread;
 
     fn assert_conversation_state_invariants(state: FigConversationState, assertion_iteration: usize) {
         if let Some(Some(msg)) = state.history.as_ref().map(|h| h.first()) {
@@ -928,11 +931,15 @@ mod tests {
 
     #[tokio::test]
     async fn test_conversation_state_history_handling_truncation() {
+        let env = Env::new();
+        let mut database = Database::new().await.unwrap();
+        let telemetry = TelemetryThread::new(&env, &mut database).await.unwrap();
+
         let mut tool_manager = ToolManager::default();
         let mut conversation_state = ConversationState::new(
             Context::new(),
             "fake_conv_id",
-            tool_manager.load_tools().await.unwrap(),
+            tool_manager.load_tools(&database, &telemetry).await.unwrap(),
             None,
             None,
         )
@@ -951,12 +958,16 @@ mod tests {
 
     #[tokio::test]
     async fn test_conversation_state_history_handling_with_tool_results() {
+        let env = Env::new();
+        let mut database = Database::new().await.unwrap();
+        let telemetry = TelemetryThread::new(&env, &mut database).await.unwrap();
+
         // Build a long conversation history of tool use results.
         let mut tool_manager = ToolManager::default();
         let mut conversation_state = ConversationState::new(
             Context::new(),
             "fake_conv_id",
-            tool_manager.load_tools().await.unwrap(),
+            tool_manager.load_tools(&database, &telemetry).await.unwrap(),
             None,
             None,
         )
@@ -984,7 +995,7 @@ mod tests {
         let mut conversation_state = ConversationState::new(
             Context::new(),
             "fake_conv_id",
-            tool_manager.load_tools().await.unwrap(),
+            tool_manager.load_tools(&database, &telemetry).await.unwrap(),
             None,
             None,
         )
@@ -1015,6 +1026,10 @@ mod tests {
 
     #[tokio::test]
     async fn test_conversation_state_with_context_files() {
+        let env = Env::new();
+        let mut database = Database::new().await.unwrap();
+        let telemetry = TelemetryThread::new(&env, &mut database).await.unwrap();
+
         let ctx = Context::builder().with_test_home().await.unwrap().build_fake();
         ctx.fs().write(AMAZONQ_FILENAME, "test context").await.unwrap();
 
@@ -1022,7 +1037,7 @@ mod tests {
         let mut conversation_state = ConversationState::new(
             ctx,
             "fake_conv_id",
-            tool_manager.load_tools().await.unwrap(),
+            tool_manager.load_tools(&database, &telemetry).await.unwrap(),
             None,
             None,
         )
@@ -1060,6 +1075,10 @@ mod tests {
     async fn test_conversation_state_additional_context() {
         // tracing_subscriber::fmt::try_init().ok();
 
+        let env = Env::new();
+        let mut database = Database::new().await.unwrap();
+        let telemetry = TelemetryThread::new(&env, &mut database).await.unwrap();
+
         let mut tool_manager = ToolManager::default();
         let ctx = Context::builder().with_test_home().await.unwrap().build_fake();
         let conversation_start_context = "conversation start context";
@@ -1087,7 +1106,7 @@ mod tests {
         let mut conversation_state = ConversationState::new(
             ctx,
             "fake_conv_id",
-            tool_manager.load_tools().await.unwrap(),
+            tool_manager.load_tools(&database, &telemetry).await.unwrap(),
             None,
             Some(SharedWriter::stdout()),
         )

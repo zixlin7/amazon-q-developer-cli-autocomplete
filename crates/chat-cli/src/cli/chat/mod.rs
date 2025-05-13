@@ -5,6 +5,7 @@ mod context;
 mod conversation_state;
 mod hooks;
 mod input_source;
+pub mod mcp;
 mod message;
 mod parse;
 mod parser;

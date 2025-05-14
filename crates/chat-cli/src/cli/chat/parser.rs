@@ -222,9 +222,9 @@ impl ResponseParser {
                     self.tool_uses.push(AssistantToolUse {
                         id: id.clone(),
                         name: name.clone(),
-                        orig_name: Some(name.clone()),
+                        orig_name: name.clone(),
                         args: args.clone(),
-                        orig_args: Some(args.clone()),
+                        orig_args: args.clone(),
                     });
                     let message = Box::new(AssistantMessage::new_tool_use(
                         Some(self.message_id.clone()),
@@ -244,11 +244,14 @@ impl ResponseParser {
             // if the tool just does not need any input
             _ => serde_json::json!({}),
         };
+        let orig_name = name.clone();
+        let orig_args = args.clone();
         Ok(AssistantToolUse {
             id,
             name,
+            orig_name,
             args,
-            ..Default::default()
+            orig_args,
         })
     }
 

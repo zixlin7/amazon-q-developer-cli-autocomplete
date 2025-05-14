@@ -572,6 +572,7 @@ impl ChatContext {
                 cs.reload_serialized_state(Arc::clone(&ctx), Some(output.clone())).await;
                 input = Some(input.unwrap_or("In a few words, summarize our conversation so far.".to_owned()));
                 cs.tool_manager = tool_manager;
+                cs.enforce_tool_use_history_invariants(false);
                 cs
             } else {
                 ConversationState::new(

@@ -160,7 +160,7 @@ use crate::mcp_client::{
 use crate::platform::Context;
 use crate::telemetry::TelemetryThread;
 use crate::telemetry::core::ToolUseEventBuilder;
-use crate::util::CHAT_BINARY_NAME;
+use crate::util::CLI_BINARY_NAME;
 
 /// Help text for the compact command
 fn compact_help_text() -> String {
@@ -324,7 +324,7 @@ pub async fn chat(
     if !crate::util::system_info::in_cloudshell() && !crate::auth::is_logged_in(database).await {
         bail!(
             "You are not logged in, please log in with {}",
-            format!("{CHAT_BINARY_NAME} login").bold()
+            format!("{CLI_BINARY_NAME} login").bold()
         );
     }
 

@@ -70,6 +70,7 @@ use tokio::signal::ctrl_c;
 use tracing::{
     Level,
     debug,
+    error,
 };
 
 use self::integrations::IntegrationsSubcommands;
@@ -381,10 +382,13 @@ impl Cli {
 
         let secret_store = SecretStore::new().await.ok();
         if let Some(secret_store) = secret_store {
-            if let Ok(database) = database() {
+            if let Ok(database) = database().map_err(|err| error!(?err, "failed to open database")) {
                 if let Ok(token) = BuilderIdToken::load(&secret_store, false).await {
                     if let Ok(token) = serde_json::to_string(&token) {
-                        database.set_auth_value("codewhisperer:odic:token", token).ok();
+                        database
+                            .set_auth_value("codewhisperer:odic:token", token)
+                            .map_err(|err| error!(?err, "failed to write credentials to auth db"))
+                            .ok();
                     }
                 }
             }

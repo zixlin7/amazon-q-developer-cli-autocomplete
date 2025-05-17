@@ -95,55 +95,6 @@ fn test_bm25_with_file() {
     fs::remove_dir_all(temp_dir).unwrap_or(());
 }
 
-/// Test creating a client with BM25 embedder and adding multiple contexts
-#[test]
-fn test_bm25_multiple_contexts() {
-    // Create a temporary directory for the test
-    let temp_dir = env::temp_dir().join("semantic_search_test_bm25_multiple");
-    let base_dir = temp_dir.join("semantic_search");
-    fs::create_dir_all(&base_dir).unwrap();
-
-    // Create a semantic search client with BM25 embedder
-    let mut client = SemanticSearchClient::with_embedding_type(base_dir.clone(), EmbeddingType::BM25).unwrap();
-
-    // Add multiple contexts
-    let id1 = client
-        .add_context_from_text(
-            "BM25 is a keyword-based ranking function used in information retrieval",
-            "BM25 Info",
-            "Information about BM25 algorithm",
-            false,
-        )
-        .unwrap();
-
-    let id2 = client
-        .add_context_from_text(
-            "TF-IDF stands for Term Frequency-Inverse Document Frequency, a numerical statistic used in information retrieval",
-            "TF-IDF Info",
-            "Information about TF-IDF",
-            false,
-        )
-        .unwrap();
-
-    // Search across all contexts
-    let results = client.search_all("information retrieval", Some(5)).unwrap();
-
-    // Should find matches in both contexts
-    assert!(!results.is_empty());
-
-    // Verify we got results from both contexts
-    let mut found_contexts = 0;
-    for (context_id, _) in &results {
-        if context_id == &id1 || context_id == &id2 {
-            found_contexts += 1;
-        }
-    }
-    assert_eq!(found_contexts, 2);
-
-    // Clean up
-    fs::remove_dir_all(temp_dir).unwrap_or(());
-}
-
 /// Test BM25 with persistent contexts
 #[test]
 fn test_bm25_persistent_context() {

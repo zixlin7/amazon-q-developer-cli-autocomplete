@@ -5,15 +5,11 @@
 
 use std::env;
 
-#[cfg(any(target_os = "macos", target_os = "windows"))]
-use crate::embedding::TextEmbedder;
-#[cfg(any(target_os = "macos", target_os = "windows"))]
-use crate::embedding::onnx_models::OnnxModelType;
 use crate::embedding::{
     BM25TextEmbedder,
     run_standard_benchmark,
 };
-#[cfg(not(target_arch = "aarch64"))]
+#[cfg(not(all(target_os = "linux", target_arch = "aarch64")))]
 use crate::embedding::{
     CandleTextEmbedder,
     ModelType,
@@ -37,7 +33,7 @@ fn should_skip_real_embedder_tests() -> bool {
 }
 
 /// Run benchmark for a Candle model
-#[cfg(not(target_arch = "aarch64"))]
+#[cfg(not(all(target_os = "linux", target_arch = "aarch64")))]
 fn benchmark_candle_model(model_type: ModelType) {
     match CandleTextEmbedder::with_model_type(model_type) {
         Ok(embedder) => {
@@ -54,28 +50,6 @@ fn benchmark_candle_model(model_type: ModelType) {
         },
         Err(e) => {
             println!("Failed to load Candle model {:?}: {}", model_type, e);
-        },
-    }
-}
-
-/// Run benchmark for an ONNX model
-#[cfg(any(target_os = "macos", target_os = "windows"))]
-fn benchmark_onnx_model(model_type: OnnxModelType) {
-    match TextEmbedder::with_model_type(model_type) {
-        Ok(embedder) => {
-            println!("Benchmarking ONNX model: {:?}", model_type);
-            let results = run_standard_benchmark(&embedder);
-            println!(
-                "Model: {}, Embedding dim: {}, Single time: {:?}, Batch time: {:?}, Avg per text: {:?}",
-                results.model_name,
-                results.embedding_dim,
-                results.single_time,
-                results.batch_time,
-                results.avg_time_per_text()
-            );
-        },
-        Err(e) => {
-            println!("Failed to load ONNX model {:?}: {}", model_type, e);
         },
     }
 }
@@ -114,18 +88,11 @@ fn test_standard_benchmark() {
     // Benchmark BM25 model (available on all platforms)
     benchmark_bm25_model();
 
-    // Benchmark Candle models (not available on arm64)
-    #[cfg(not(target_arch = "aarch64"))]
+    // Benchmark Candle models (not available on Linux ARM)
+    #[cfg(not(all(target_os = "linux", target_arch = "aarch64")))]
     {
         benchmark_candle_model(ModelType::MiniLML6V2);
         benchmark_candle_model(ModelType::MiniLML12V2);
-    }
-
-    // Benchmark ONNX models (available on macOS and Windows)
-    #[cfg(any(target_os = "macos", target_os = "windows"))]
-    {
-        benchmark_onnx_model(OnnxModelType::MiniLML6V2Q);
-        benchmark_onnx_model(OnnxModelType::MiniLML12V2Q);
     }
 
     println!("--------------------------------------------------------");

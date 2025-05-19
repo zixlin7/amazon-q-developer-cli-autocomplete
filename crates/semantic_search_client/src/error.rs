@@ -25,8 +25,6 @@ pub enum SemanticSearchError {
     InvalidArgument(String),
     /// Embedding error
     EmbeddingError(String),
-    /// Fastembed error
-    FastembedError(String),
 }
 
 impl fmt::Display for SemanticSearchError {
@@ -40,7 +38,6 @@ impl fmt::Display for SemanticSearchError {
             SemanticSearchError::OperationFailed(msg) => write!(f, "Operation failed: {}", msg),
             SemanticSearchError::InvalidArgument(msg) => write!(f, "Invalid argument: {}", msg),
             SemanticSearchError::EmbeddingError(msg) => write!(f, "Embedding error: {}", msg),
-            SemanticSearchError::FastembedError(msg) => write!(f, "Fastembed error: {}", msg),
         }
     }
 }

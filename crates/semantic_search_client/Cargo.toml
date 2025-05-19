@@ -34,8 +34,8 @@ bm25 = { version = "2.2.1", features = ["language_detection"] }
 # Common dependencies for all platforms
 anyhow = "1.0"
 
-# Candle dependencies - not used on arm64
-[target.'cfg(not(target_arch = "aarch64"))'.dependencies]
+# Candle dependencies - not used on Linux ARM
+[target.'cfg(not(all(target_os = "linux", target_arch = "aarch64")))'.dependencies]
 candle-core = { version = "0.9.1", features = [] }
 candle-nn = "0.9.1"
 candle-transformers = "0.9.1"
@@ -43,15 +43,11 @@ tokenizers = "0.21.1"
 hf-hub = { version = "0.4.2", default-features = false, features = ["rustls-tls", "tokio", "ureq"] }
 
 # Conditionally enable Metal on macOS
-[target.'cfg(all(target_os = "macos", not(target_arch = "aarch64")))'.dependencies.candle-core]
+[target.'cfg(all(target_os = "macos", not(all(target_os = "linux", target_arch = "aarch64"))))'.dependencies.candle-core]
 version = "0.9.1"
 features = []
 
 # Conditionally enable CUDA on Linux and Windows
-[target.'cfg(all(any(target_os = "linux", target_os = "windows"), not(target_arch = "aarch64")))'.dependencies.candle-core]
+[target.'cfg(all(any(target_os = "linux", target_os = "windows"), not(all(target_os = "linux", target_arch = "aarch64"))))'.dependencies.candle-core]
 version = "0.9.1"
 features = []
-
-[target.'cfg(any(target_os = "macos", target_os = "windows"))'.dependencies]
-# Fastembed dependencies - only for macOS and Windows
-fastembed = { version = "4.8.0", default-features = false, features = ["hf-hub-rustls-tls", "ort-download-binaries"] }

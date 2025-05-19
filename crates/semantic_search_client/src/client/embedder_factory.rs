@@ -1,9 +1,7 @@
-#[cfg(not(target_arch = "aarch64"))]
+#[cfg(not(all(target_os = "linux", target_arch = "aarch64")))]
 use crate::embedding::CandleTextEmbedder;
 #[cfg(test)]
 use crate::embedding::MockTextEmbedder;
-#[cfg(any(target_os = "macos", target_os = "windows"))]
-use crate::embedding::TextEmbedder;
 use crate::embedding::{
     BM25TextEmbedder,
     EmbeddingType,
@@ -23,9 +21,8 @@ use crate::error::Result;
 #[cfg(any(target_os = "macos", target_os = "windows"))]
 pub fn create_embedder(embedding_type: EmbeddingType) -> Result<Box<dyn TextEmbedderTrait>> {
     let embedder: Box<dyn TextEmbedderTrait> = match embedding_type {
-        #[cfg(not(target_arch = "aarch64"))]
+        #[cfg(not(all(target_os = "linux", target_arch = "aarch64")))]
         EmbeddingType::Candle => Box::new(CandleTextEmbedder::new()?),
-        EmbeddingType::Onnx => Box::new(TextEmbedder::new()?),
         EmbeddingType::BM25 => Box::new(BM25TextEmbedder::new()?),
         #[cfg(test)]
         EmbeddingType::Mock => Box::new(MockTextEmbedder::new(384)),

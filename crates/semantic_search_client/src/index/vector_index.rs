@@ -9,6 +9,8 @@ use tracing::{
 pub struct VectorIndex {
     /// The HNSW index
     index: Hnsw<'static, f32, DistCosine>,
+    /// Counter to track the number of elements
+    count: std::sync::atomic::AtomicUsize,
 }
 
 impl VectorIndex {
@@ -33,7 +35,10 @@ impl VectorIndex {
         );
 
         debug!("Vector index created successfully");
-        Self { index }
+        Self {
+            index,
+            count: std::sync::atomic::AtomicUsize::new(0),
+        }
     }
 
     /// Insert a vector into the index
@@ -44,6 +49,7 @@ impl VectorIndex {
     /// * `id` - The ID associated with the vector
     pub fn insert(&self, vector: &[f32], id: usize) {
         self.index.insert((vector, id));
+        self.count.fetch_add(1, std::sync::atomic::Ordering::SeqCst);
     }
 
     /// Search for nearest neighbors
@@ -72,9 +78,7 @@ impl VectorIndex {
     ///
     /// The number of elements in the index
     pub fn len(&self) -> usize {
-        // Since HNSW doesn't provide a direct way to get the count,
-        // we'll use a simple counter that's updated when items are inserted
-        self.index.get_ef_construction()
+        self.count.load(std::sync::atomic::Ordering::SeqCst)
     }
 
     /// Check if the index is empty
@@ -83,7 +87,6 @@ impl VectorIndex {
     ///
     /// `true` if the index is empty, `false` otherwise
     pub fn is_empty(&self) -> bool {
-        // For simplicity, we'll assume it's empty if ef_construction is at default value
-        self.index.get_ef_construction() == 100
+        self.len() == 0
     }
 }

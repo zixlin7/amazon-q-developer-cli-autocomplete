@@ -104,7 +104,7 @@ pub(crate) fn client(region: Region) -> Client {
         .sleep_impl(SharedAsyncSleep::new(TokioSleep::new()))
         .stalled_stream_protection(
             StalledStreamProtectionConfig::enabled()
-                .grace_period(std::time::Duration::from_secs(60))
+                .grace_period(std::time::Duration::from_secs(12))
                 .build(),
         )
         .app_name(app_name())

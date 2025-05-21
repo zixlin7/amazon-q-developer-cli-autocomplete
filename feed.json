@@ -12,6 +12,50 @@
     },
     {
       "type": "release",
+      "date": "2025-05-21",
+      "version": "1.10.2",
+      "title": "Version 1.10.2",
+      "changes": [
+        {
+          "type": "fixed",
+          "description": "Update stalled stream protection to 12s - [#75](https://github.com/aws/amazon-q-developer-cli-autocomplete/pull/75)"
+        },
+        {
+          "type": "fixed",
+          "description": "Fix token refresh - [#1920](https://github.com/aws/amazon-q-developer-cli/pull/1920)"
+        },
+        {
+          "type": "fixed",
+          "description": "An issue where early error from an mcp server will cause loading status to be terminated prematurely - [#1919](https://github.com/aws/amazon-q-developer-cli/pull/1919)"
+        },
+        {
+          "type": "fixed",
+          "description": "Fixed readme in dashboard app - [#1868](https://github.com/aws/amazon-q-developer-cli/pull/1868)"
+        },
+        {
+          "type": "added",
+          "description": "Added chat.editMode to tips - [#1900](https://github.com/aws/amazon-q-developer-cli/pull/1900)"
+        },
+        {
+          "type": "added",
+          "description": "Added multi platform process kill - [#1875](https://github.com/aws/amazon-q-developer-cli/pull/1875)"
+        },
+        {
+          "type": "added",
+          "description": "Added server load tiemout for no interactive mode - [#1851](https://github.com/aws/amazon-q-developer-cli/pull/1851)"
+        },
+        {
+          "type": "added",
+          "description": "Sorts tools and prompts - [#1809](https://github.com/aws/amazon-q-developer-cli/pull/1809)"
+        },
+        {
+          "type": "added",
+          "description": "Add semantic search crate to Q CLI - [#1860](https://github.com/aws/amazon-q-developer-cli/pull/1860)"
+        }
+      ]
+    },
+    {
+      "type": "release",
       "date": "2025-05-16",
       "version": "1.10.1",
       "title": "Version 1.10.1",

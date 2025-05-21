@@ -60,14 +60,14 @@ dependencies = [
 
 [[package]]
 name = "alacritty_terminal"
-version = "1.10.1"
+version = "1.10.2"
 dependencies = [
  "bitflags 2.9.1",
  "camino",
  "serde",
  "serde_json",
  "serde_yaml",
- "shell-color 1.10.1",
+ "shell-color 1.10.2",
  "tracing",
  "unicode-width 0.2.0",
  "vte 0.15.0",
@@ -277,7 +277,7 @@ checksum = "e16d2d3311acee920a9eb8d33b8cbc1787ce4a264e85f964c2404b969bdcd487"
 
 [[package]]
 name = "appkit-nsworkspace-bindings"
-version = "1.10.1"
+version = "1.10.2"
 dependencies = [
  "bindgen 0.71.1",
  "objc",
@@ -1618,7 +1618,7 @@ checksum = "613afe47fcd5fac7ccf1db93babcb082c5994d996f20b8b159f2ad1658eb5724"
 
 [[package]]
 name = "chat_cli"
-version = "1.10.1"
+version = "1.10.2"
 dependencies = [
  "amzn-codewhisperer-client",
  "amzn-codewhisperer-streaming-client",
@@ -2376,7 +2376,7 @@ checksum = "2a2330da5de22e8a3cb63252ce2abb30116bf5265e89c0e01bc17015ce30a476"
 
 [[package]]
 name = "dbus"
-version = "1.10.1"
+version = "1.10.2"
 dependencies = [
  "async_zip",
  "fig_os_shim",
@@ -2993,7 +2993,7 @@ dependencies = [
 
 [[package]]
 name = "fig-api-mock"
-version = "1.10.1"
+version = "1.10.2"
 dependencies = [
  "async-trait",
  "clap",
@@ -3006,7 +3006,7 @@ dependencies = [
 
 [[package]]
 name = "fig_api_client"
-version = "1.10.1"
+version = "1.10.2"
 dependencies = [
  "amzn-codewhisperer-client",
  "amzn-codewhisperer-streaming-client",
@@ -3041,7 +3041,7 @@ dependencies = [
 
 [[package]]
 name = "fig_auth"
-version = "1.10.1"
+version = "1.10.2"
 dependencies = [
  "async-trait",
  "aws-credential-types",
@@ -3075,7 +3075,7 @@ dependencies = [
 
 [[package]]
 name = "fig_aws_common"
-version = "1.10.1"
+version = "1.10.2"
 dependencies = [
  "aws-runtime",
  "aws-smithy-runtime",
@@ -3089,7 +3089,7 @@ dependencies = [
 
 [[package]]
 name = "fig_desktop"
-version = "1.10.1"
+version = "1.10.2"
 dependencies = [
  "accessibility-sys",
  "anyhow",
@@ -3181,7 +3181,7 @@ dependencies = [
 
 [[package]]
 name = "fig_desktop_api"
-version = "1.10.1"
+version = "1.10.2"
 dependencies = [
  "anstream",
  "async-trait",
@@ -3218,7 +3218,7 @@ dependencies = [
 
 [[package]]
 name = "fig_diagnostic"
-version = "1.10.1"
+version = "1.10.2"
 dependencies = [
  "cfg-if",
  "clap",
@@ -3238,7 +3238,7 @@ dependencies = [
 
 [[package]]
 name = "fig_input_method"
-version = "1.10.1"
+version = "1.10.2"
 dependencies = [
  "apple-bundle",
  "fig_ipc",
@@ -3259,7 +3259,7 @@ dependencies = [
 
 [[package]]
 name = "fig_install"
-version = "1.10.1"
+version = "1.10.2"
 dependencies = [
  "bitflags 2.9.1",
  "bytes",
@@ -3298,7 +3298,7 @@ dependencies = [
 
 [[package]]
 name = "fig_integrations"
-version = "1.10.1"
+version = "1.10.2"
 dependencies = [
  "accessibility-sys",
  "async-trait",
@@ -3331,7 +3331,7 @@ dependencies = [
 
 [[package]]
 name = "fig_ipc"
-version = "1.10.1"
+version = "1.10.2"
 dependencies = [
  "async-trait",
  "base64 0.22.1",
@@ -3354,7 +3354,7 @@ dependencies = [
 
 [[package]]
 name = "fig_log"
-version = "1.10.1"
+version = "1.10.2"
 dependencies = [
  "fig_util",
  "parking_lot",
@@ -3367,7 +3367,7 @@ dependencies = [
 
 [[package]]
 name = "fig_os_shim"
-version = "1.10.1"
+version = "1.10.2"
 dependencies = [
  "cfg-if",
  "dirs 5.0.1",
@@ -3380,7 +3380,7 @@ dependencies = [
 
 [[package]]
 name = "fig_proto"
-version = "1.10.1"
+version = "1.10.2"
 dependencies = [
  "arbitrary",
  "bytes",
@@ -3403,7 +3403,7 @@ dependencies = [
 
 [[package]]
 name = "fig_remote_ipc"
-version = "1.10.1"
+version = "1.10.2"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -3421,7 +3421,7 @@ dependencies = [
 
 [[package]]
 name = "fig_request"
-version = "1.10.1"
+version = "1.10.2"
 dependencies = [
  "bytes",
  "cfg-if",
@@ -3446,7 +3446,7 @@ dependencies = [
 
 [[package]]
 name = "fig_settings"
-version = "1.10.1"
+version = "1.10.2"
 dependencies = [
  "fd-lock",
  "fig_test",
@@ -3467,7 +3467,7 @@ dependencies = [
 
 [[package]]
 name = "fig_telemetry"
-version = "1.10.1"
+version = "1.10.2"
 dependencies = [
  "amzn-codewhisperer-client",
  "amzn-toolkit-telemetry-client",
@@ -3501,7 +3501,7 @@ dependencies = [
 
 [[package]]
 name = "fig_telemetry_core"
-version = "1.10.1"
+version = "1.10.2"
 dependencies = [
  "amzn-codewhisperer-client",
  "amzn-toolkit-telemetry-client",
@@ -3515,7 +3515,7 @@ dependencies = [
 
 [[package]]
 name = "fig_test"
-version = "1.10.1"
+version = "1.10.2"
 dependencies = [
  "fig_test_macro",
  "tokio",
@@ -3523,7 +3523,7 @@ dependencies = [
 
 [[package]]
 name = "fig_test_macro"
-version = "1.10.1"
+version = "1.10.2"
 dependencies = [
  "quote",
  "syn 2.0.101",
@@ -3531,7 +3531,7 @@ dependencies = [
 
 [[package]]
 name = "fig_test_utils"
-version = "1.10.1"
+version = "1.10.2"
 dependencies = [
  "bytes",
  "fig_os_shim",
@@ -3549,7 +3549,7 @@ dependencies = [
 
 [[package]]
 name = "fig_util"
-version = "1.10.1"
+version = "1.10.2"
 dependencies = [
  "appkit-nsworkspace-bindings",
  "bstr",
@@ -3589,7 +3589,7 @@ dependencies = [
 
 [[package]]
 name = "figterm"
-version = "1.10.1"
+version = "1.10.2"
 dependencies = [
  "alacritty_terminal",
  "anyhow",
@@ -3634,7 +3634,7 @@ dependencies = [
  "serde",
  "serde_json",
  "shared_library",
- "shell-color 1.10.1",
+ "shell-color 1.10.2",
  "shell-words",
  "shellexpand",
  "shlex",
@@ -3653,7 +3653,7 @@ dependencies = [
 
 [[package]]
 name = "figterm2"
-version = "1.10.1"
+version = "1.10.2"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -5688,7 +5688,7 @@ dependencies = [
 
 [[package]]
 name = "macos-utils"
-version = "1.10.1"
+version = "1.10.2"
 dependencies = [
  "accessibility",
  "accessibility-sys",
@@ -7686,7 +7686,7 @@ dependencies = [
 
 [[package]]
 name = "q_cli"
-version = "1.10.1"
+version = "1.10.2"
 dependencies = [
  "amzn-codewhisperer-client",
  "amzn-codewhisperer-streaming-client",
@@ -8737,7 +8737,7 @@ dependencies = [
 
 [[package]]
 name = "semantic_search_client"
-version = "1.10.1"
+version = "1.10.2"
 dependencies = [
  "anyhow",
  "bm25",
@@ -8986,7 +8986,7 @@ dependencies = [
 
 [[package]]
 name = "shell-color"
-version = "1.10.1"
+version = "1.10.2"
 dependencies = [
  "bitflags 2.9.1",
  "fig_test",

@@ -22,7 +22,7 @@
         },
         {
           "type": "fixed",
-          "description": "Fix token refresh - [#1920](https://github.com/aws/amazon-q-developer-cli/pull/1920)"
+          "description": "Token refresh - [#1920](https://github.com/aws/amazon-q-developer-cli/pull/1920)"
         },
         {
           "type": "fixed",
@@ -30,27 +30,27 @@
         },
         {
           "type": "fixed",
-          "description": "Fixed readme in dashboard app - [#1868](https://github.com/aws/amazon-q-developer-cli/pull/1868)"
+          "description": "Readme in dashboard app - [#1868](https://github.com/aws/amazon-q-developer-cli/pull/1868)"
         },
         {
           "type": "added",
-          "description": "Added chat.editMode to tips - [#1900](https://github.com/aws/amazon-q-developer-cli/pull/1900)"
+          "description": "chat.editMode to tips - [#1900](https://github.com/aws/amazon-q-developer-cli/pull/1900)"
         },
         {
           "type": "added",
-          "description": "Added multi platform process kill - [#1875](https://github.com/aws/amazon-q-developer-cli/pull/1875)"
+          "description": "Multi platform process kill - [#1875](https://github.com/aws/amazon-q-developer-cli/pull/1875)"
         },
         {
           "type": "added",
-          "description": "Added server load tiemout for no interactive mode - [#1851](https://github.com/aws/amazon-q-developer-cli/pull/1851)"
+          "description": "Server load timeout for no interactive mode - [#1851](https://github.com/aws/amazon-q-developer-cli/pull/1851)"
+        },
+        {
+          "type": "fixed",
+          "description": "Tools and prompts not being sorted - [#1809](https://github.com/aws/amazon-q-developer-cli/pull/1809)"
         },
         {
           "type": "added",
-          "description": "Sorts tools and prompts - [#1809](https://github.com/aws/amazon-q-developer-cli/pull/1809)"
-        },
-        {
-          "type": "added",
-          "description": "Add semantic search crate to Q CLI - [#1860](https://github.com/aws/amazon-q-developer-cli/pull/1860)"
+          "description": "Semantic search crate to Q CLI - [#1860](https://github.com/aws/amazon-q-developer-cli/pull/1860)"
         }
       ]
     },

@@ -70,7 +70,7 @@
 ### 1. Clone repo
 
 ```shell
-git clone https://github.com/aws/amazon-q-for-command-line.git
+git clone https://github.com/aws/amazon-q-developer-cli-autocomplete.git
 ```
 
 ### 2. Setup

@@ -105,6 +105,9 @@ pub struct ConversationState {
     latest_summary: Option<String>,
     #[serde(skip)]
     pub updates: Option<SharedWriter>,
+    /// Model explicitly selected by the user in this conversation state via `/model`. (`None` == auto)
+    #[serde(skip)]
+    pub current_model_id: Option<String>,
 }
 
 impl ConversationState {
@@ -115,6 +118,7 @@ impl ConversationState {
         profile: Option<String>,
         updates: Option<SharedWriter>,
         tool_manager: ToolManager,
+        curren_model_id: Option<String>,
     ) -> Self {
         // Initialize context manager
         let context_manager = match ContextManager::new(ctx, None).await {
@@ -157,6 +161,7 @@ impl ConversationState {
             context_message_length: None,
             latest_summary: None,
             updates,
+            current_model_id: curren_model_id,
         }
     }
 
@@ -1059,6 +1064,7 @@ mod tests {
             None,
             None,
             tool_manager,
+            None,
         )
         .await;
 
@@ -1089,6 +1095,7 @@ mod tests {
             None,
             None,
             tool_manager.clone(),
+            None,
         )
         .await;
         conversation_state.set_next_user_message("start".to_string()).await;
@@ -1120,6 +1127,7 @@ mod tests {
             None,
             None,
             tool_manager.clone(),
+            None,
         )
         .await;
         conversation_state.set_next_user_message("start".to_string()).await;
@@ -1165,6 +1173,7 @@ mod tests {
             None,
             None,
             tool_manager,
+            None,
         )
         .await;
 
@@ -1235,6 +1244,7 @@ mod tests {
             None,
             Some(SharedWriter::stdout()),
             tool_manager,
+            None,
         )
         .await;
 

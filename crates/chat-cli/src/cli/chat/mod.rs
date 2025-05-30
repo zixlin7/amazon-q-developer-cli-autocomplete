@@ -562,6 +562,7 @@ impl ChatContext {
         let output_clone = output.clone();
 
         let mut existing_conversation = false;
+        let model_id = Some(database.settings.get_string(Setting::UserDefaultModel).unwrap());
         let conversation_state = if resume_conversation {
             let prior = std::env::current_dir()
                 .ok()
@@ -588,6 +589,7 @@ impl ChatContext {
                     profile,
                     Some(output_clone),
                     tool_manager,
+                    model_id
                 )
                 .await
             }
@@ -599,6 +601,7 @@ impl ChatContext {
                 profile,
                 Some(output_clone),
                 tool_manager,
+                model_id
             )
             .await
         };
@@ -3014,21 +3017,14 @@ impl ChatContext {
                 queue!(self.output, style::Print("\n"))?;
                 let labels: Vec<&str> = MODEL_OPTIONS.iter().map(|(l, _)| *l).collect();
                 let selection: Option<_> = match Select::with_theme(&crate::util::dialoguer_theme())
-                    .with_prompt("choose your model")
+                    .with_prompt("Select the model you want to use for chat")
                     .items(&labels)
                     .default(0)
                     .interact_on_opt(&dialoguer::console::Term::stdout())
                 {
                     Ok(sel) => sel,
                     // Ctrl‑C -> Err(Interrupted)
-                    Err(DError::IO(ref e)) if e.kind() == io::ErrorKind::Interrupted => {
-                        queue!(
-                            self.output,
-                            style::Print("\n"),
-                            style::Print("⚠️ User cancelled selection\n\n")
-                        )?;
-                        None
-                    },
+                    Err(DError::IO(ref e)) if e.kind() == io::ErrorKind::Interrupted => None,
                     Err(e) => return Err(ChatError::Custom(format!("Failed to choose model: {e}").into())),
                 };
 
@@ -3039,7 +3035,7 @@ impl ChatContext {
                         queue,
                         style,
                     };
-                    queue!(self.output, style::Print(format!("\n✅ change to : {}\n\n", label)))?;
+                    queue!(self.output, style::Print("\n"), style::Print(format!(" Swtiched model to {}\n\n", label)))?;
                 }
 
                 ChatState::PromptUser {
@@ -3729,6 +3725,8 @@ impl ChatContext {
 
         Ok(())
     }
+
+    
 }
 
 /// Prints hook configuration grouped by trigger: conversation session start or per user message

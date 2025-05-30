@@ -126,6 +126,7 @@ impl StreamingClient {
         })
     }
 
+    //todo yifan generate response
     pub async fn send_message(
         &self,
         conversation_state: ConversationState,

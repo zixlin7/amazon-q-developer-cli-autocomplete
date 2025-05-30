@@ -562,7 +562,7 @@ impl ChatContext {
         let output_clone = output.clone();
 
         let mut existing_conversation = false;
-        let model_id = Some(database.settings.get_string(Setting::UserDefaultModel).unwrap());
+        let model_id = database.settings.get_string(Setting::UserDefaultModel);
         let conversation_state = if resume_conversation {
             let prior = std::env::current_dir()
                 .ok()

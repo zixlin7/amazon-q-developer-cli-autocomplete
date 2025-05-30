@@ -12,6 +12,7 @@ use amzn_codewhisperer_client::types::{
     TelemetryEvent,
     UserContext,
 };
+use crate::model::ConversationState;
 use amzn_consolas_client::Client as ConsolasClient;
 use amzn_consolas_client::error::DisplayErrorContext;
 use amzn_consolas_client::operation::generate_recommendations::GenerateRecommendationsError;
@@ -223,6 +224,7 @@ impl Client {
         Ok(customizations)
     }
 
+    //(todo) yifan : how to propgate modelID
     // .telemetry_event(TelemetryEvent::UserTriggerDecisionEvent(user_trigger_decision_event))
     // .user_context(user_context)
     // .opt_out_preference(opt_out_preference)

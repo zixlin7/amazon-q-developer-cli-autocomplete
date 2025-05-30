@@ -59,6 +59,7 @@ pub enum Command {
         force: bool,
     },
     Mcp,
+    Model,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -839,6 +840,7 @@ impl Command {
                     Self::Save { path, force }
                 },
                 "mcp" => Self::Mcp,
+                "model" => Self::Model,
                 unknown_command => {
                     let looks_like_path = {
                         let after_slash_command_str = parts[1..].join(" ");

@@ -38,6 +38,7 @@ use std::time::Duration;
 use std::{
     env,
     fs,
+    io,
 };
 
 use command::{
@@ -64,6 +65,10 @@ use crossterm::{
     queue,
     style,
     terminal,
+};
+use dialoguer::{
+    Error as DError,
+    Select,
 };
 use eyre::{
     ErrReport,
@@ -222,6 +227,12 @@ const ROTATING_TIPS: [&str; 13] = [
 ];
 
 const GREETING_BREAK_POINT: usize = 80;
+
+const MODEL_OPTIONS: [(&str, &str); 3] = [
+    ("Auto", ""),
+    ("Claude Sonnet 3.7", "CLAUDE_3_7_SONNET_20250219_V1_0"),
+    ("Claude Sonnet 3.5", "CLAUDE_3_5_SONNET_20241022_V2_0"),
+];
 
 const POPULAR_SHORTCUTS: &str = color_print::cstr! {"<black!><green!>/help</green!> all commands  <em>•</em>  <green!>ctrl + j</green!> new lines  <em>•</em>  <green!>ctrl + s</green!> fuzzy search</black!>"};
 const SMALL_SCREEN_POPULAR_SHORTCUTS: &str = color_print::cstr! {"<black!><green!>/help</green!> all commands
@@ -2997,6 +3008,44 @@ impl ChatContext {
                     tool_uses: None,
                     pending_tool_index: None,
                     skip_printing_tools: true,
+                }
+            },
+            Command::Model => {
+                queue!(self.output, style::Print("\n"))?;
+                let labels: Vec<&str> = MODEL_OPTIONS.iter().map(|(l, _)| *l).collect();
+                let selection: Option<_> = match Select::with_theme(&crate::util::dialoguer_theme())
+                    .with_prompt("choose your model")
+                    .items(&labels)
+                    .default(0)
+                    .interact_on_opt(&dialoguer::console::Term::stdout())
+                {
+                    Ok(sel) => sel,
+                    // Ctrl‑C -> Err(Interrupted)
+                    Err(DError::IO(ref e)) if e.kind() == io::ErrorKind::Interrupted => {
+                        queue!(
+                            self.output,
+                            style::Print("\n"),
+                            style::Print("⚠️ User cancelled selection\n\n")
+                        )?;
+                        None
+                    },
+                    Err(e) => return Err(ChatError::Custom(format!("Failed to choose model: {e}").into())),
+                };
+
+                if let Some(index) = selection {
+                    let (label, model_opt) = MODEL_OPTIONS[index];
+
+                    use crossterm::{
+                        queue,
+                        style,
+                    };
+                    queue!(self.output, style::Print(format!("\n✅ change to : {}\n\n", label)))?;
+                }
+
+                ChatState::PromptUser {
+                    tool_uses: None,
+                    pending_tool_index: None,
+                    skip_printing_tools: false,
                 }
             },
         })

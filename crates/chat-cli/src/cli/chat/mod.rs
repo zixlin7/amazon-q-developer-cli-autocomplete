@@ -24,6 +24,7 @@ use std::collections::{
     HashSet,
     VecDeque,
 };
+use std::error::Error;
 use std::io::{
     IsTerminal,
     Read,
@@ -66,6 +67,7 @@ use crossterm::{
     terminal,
 };
 use eyre::{
+    Chain,
     ErrReport,
     Result,
     bail,
@@ -160,8 +162,11 @@ use crate::mcp_client::{
     PromptGetResult,
 };
 use crate::platform::Context;
-use crate::telemetry::TelemetryThread;
 use crate::telemetry::core::ToolUseEventBuilder;
+use crate::telemetry::{
+    TelemetryResult,
+    TelemetryThread,
+};
 use crate::util::CLI_BINARY_NAME;
 
 /// Help text for the compact command
@@ -843,7 +848,7 @@ impl ChatContext {
                 } => {
                     let tool_uses_clone = tool_uses.clone();
                     tokio::select! {
-                        res = self.handle_input(telemetry, input, tool_uses, pending_tool_index) => res,
+                        res = self.handle_input(telemetry, database, input, tool_uses, pending_tool_index) => res,
                         Ok(_) = ctrl_c_stream => Err(ChatError::Interrupted { tool_uses: tool_uses_clone })
                     }
                 },
@@ -856,7 +861,7 @@ impl ChatContext {
                 } => {
                     let tool_uses_clone = tool_uses.clone();
                     tokio::select! {
-                        res = self.compact_history(telemetry, tool_uses, pending_tool_index, prompt, show_summary, help) => res,
+                        res = self.compact_history(telemetry, database, tool_uses, pending_tool_index, prompt, show_summary, help) => res,
                         Ok(_) = ctrl_c_stream => Err(ChatError::Interrupted { tool_uses: tool_uses_clone })
                     }
                 },
@@ -875,12 +880,16 @@ impl ChatContext {
                 },
                 ChatState::HandleResponseStream(response) => tokio::select! {
                     res = self.handle_response(database, telemetry, response) => res,
-                    Ok(_) = ctrl_c_stream => Err(ChatError::Interrupted { tool_uses: None })
+                    Ok(_) = ctrl_c_stream => {
+                        self.send_chat_telemetry(database, telemetry, None, TelemetryResult::Cancelled, None).await;
+
+                        Err(ChatError::Interrupted { tool_uses: None })
+                    }
                 },
                 ChatState::Exit => return Ok(()),
             };
 
-            next_state = Some(self.handle_state_execution_result(database, result).await?);
+            next_state = Some(self.handle_state_execution_result(telemetry, database, result).await?);
         }
     }
 
@@ -888,6 +897,7 @@ impl ChatContext {
     /// to.
     async fn handle_state_execution_result(
         &mut self,
+        telemetry: &TelemetryThread,
         database: &mut Database,
         result: Result<ChatState, ChatError>,
     ) -> Result<ChatState, ChatError> {
@@ -896,6 +906,9 @@ impl ChatContext {
         match result {
             Ok(state) => Ok(state),
             Err(e) => {
+                self.send_error_telemetry(database, telemetry, get_error_string(&e))
+                    .await;
+
                 macro_rules! print_err {
                     ($prepend_msg:expr, $err:expr) => {{
                         queue!(
@@ -1027,9 +1040,11 @@ impl ChatContext {
     /// model.
     ///
     /// The last two user messages in the history are not included in the compaction process.
+    #[allow(clippy::too_many_arguments)]
     async fn compact_history(
         &mut self,
         telemetry: &TelemetryThread,
+        database: &mut Database,
         tool_uses: Option<Vec<QueuedTool>>,
         pending_tool_index: Option<usize>,
         custom_prompt: Option<String>,
@@ -1085,32 +1100,43 @@ impl ChatContext {
         // retry except with less context included.
         let response = match response {
             Ok(res) => res,
-            Err(e) => match e {
-                crate::api_client::ApiClientError::ContextWindowOverflow => {
-                    self.conversation_state.clear(true);
-                    if self.interactive {
-                        self.spinner.take();
-                        execute!(
-                            self.output,
-                            terminal::Clear(terminal::ClearType::CurrentLine),
-                            cursor::MoveToColumn(0),
-                            style::SetForegroundColor(Color::Yellow),
-                            style::Print(
-                                "The context window usage has overflowed. Clearing the conversation history.\n\n"
-                            ),
-                            style::SetAttribute(Attribute::Reset)
-                        )?;
-                    }
-                    return Ok(ChatState::PromptUser {
-                        tool_uses,
-                        pending_tool_index,
-                        skip_printing_tools: true,
-                    });
-                },
-                e => return Err(e.into()),
+            Err(e) => {
+                self.send_chat_telemetry(
+                    database,
+                    telemetry,
+                    None,
+                    TelemetryResult::Failed,
+                    Some(get_error_string(&e)),
+                )
+                .await;
+                match e {
+                    crate::api_client::ApiClientError::ContextWindowOverflow => {
+                        self.conversation_state.clear(true);
+                        if self.interactive {
+                            self.spinner.take();
+                            execute!(
+                                self.output,
+                                terminal::Clear(terminal::ClearType::CurrentLine),
+                                cursor::MoveToColumn(0),
+                                style::SetForegroundColor(Color::Yellow),
+                                style::Print(
+                                    "The context window usage has overflowed. Clearing the conversation history.\n\n"
+                                ),
+                                style::SetAttribute(Attribute::Reset)
+                            )?;
+                        }
+                        return Ok(ChatState::PromptUser {
+                            tool_uses,
+                            pending_tool_index,
+                            skip_printing_tools: true,
+                        });
+                    },
+                    e => return Err(e.into()),
+                }
             },
         };
 
+        let request_id = response.request_id().map(|s| s.to_string());
         let summary = {
             let mut parser = ResponseParser::new(response);
             loop {
@@ -1123,6 +1149,14 @@ impl ChatContext {
                         if let Some(request_id) = &err.request_id {
                             self.failed_request_ids.push(request_id.clone());
                         };
+                        self.send_chat_telemetry(
+                            database,
+                            telemetry,
+                            err.request_id.clone(),
+                            TelemetryResult::Failed,
+                            Some(get_error_string(&err)),
+                        )
+                        .await;
                         return Err(err.into());
                     },
                 }
@@ -1138,16 +1172,8 @@ impl ChatContext {
                 cursor::Show
             )?;
         }
-
-        if let Some(message_id) = self.conversation_state.message_id() {
-            telemetry
-                .send_chat_added_message(
-                    self.conversation_state.conversation_id().to_owned(),
-                    message_id.to_owned(),
-                    self.conversation_state.context_message_length(),
-                )
-                .ok();
-        }
+        self.send_chat_telemetry(database, telemetry, request_id, TelemetryResult::Succeeded, None)
+            .await;
 
         self.conversation_state.replace_history_with_summary(summary.clone());
 
@@ -1308,6 +1334,7 @@ impl ChatContext {
     async fn handle_input(
         &mut self,
         telemetry: &TelemetryThread,
+        database: &mut Database,
         mut user_input: String,
         tool_uses: Option<Vec<QueuedTool>>,
         pending_tool_index: Option<usize>,
@@ -1440,6 +1467,7 @@ impl ChatContext {
             } => {
                 self.compact_history(
                     telemetry,
+                    database,
                     Some(tool_uses),
                     pending_tool_index,
                     prompt,
@@ -3261,6 +3289,15 @@ impl ChatContext {
                         self.failed_request_ids.push(request_id.clone());
                     };
 
+                    self.send_chat_telemetry(
+                        database,
+                        telemetry,
+                        recv_error.request_id.clone(),
+                        TelemetryResult::Failed,
+                        Some(get_error_string(&recv_error)),
+                    )
+                    .await;
+
                     match recv_error.source {
                         RecvErrorKind::StreamTimeout { source, duration } => {
                             error!(
@@ -3395,15 +3432,8 @@ impl ChatContext {
             }
 
             if ended {
-                if let Some(message_id) = self.conversation_state.message_id() {
-                    telemetry
-                        .send_chat_added_message(
-                            self.conversation_state.conversation_id().to_owned(),
-                            message_id.to_owned(),
-                            self.conversation_state.context_message_length(),
-                        )
-                        .ok();
-                }
+                self.send_chat_telemetry(database, telemetry, request_id, TelemetryResult::Succeeded, None)
+                    .await;
 
                 if self.interactive
                     && database
@@ -3691,6 +3721,41 @@ impl ChatContext {
 
         Ok(())
     }
+
+    async fn send_chat_telemetry(
+        &self,
+        database: &Database,
+        telemetry: &TelemetryThread,
+        request_id: Option<String>,
+        result: TelemetryResult,
+        reason: Option<String>,
+    ) {
+        telemetry
+            .send_chat_added_message(
+                database,
+                self.conversation_state.conversation_id().to_owned(),
+                self.conversation_state.message_id().map(|s| s.to_owned()),
+                request_id,
+                self.conversation_state.context_message_length(),
+                result,
+                reason,
+            )
+            .await
+            .ok();
+    }
+
+    async fn send_error_telemetry(&self, database: &Database, telemetry: &TelemetryThread, reason: String) {
+        telemetry
+            .send_response_error(
+                database,
+                self.conversation_state.conversation_id().to_owned(),
+                self.conversation_state.context_message_length(),
+                TelemetryResult::Failed,
+                Some(reason),
+            )
+            .await
+            .ok();
+    }
 }
 
 /// Prints hook configuration grouped by trigger: conversation session start or per user message
@@ -3787,6 +3852,22 @@ fn create_stream(model_responses: serde_json::Value) -> StreamingClient {
         mock.push(stream);
     }
     StreamingClient::mock(mock)
+}
+
+/// Returns surface error + root cause as a string. If there is only one error
+/// in the chain, return that as a string.
+fn get_error_string(error: &(dyn Error + 'static)) -> String {
+    let err_chain = Chain::new(error);
+
+    if err_chain.len() > 1 {
+        format!(
+            "'{}' caused by: {}",
+            error,
+            err_chain.last().map_or("UNKNOWN".to_string(), |e| e.to_string())
+        )
+    } else {
+        error.to_string()
+    }
 }
 
 #[cfg(test)]

@@ -3017,7 +3017,7 @@ impl ChatContext {
                 queue!(self.output, style::Print("\n"))?;
                 let labels: Vec<&str> = MODEL_OPTIONS.iter().map(|(l, _)| *l).collect();
                 let selection: Option<_> = match Select::with_theme(&crate::util::dialoguer_theme())
-                    .with_prompt("Select the model you want to use for chat")
+                    .with_prompt("Select a model for this chat session")
                     .items(&labels)
                     .default(0)
                     .interact_on_opt(&dialoguer::console::Term::stdout())
@@ -3031,13 +3031,16 @@ impl ChatContext {
                 if let Some(index) = selection {
                     let (label, model_opt) = MODEL_OPTIONS[index];
 
+                    self.conversation_state.current_model_id = Some(model_opt.to_string());
+                    telemetry.update_model_id(self.conversation_state.current_model_id.clone());
+
                     use crossterm::{
                         queue,
                         style,
                     };
                     queue!(self.output, style::Print("\n"), style::Print(format!(" Swtiched model to {}\n\n", label)))?;
                 }
-
+                
                 ChatState::PromptUser {
                     tool_uses: None,
                     pending_tool_index: None,

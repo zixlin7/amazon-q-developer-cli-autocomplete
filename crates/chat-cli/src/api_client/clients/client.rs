@@ -78,6 +78,7 @@ impl Client {
         telemetry_event: TelemetryEvent,
         user_context: UserContext,
         telemetry_enabled: bool,
+        model_id: Option<String>,
     ) -> Result<(), ApiClientError> {
         match &self.inner {
             inner::Inner::Codewhisperer(client) => {
@@ -90,6 +91,7 @@ impl Client {
                         false => OptOutPreference::OptOut,
                     })
                     .set_profile_arn(self.profile.as_ref().map(|p| p.arn.clone()))
+                    .set_model_id(model_id)
                     .send()
                     .await;
                 Ok(())
@@ -159,6 +161,7 @@ mod tests {
                     .build()
                     .unwrap(),
                 false,
+                Some("model".to_owned()),
             )
             .await
             .unwrap();

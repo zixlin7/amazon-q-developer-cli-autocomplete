@@ -6,6 +6,7 @@ mod install_method;
 
 use core::ToolUseEventBuilder;
 use std::str::FromStr;
+use std::sync::{Arc, RwLock};
 
 use amzn_codewhisperer_client::types::{
     ChatAddMessageEvent,
@@ -131,6 +132,7 @@ impl TelemetryStage {
 pub struct TelemetryThread {
     handle: Option<JoinHandle<()>>,
     tx: mpsc::UnboundedSender<Event>,
+    current_model_id: Arc<RwLock<Option<String>>>,
 }
 
 impl Clone for TelemetryThread {
@@ -138,13 +140,16 @@ impl Clone for TelemetryThread {
         Self {
             handle: None,
             tx: self.tx.clone(),
+            current_model_id: Arc::clone(&self.current_model_id),
         }
     }
 }
 
 impl TelemetryThread {
     pub async fn new(env: &Env, database: &mut Database) -> Result<Self, TelemetryError> {
-        let telemetry_client = TelemetryClient::new(env, database).await?;
+        //todo yifan change to last used modelid
+        let current_model_id = Arc::new(RwLock::new(None));
+        let telemetry_client = TelemetryClient::new(env, database, current_model_id.clone()).await?;
         let (tx, mut rx) = mpsc::unbounded_channel();
         let handle = tokio::spawn(async move {
             while let Some(event) = rx.recv().await {
@@ -156,7 +161,12 @@ impl TelemetryThread {
         Ok(Self {
             handle: Some(handle),
             tx,
+            current_model_id,
         })
+    }
+
+    pub fn update_model_id(&self, model_id: Option<String>) {
+        *self.current_model_id.write().unwrap() = model_id;
     }
 
     pub async fn finish(self) -> Result<(), TelemetryError> {
@@ -275,10 +285,11 @@ struct TelemetryClient {
     telemetry_enabled: bool,
     codewhisperer_client: CodewhispererClient,
     toolkit_telemetry_client: Option<ToolkitTelemetryClient>,
+    current_model_id: Arc<RwLock<Option<String>>>,
 }
 
 impl TelemetryClient {
-    async fn new(env: &Env, database: &mut Database) -> Result<Self, TelemetryError> {
+    async fn new(env: &Env, database: &mut Database, current_model_id: Arc<RwLock<Option<String>>>) -> Result<Self, TelemetryError> {
         let telemetry_enabled = !cfg!(test)
             && env.get_os("Q_DISABLE_TELEMETRY").is_none()
             && database.settings.get_bool(Setting::TelemetryEnabled).unwrap_or(true);
@@ -338,6 +349,7 @@ impl TelemetryClient {
             telemetry_enabled,
             toolkit_telemetry_client,
             codewhisperer_client: CodewhispererClient::new(database, None).await?,
+            current_model_id,
         })
     }
 
@@ -356,6 +368,7 @@ impl TelemetryClient {
             ..
         } = &event.ty
         {
+            let model_id = self.current_model_id.read().unwrap().clone();
             let user_context = self.user_context().unwrap();
 
             let chat_add_message_event = match ChatAddMessageEvent::builder()
@@ -376,6 +389,7 @@ impl TelemetryClient {
                     TelemetryEvent::ChatAddMessageEvent(chat_add_message_event),
                     user_context,
                     self.telemetry_enabled,
+                    model_id,
                 )
                 .await
             {
@@ -451,7 +465,7 @@ mod test {
     #[tokio::test]
     async fn client_context() {
         let mut database = Database::new().await.unwrap();
-        let client = TelemetryClient::new(&Env::new(), &mut database).await.unwrap();
+        let client = TelemetryClient::new(&Env::new(), &mut database, Arc::new(RwLock::new(Some("model".to_owned())))).await.unwrap();
         let context = client.user_context().unwrap();
 
         assert_eq!(context.ide_category, IdeCategory::Cli);
@@ -511,7 +525,7 @@ mod test {
     #[ignore = "needs auth which is not in CI"]
     async fn test_without_optout() {
         let mut database = Database::new().await.unwrap();
-        let client = TelemetryClient::new(&Env::new(), &mut database).await.unwrap();
+        let client = TelemetryClient::new(&Env::new(), &mut database, Arc::new(RwLock::new(Some("model".to_owned())))).await.unwrap();
         client
             .codewhisperer_client
             .send_telemetry_event(
@@ -524,6 +538,7 @@ mod test {
                 ),
                 client.user_context().unwrap(),
                 false,
+                Some("model".to_owned()),
             )
             .await
             .unwrap();

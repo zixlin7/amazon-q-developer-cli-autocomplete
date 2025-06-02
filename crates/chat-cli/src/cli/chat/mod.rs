@@ -432,7 +432,8 @@ pub async fn chat(
 
     // If modelId is specified, verify it exists before starting the chat
     let model_id: Option<String> = if let Some(model_name) = model_name {
-        match MODEL_OPTIONS.iter().find(|(_, name, _)| *name == model_name) {
+        let model_name_lower = model_name.to_lowercase();
+        match MODEL_OPTIONS.iter().find(|(_, name, _)| name == &model_name_lower) {
             Some((_, _, id)) => Some(id.to_string()),
             None => {
                 let available_names: Vec<&str> = MODEL_OPTIONS.iter().map(|(_, name, _)| *name).collect();
@@ -613,9 +614,9 @@ impl ChatContext {
                     MODEL_OPTIONS
                         .iter()
                         .find(|(_, name, _)| *name == model_name)
-                        .map(|(_, _, id)| id.to_string())
+                        .map(|(_, _, id)| (*id).to_owned())
                 })
-                .or_else(|| Some(DEFAULT_MODEL_ID.to_string())),
+                .or_else(|| Some(DEFAULT_MODEL_ID.to_owned())),
         };
         let conversation_state = if resume_conversation {
             let prior = std::env::current_dir()
@@ -3098,7 +3099,7 @@ impl ChatContext {
                         if (model_id.is_empty() && active_model_id.is_none()) || Some(*model_id) == active_model_id {
                             format!("{} (active)", label)
                         } else {
-                            label.to_string()
+                            (*label).to_owned()
                         }
                     })
                     .collect();
@@ -3129,16 +3130,9 @@ impl ChatContext {
                 if let Some(index) = selection {
                     let (label, _, model_id) = MODEL_OPTIONS[index];
                     let model_id_str = model_id.to_string();
-
-                    if model_id == "" {
-                        self.conversation_state.current_model_id = None;
-                        telemetry.update_model_id(None);
-                        // let _ = database.unset_last_used_model_id();
-                    } else {
-                        self.conversation_state.current_model_id = Some(model_id_str.clone());
-                        telemetry.update_model_id(Some(model_id_str.clone()));
-                        // let _ = database.set_last_used_model_id(model_id_str);
-                    }
+                    self.conversation_state.current_model_id = Some(model_id_str.clone());
+                    telemetry.update_model_id(Some(model_id_str.clone()));
+                    // let _ = database.set_last_used_model_id(model_id_str);
 
                     queue!(
                         self.output,

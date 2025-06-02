@@ -162,9 +162,9 @@ impl TelemetryThread {
                 MODEL_OPTIONS
                     .iter()
                     .find(|(_, name, _)| *name == model_name)
-                    .map(|(_, _, id)| id.to_string())
+                    .map(|(_, _, id)| (*id).to_owned())
             })
-            .or_else(|| Some(DEFAULT_MODEL_ID.to_string()));
+            .or_else(|| Some(DEFAULT_MODEL_ID.to_owned()));
         let current_model_id = Arc::new(RwLock::new(model_id));
         let telemetry_client = TelemetryClient::new(env, database, current_model_id.clone()).await?;
         let (tx, mut rx) = mpsc::unbounded_channel();

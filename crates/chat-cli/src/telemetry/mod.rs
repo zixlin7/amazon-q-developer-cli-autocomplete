@@ -50,7 +50,7 @@ use uuid::{
 use crate::api_client::Client as CodewhispererClient;
 use crate::auth::builder_id::get_start_url_and_region;
 use crate::aws_common::app_name;
-use crate::cli::CliRootCommands;
+use crate::cli::RootSubcommand;
 use crate::database::settings::Setting;
 use crate::database::{
     Database,
@@ -182,12 +182,14 @@ impl TelemetryThread {
         Ok(self.tx.send(Event::new(EventType::UserLoggedIn {}))?)
     }
 
-    pub fn send_cli_subcommand_executed(&self, subcommand: Option<&CliRootCommands>) -> Result<(), TelemetryError> {
+    pub fn send_cli_subcommand_executed(&self, subcommand: &Option<RootSubcommand>) -> Result<(), TelemetryError> {
         let subcommand = match subcommand {
-            Some(subcommand) => subcommand.name(),
-            None => "chat",
-        }
-        .to_owned();
+            None => "chat".to_string(),
+            Some(subcommand) => match subcommand.valid_for_telemetry() {
+                true => subcommand.to_string(),
+                false => return Ok(()),
+            },
+        };
 
         Ok(self
             .tx
@@ -533,7 +535,7 @@ mod test {
 
         thread.send_user_logged_in().ok();
         thread
-            .send_cli_subcommand_executed(Some(&CliRootCommands::Version { changelog: None }))
+            .send_cli_subcommand_executed(&Some(RootSubcommand::Version { changelog: None }))
             .ok();
         thread
             .send_chat_added_message(

@@ -282,7 +282,7 @@ impl ChatArgs {
         let model_id: Option<String> = if let Some(model_name) = self.model {
             let model_name_lower = model_name.to_lowercase();
             match MODEL_OPTIONS.iter().find(|(_, name, _)| name == &model_name_lower) {
-                Some((_, _, id)) => Some(id.to_string()),
+                Some((_, _, id)) => Some((*id).to_string()),
                 None => {
                     let available_names: Vec<&str> = MODEL_OPTIONS.iter().map(|(_, name, _)| *name).collect();
                     bail!(

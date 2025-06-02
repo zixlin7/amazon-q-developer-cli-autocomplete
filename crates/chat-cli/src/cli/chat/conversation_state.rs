@@ -606,7 +606,7 @@ impl ConversationState {
             user_input_message_context: None,
             user_intent: None,
             images: None,
-            model_id: self.current_model_id.to_owned(),
+            model_id: self.current_model_id.clone(),
         };
 
         // If the last message contains tool uses, then add cancelled tool results to the summary

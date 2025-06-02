@@ -13,14 +13,6 @@ use eyre::{
 };
 use tracing::warn;
 
-use crate::cli::chat::cli::{
-    Mcp,
-    McpAdd,
-    McpImport,
-    McpList,
-    McpRemove,
-    Scope,
-};
 use crate::cli::chat::tool_manager::{
     McpServerConfig,
     global_mcp_config_path,
@@ -31,18 +23,26 @@ use crate::cli::chat::tools::custom_tool::{
     default_timeout,
 };
 use crate::cli::chat::util::shared_writer::SharedWriter;
+use crate::cli::chat::{
+    McpAdd,
+    McpImport,
+    McpList,
+    McpRemove,
+    McpSubcommand,
+    Scope,
+};
 use crate::platform::Context;
 
-pub async fn execute_mcp(args: Mcp) -> Result<ExitCode> {
+pub async fn execute_mcp(subcommand: McpSubcommand) -> Result<ExitCode> {
     let ctx = Context::new();
     let mut output = SharedWriter::stdout();
 
-    match args {
-        Mcp::Add(args) => add_mcp_server(&ctx, &mut output, args).await?,
-        Mcp::Remove(args) => remove_mcp_server(&ctx, &mut output, args).await?,
-        Mcp::List(args) => list_mcp_server(&ctx, &mut output, args).await?,
-        Mcp::Import(args) => import_mcp_server(&ctx, &mut output, args).await?,
-        Mcp::Status { name } => get_mcp_server_status(&ctx, &mut output, name).await?,
+    match subcommand {
+        McpSubcommand::Add(args) => add_mcp_server(&ctx, &mut output, args).await?,
+        McpSubcommand::Remove(args) => remove_mcp_server(&ctx, &mut output, args).await?,
+        McpSubcommand::List(args) => list_mcp_server(&ctx, &mut output, args).await?,
+        McpSubcommand::Import(args) => import_mcp_server(&ctx, &mut output, args).await?,
+        McpSubcommand::Status { name } => get_mcp_server_status(&ctx, &mut output, name).await?,
     }
 
     output.flush()?;
@@ -324,7 +324,7 @@ mod tests {
 
     #[tokio::test]
     async fn add_then_remove_cycle() {
-        use crate::cli::chat::cli::{
+        use crate::cli::chat::{
             McpAdd,
             McpRemove,
         };

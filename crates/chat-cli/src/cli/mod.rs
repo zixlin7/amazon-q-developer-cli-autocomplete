@@ -6,26 +6,21 @@ mod issue;
 mod settings;
 mod user;
 
+use std::fmt::Display;
 use std::io::{
     Write as _,
     stdout,
 };
 use std::process::ExitCode;
 
-use anstream::{
-    eprintln,
-    println,
-};
+use anstream::println;
 pub use chat::ConversationState;
-use chat::cli::Chat;
 use clap::{
     ArgAction,
     CommandFactory,
     Parser,
-    Subcommand,
     ValueEnum,
 };
-use crossterm::style::Stylize;
 use eyre::Result;
 use feed::Feed;
 use serde::Serialize;
@@ -33,19 +28,22 @@ use tracing::{
     Level,
     debug,
 };
-use user::UserSubcommand;
 
-use crate::cli::chat::cli::Mcp;
-use crate::cli::chat::mcp;
+use crate::cli::chat::{
+    ChatArgs,
+    McpSubcommand,
+    mcp,
+};
+use crate::cli::user::{
+    LoginArgs,
+    WhoamiArgs,
+};
 use crate::logging::{
     LogArgs,
     initialize_logging,
 };
+use crate::util::CliContext;
 use crate::util::directories::logs_dir;
-use crate::util::{
-    CHAT_BINARY_NAME,
-    CliContext,
-};
 
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq, ValueEnum)]
 pub enum OutputFormat {
@@ -74,16 +72,21 @@ impl OutputFormat {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, ValueEnum)]
-pub enum Processes {
-    /// Desktop Process
-    App,
-}
-
 /// The Amazon Q CLI
 #[deny(missing_docs)]
-#[derive(Debug, PartialEq, Subcommand)]
-pub enum CliRootCommands {
+#[derive(Debug, PartialEq, clap::Subcommand)]
+pub enum Subcommand {
+    /// AI assistant in your terminal
+    #[command(alias("q"))]
+    Chat(ChatArgs),
+    /// Log in to Amazon Q
+    Login(LoginArgs),
+    /// Log out of Amazon Q
+    Logout,
+    /// Print info about the current login session
+    Whoami(WhoamiArgs),
+    /// Show the profile associated with this idc user
+    Profile,
     /// Customize appearance & behavior
     #[command(alias("setting"))]
     Settings(settings::SettingsArgs),
@@ -92,9 +95,6 @@ pub enum CliRootCommands {
     Diagnostic(diagnostics::DiagnosticArgs),
     /// Create a new Github issue
     Issue(issue::IssueArgs),
-    /// User subcommands
-    #[command(flatten)]
-    User(user::UserSubcommand),
     /// Version
     #[command(hide = true)]
     Version {
@@ -103,51 +103,47 @@ pub enum CliRootCommands {
         #[arg(long, num_args = 0..=1, default_missing_value = "")]
         changelog: Option<String>,
     },
-    /// AI assistant in your terminal
-    #[command(alias("q"))]
-    Chat(Chat),
     /// Model Context Protocol (MCP)
     #[command(subcommand)]
-    Mcp(Mcp),
+    Mcp(McpSubcommand),
 }
 
-impl CliRootCommands {
-    pub fn name(&self) -> &'static str {
-        match self {
-            CliRootCommands::Settings(_) => "settings",
-            CliRootCommands::Diagnostic(_) => "diagnostics",
-            CliRootCommands::Issue(_) => "issue",
-            CliRootCommands::User(UserSubcommand::Login(_)) => "login",
-            CliRootCommands::User(UserSubcommand::Logout) => "logout",
-            CliRootCommands::User(UserSubcommand::Whoami { .. }) => "whoami",
-            CliRootCommands::User(UserSubcommand::Profile) => "profile",
-            CliRootCommands::Version { .. } => "version",
-            CliRootCommands::Chat { .. } => "chat",
-            CliRootCommands::Mcp(_) => "mcp",
-        }
+impl Subcommand {
+    /// Whether the command should have an associated telemetry event.
+    ///
+    /// Emitting telemetry takes a long time so the answer is usually no.
+    pub fn valid_for_telemetry(&self) -> bool {
+        matches!(
+            self,
+            Subcommand::Chat(_) | Subcommand::Login(_) | Subcommand::Profile | Subcommand::Issue(_)
+        )
     }
 }
 
-const HELP_TEXT: &str = color_print::cstr! {"
+impl Display for Subcommand {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let name = match self {
+            Subcommand::Chat(_) => "chat",
+            Subcommand::Login(_) => "login",
+            Subcommand::Logout => "logout",
+            Subcommand::Whoami(_) => "whoami",
+            Subcommand::Profile => "profile",
+            Subcommand::Settings(_) => "settings",
+            Subcommand::Diagnostic(_) => "diagnostic",
+            Subcommand::Issue(_) => "issue",
+            Subcommand::Version { .. } => "version",
+            Subcommand::Mcp(_) => "mcp",
+        };
 
-<magenta,em>q</magenta,em> (Amazon Q CLI)
-
-<magenta,em>Popular Subcommands</magenta,em>              <black!><em>Usage:</em> q [subcommand]</black!>
-╭────────────────────────────────────────────────────╮
-│ <em>chat</em>         <black!>Chat with Amazon Q</black!>                    │
-│ <em>settings</em>     <black!>Customize appearance & behavior</black!>       │
-╰────────────────────────────────────────────────────╯
-
-<black!>To see all subcommands, use:</black!>
- <black!>❯</black!> q --help-all
-ㅤ
-"};
+        write!(f, "{name}")
+    }
+}
 
 #[derive(Debug, Parser, PartialEq, Default)]
-#[command(version, about, name = crate::util::CHAT_BINARY_NAME, help_template = HELP_TEXT)]
+#[command(version, about, name = crate::util::CHAT_BINARY_NAME)]
 pub struct Cli {
     #[command(subcommand)]
-    pub subcommand: Option<CliRootCommands>,
+    pub subcommand: Option<Subcommand>,
     /// Increase logging verbosity
     #[arg(long, short = 'v', action = ArgAction::Count, global = true)]
     pub verbose: u8,
@@ -174,7 +170,7 @@ impl Cli {
             },
             log_to_stdout: std::env::var_os("Q_LOG_STDOUT").is_some() || self.verbose > 0,
             log_file_path: match self.subcommand {
-                Some(CliRootCommands::Chat { .. }) => Some("chat.log".to_owned()),
+                Some(Subcommand::Chat { .. }) => Some("chat.log".to_owned()),
                 _ => match crate::logging::get_log_level_max() >= Level::DEBUG {
                     true => Some("cli.log".to_owned()),
                     false => None,
@@ -190,32 +186,25 @@ impl Cli {
         let mut database = crate::database::Database::new().await?;
         let telemetry = crate::telemetry::TelemetryThread::new(&env, &mut database).await?;
 
-        let _ = match &self.subcommand {
-            None => telemetry.send_cli_subcommand_executed(None),
-            Some(subcommand) if ["diagnostic", "version"].contains(&subcommand.name()) => {
-                telemetry.send_cli_subcommand_executed(Some(subcommand))
-            },
-            _ => Ok(()),
-        };
-
-        if self.help_all {
-            return Self::print_help_all();
-        }
+        telemetry.send_cli_subcommand_executed(&self.subcommand).ok();
 
         let cli_context = CliContext::new();
 
         let result = match self.subcommand {
             Some(subcommand) => match subcommand {
-                CliRootCommands::Diagnostic(args) => args.execute().await,
-                CliRootCommands::User(user) => user.execute(&mut database, &telemetry).await,
-                CliRootCommands::Settings(settings_args) => settings_args.execute(&mut database, &cli_context).await,
-                CliRootCommands::Issue(args) => args.execute().await,
-                CliRootCommands::Version { changelog } => Self::print_version(changelog),
-                CliRootCommands::Chat(args) => chat::launch_chat(&mut database, &telemetry, args).await,
-                CliRootCommands::Mcp(args) => mcp::execute_mcp(args).await,
+                Subcommand::Diagnostic(args) => args.execute().await,
+                Subcommand::Login(args) => args.execute(&mut database, &telemetry).await,
+                Subcommand::Logout => user::logout(&mut database).await,
+                Subcommand::Whoami(args) => args.execute(&mut database).await,
+                Subcommand::Profile => user::profile(&mut database, &telemetry).await,
+                Subcommand::Settings(settings_args) => settings_args.execute(&mut database, &cli_context).await,
+                Subcommand::Issue(args) => args.execute().await,
+                Subcommand::Version { changelog } => Self::print_version(changelog),
+                Subcommand::Chat(args) => args.execute(&mut database, &telemetry).await,
+                Subcommand::Mcp(args) => mcp::execute_mcp(args).await,
             },
             // Root command
-            None => chat::launch_chat(&mut database, &telemetry, chat::cli::Chat::default()).await,
+            None => ChatArgs::default().execute(&mut database, &telemetry).await,
         };
 
         let telemetry_result = telemetry.finish().await;
@@ -223,17 +212,6 @@ impl Cli {
         let exit_code = result?;
         telemetry_result?;
         Ok(exit_code)
-    }
-
-    fn print_help_all() -> Result<ExitCode> {
-        let mut cmd = Self::command().help_template("{all-args}");
-        eprintln!();
-        eprintln!(
-            "{}\n    {CHAT_BINARY_NAME} [OPTIONS] [SUBCOMMAND]\n",
-            "USAGE:".bold().underlined(),
-        );
-        cmd.print_long_help()?;
-        Ok(ExitCode::SUCCESS)
     }
 
     fn print_changelog_entry(entry: &feed::Entry) -> Result<()> {
@@ -316,13 +294,14 @@ impl Cli {
 #[cfg(test)]
 mod test {
     use super::*;
-    use crate::cli::chat::cli::{
+    use crate::cli::chat::{
         McpAdd,
         McpImport,
         McpList,
         McpRemove,
         Scope,
     };
+    use crate::util::CHAT_BINARY_NAME;
 
     #[test]
     fn debug_assert() {
@@ -366,7 +345,7 @@ mod test {
         });
 
         assert_eq!(Cli::parse_from([CHAT_BINARY_NAME, "chat", "-vv"]), Cli {
-            subcommand: Some(CliRootCommands::Chat(Chat {
+            subcommand: Some(Subcommand::Chat(ChatArgs {
                 accept_all: false,
                 no_interactive: false,
                 resume: false,
@@ -382,21 +361,21 @@ mod test {
 
     #[test]
     fn test_version_changelog() {
-        assert_parse!(["version", "--changelog"], CliRootCommands::Version {
+        assert_parse!(["version", "--changelog"], Subcommand::Version {
             changelog: Some("".to_string()),
         });
     }
 
     #[test]
     fn test_version_changelog_all() {
-        assert_parse!(["version", "--changelog=all"], CliRootCommands::Version {
+        assert_parse!(["version", "--changelog=all"], Subcommand::Version {
             changelog: Some("all".to_string()),
         });
     }
 
     #[test]
     fn test_version_changelog_specific() {
-        assert_parse!(["version", "--changelog=1.8.0"], CliRootCommands::Version {
+        assert_parse!(["version", "--changelog=1.8.0"], Subcommand::Version {
             changelog: Some("1.8.0".to_string()),
         });
     }
@@ -405,7 +384,7 @@ mod test {
     fn test_chat_with_context_profile() {
         assert_parse!(
             ["chat", "--profile", "my-profile"],
-            CliRootCommands::Chat(Chat {
+            Subcommand::Chat(ChatArgs {
                 accept_all: false,
                 no_interactive: false,
                 resume: false,
@@ -421,7 +400,7 @@ mod test {
     fn test_chat_with_context_profile_and_input() {
         assert_parse!(
             ["chat", "--profile", "my-profile", "Hello"],
-            CliRootCommands::Chat(Chat {
+            Subcommand::Chat(ChatArgs {
                 accept_all: false,
                 no_interactive: false,
                 resume: false,
@@ -437,7 +416,7 @@ mod test {
     fn test_chat_with_context_profile_and_accept_all() {
         assert_parse!(
             ["chat", "--profile", "my-profile", "--accept-all"],
-            CliRootCommands::Chat(Chat {
+            Subcommand::Chat(ChatArgs {
                 accept_all: true,
                 no_interactive: false,
                 resume: false,
@@ -453,7 +432,7 @@ mod test {
     fn test_chat_with_no_interactive_and_resume() {
         assert_parse!(
             ["chat", "--no-interactive", "--resume"],
-            CliRootCommands::Chat(Chat {
+            Subcommand::Chat(ChatArgs {
                 accept_all: false,
                 no_interactive: true,
                 resume: true,
@@ -465,7 +444,7 @@ mod test {
         );
         assert_parse!(
             ["chat", "--no-interactive", "-r"],
-            CliRootCommands::Chat(Chat {
+            Subcommand::Chat(ChatArgs {
                 accept_all: false,
                 no_interactive: true,
                 resume: true,
@@ -481,7 +460,7 @@ mod test {
     fn test_chat_with_tool_trust_all() {
         assert_parse!(
             ["chat", "--trust-all-tools"],
-            CliRootCommands::Chat(Chat {
+            Subcommand::Chat(ChatArgs {
                 accept_all: false,
                 no_interactive: false,
                 resume: false,
@@ -497,7 +476,7 @@ mod test {
     fn test_chat_with_tool_trust_none() {
         assert_parse!(
             ["chat", "--trust-tools="],
-            CliRootCommands::Chat(Chat {
+            Subcommand::Chat(ChatArgs {
                 accept_all: false,
                 no_interactive: false,
                 resume: false,
@@ -513,7 +492,7 @@ mod test {
     fn test_chat_with_tool_trust_some() {
         assert_parse!(
             ["chat", "--trust-tools=fs_read,fs_write"],
-            CliRootCommands::Chat(Chat {
+            Subcommand::Chat(ChatArgs {
                 accept_all: false,
                 no_interactive: false,
                 resume: false,
@@ -537,7 +516,7 @@ mod test {
                 "--env",
                 "key1=value1,key2=value2"
             ],
-            CliRootCommands::Mcp(Mcp::Add(McpAdd {
+            Subcommand::Mcp(McpSubcommand::Add(McpAdd {
                 name: "test_server".to_string(),
                 command: "test_command".to_string(),
                 scope: None,
@@ -559,7 +538,7 @@ mod test {
     fn test_mcp_subcomman_remove_workspace() {
         assert_parse!(
             ["mcp", "remove", "--name", "old"],
-            CliRootCommands::Mcp(Mcp::Remove(McpRemove {
+            Subcommand::Mcp(McpSubcommand::Remove(McpRemove {
                 name: "old".into(),
                 scope: None,
             }))
@@ -569,7 +548,7 @@ mod test {
     fn test_mcp_subcomman_import_profile_force() {
         assert_parse!(
             ["mcp", "import", "--file", "servers.json", "--force"],
-            CliRootCommands::Mcp(Mcp::Import(McpImport {
+            Subcommand::Mcp(McpSubcommand::Import(McpImport {
                 file: "servers.json".into(),
                 scope: None,
                 force: true,
@@ -581,7 +560,7 @@ mod test {
     fn test_mcp_subcommand_status_simple() {
         assert_parse!(
             ["mcp", "status", "--name", "aws"],
-            CliRootCommands::Mcp(Mcp::Status { name: "aws".into() })
+            Subcommand::Mcp(McpSubcommand::Status { name: "aws".into() })
         );
     }
 
@@ -589,7 +568,7 @@ mod test {
     fn test_mcp_subcommand_list() {
         assert_parse!(
             ["mcp", "list", "global"],
-            CliRootCommands::Mcp(Mcp::List(McpList {
+            Subcommand::Mcp(McpSubcommand::List(McpList {
                 scope: Some(Scope::Global),
                 profile: None
             }))

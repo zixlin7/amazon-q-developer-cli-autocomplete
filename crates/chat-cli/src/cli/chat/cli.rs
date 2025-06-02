@@ -25,6 +25,9 @@ pub struct Chat {
     /// Context profile to use
     #[arg(long = "profile")]
     pub profile: Option<String>,
+    /// Current model to use
+    #[arg(long = "model")]
+    pub model: Option<String>,
     /// Allows the model to use any tool to run commands without asking for confirmation.
     #[arg(long)]
     pub trust_all_tools: bool,

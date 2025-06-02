@@ -215,7 +215,7 @@ const WELCOME_TEXT: &str = color_print::cstr! {"<cyan!>
 const SMALL_SCREEN_WELCOME_TEXT: &str = color_print::cstr! {"<em>Welcome to <cyan!>Amazon Q</cyan!>!</em>"};
 const RESUME_TEXT: &str = color_print::cstr! {"<em>Picking up where we left off...</em>"};
 
-const ROTATING_TIPS: [&str; 13] = [
+const ROTATING_TIPS: [&str; 14] = [
     color_print::cstr! {"You can resume the last conversation from your current directory by launching with <green!>q chat --resume</green!>"},
     color_print::cstr! {"Get notified whenever Q CLI finishes responding. Just run <green!>q settings chat.enableNotifications true</green!>"},
     color_print::cstr! {"You can use <green!>/editor</green!> to edit your prompt with a vim-like experience"},
@@ -229,6 +229,7 @@ const ROTATING_TIPS: [&str; 13] = [
     color_print::cstr! {"You can enable custom tools with <green!>MCP servers</green!>. Learn more with /help"},
     color_print::cstr! {"You can specify wait time (in ms) for mcp server loading with <green!>q settings mcp.initTimeout {timeout in int}</green!>. Servers that takes longer than the specified time will continue to load in the background. Use /tools to see pending servers."},
     color_print::cstr! {"You can see the server load status as well as any warnings or errors associated with <green!>/mcp</green!>"},
+    color_print::cstr! {"Customize your current chat session by choosing a model with <green!>/model</green!>"},
 ];
 
 const GREETING_BREAK_POINT: usize = 80;
@@ -265,6 +266,7 @@ const HELP_TEXT: &str = color_print::cstr! {"
   <em>trustall</em>    <black!>Trust all tools (equivalent to deprecated /acceptall)</black!>
   <em>reset</em>       <black!>Reset all tools to default permission levels</black!>
 <em>/mcp</em>          <black!>See mcp server loaded</black!>
+<em>/model</em>        <black!>Select a model for the current conversation session</black!>
 <em>/profile</em>      <black!>Manage profiles</black!>
   <em>help</em>        <black!>Show profile help</black!>
   <em>list</em>        <black!>List profiles</black!>
@@ -324,6 +326,7 @@ pub async fn launch_chat(database: &mut Database, telemetry: &TelemetryThread, a
         args.resume,
         args.accept_all,
         args.profile,
+        args.model,
         args.trust_all_tools,
         trust_tools,
     )
@@ -339,6 +342,7 @@ pub async fn chat(
     resume_conversation: bool,
     accept_all: bool,
     profile: Option<String>,
+    model_name: Option<String>,
     trust_all_tools: bool,
     trust_tools: Option<Vec<String>>,
 ) -> Result<ExitCode> {
@@ -415,6 +419,29 @@ pub async fn chat(
         }
     }
 
+    // If modelId is specified, verify it exists before starting the chat
+    let model_id: Option<String> = if let Some(model_name) = model_name {
+        match MODEL_OPTIONS.iter().find(|(name, _)| *name == model_name) {
+            Some((name, id)) => {
+                if *name == "Auto" {
+                    None // Auto maps to None
+                } else {
+                    Some(id.to_string())
+                }
+            },
+            None => {
+                let available_names: Vec<&str> = MODEL_OPTIONS.iter().map(|(name, _)| *name).collect();
+                bail!(
+                    "Model '{}' does not exist. Available models: {}",
+                    model_name,
+                    available_names.join(", ")
+                );
+            },
+        }
+    } else {
+        None
+    };
+
     let conversation_id = Alphanumeric.sample_string(&mut rand::rng(), 9);
     info!(?conversation_id, "Generated new conversation id");
     let (prompt_request_sender, prompt_request_receiver) = std::sync::mpsc::channel::<Option<String>>();
@@ -473,6 +500,7 @@ pub async fn chat(
         || terminal::window_size().map(|s| s.columns.into()).ok(),
         tool_manager,
         profile,
+        model_id,
         tool_config,
         tool_permissions,
     )
@@ -560,6 +588,7 @@ impl ChatContext {
         terminal_width_provider: fn() -> Option<usize>,
         tool_manager: ToolManager,
         profile: Option<String>,
+        model_id: Option<String>,
         tool_config: HashMap<String, ToolSpec>,
         tool_permissions: ToolPermissions,
     ) -> Result<Self> {
@@ -567,9 +596,12 @@ impl ChatContext {
         let output_clone = output.clone();
 
         let mut existing_conversation = false;
-        let model_id = match database.get_last_used_model_id() {
-            Ok(Some(id)) => Some(id),
-            Ok(None) | Err(_) => database.settings.get_string(Setting::UserDefaultModel),
+        let valid_model_id = match model_id {
+            Some(id) => Some(id),
+            None => match database.get_last_used_model_id() {
+                Ok(Some(id)) => Some(id),
+                Ok(None) | Err(_) => database.settings.get_string(Setting::UserDefaultModel),
+            },
         };
         let conversation_state = if resume_conversation {
             let prior = std::env::current_dir()
@@ -597,7 +629,7 @@ impl ChatContext {
                     profile,
                     Some(output_clone),
                     tool_manager,
-                    model_id,
+                    valid_model_id,
                 )
                 .await
             }
@@ -609,7 +641,7 @@ impl ChatContext {
                 profile,
                 Some(output_clone),
                 tool_manager,
-                model_id,
+                valid_model_id,
             )
             .await
         };
@@ -4007,6 +4039,7 @@ mod tests {
             || Some(80),
             tool_manager,
             None,
+            None,
             tool_config,
             ToolPermissions::new(0),
         )
@@ -4153,6 +4186,7 @@ mod tests {
             || Some(80),
             tool_manager,
             None,
+            None,
             tool_config,
             ToolPermissions::new(0),
         )
@@ -4252,6 +4286,7 @@ mod tests {
             || Some(80),
             tool_manager,
             None,
+            None,
             tool_config,
             ToolPermissions::new(0),
         )
@@ -4329,6 +4364,7 @@ mod tests {
             test_client,
             || Some(80),
             tool_manager,
+            None,
             None,
             tool_config,
             ToolPermissions::new(0),

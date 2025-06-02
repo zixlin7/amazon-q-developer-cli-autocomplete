@@ -234,11 +234,22 @@ const ROTATING_TIPS: [&str; 14] = [
 
 const GREETING_BREAK_POINT: usize = 80;
 
-const MODEL_OPTIONS: [(&str, &str); 3] = [
-    ("Auto", ""),
-    ("Claude Sonnet 3.7", "CLAUDE_3_7_SONNET_20250219_V1_0"),
-    ("Claude Sonnet 3.5", "CLAUDE_3_5_SONNET_20241022_V2_0"),
+pub const MODEL_OPTIONS: [(&str, &str, &str); 3] = [
+    // ("Auto", ""),
+    (
+        "Claude Sonnet 3.5",
+        "claude-3.5-sonnet",
+        "CLAUDE_3_5_SONNET_20241022_V2_0",
+    ),
+    (
+        "Claude Sonnet 3.7",
+        "claude-3.7-sonnet",
+        "CLAUDE_3_7_SONNET_20250219_V1_0",
+    ),
+    ("Claude Sonnet 4.0", "claude-4-sonnet", "CLAUDE_SONNET_4_20250514_V1_0"),
 ];
+
+pub const DEFAULT_MODEL_ID: &str = "CLAUDE_3_7_SONNET_20250219_V1_0";
 
 const POPULAR_SHORTCUTS: &str = color_print::cstr! {"<black!><green!>/help</green!> all commands  <em>•</em>  <green!>ctrl + j</green!> new lines  <em>•</em>  <green!>ctrl + s</green!> fuzzy search</black!>"};
 const SMALL_SCREEN_POPULAR_SHORTCUTS: &str = color_print::cstr! {"<black!><green!>/help</green!> all commands
@@ -421,16 +432,10 @@ pub async fn chat(
 
     // If modelId is specified, verify it exists before starting the chat
     let model_id: Option<String> = if let Some(model_name) = model_name {
-        match MODEL_OPTIONS.iter().find(|(name, _)| *name == model_name) {
-            Some((name, id)) => {
-                if *name == "Auto" {
-                    None // Auto maps to None
-                } else {
-                    Some(id.to_string())
-                }
-            },
+        match MODEL_OPTIONS.iter().find(|(_, name, _)| *name == model_name) {
+            Some((_, _, id)) => Some(id.to_string()),
             None => {
-                let available_names: Vec<&str> = MODEL_OPTIONS.iter().map(|(name, _)| *name).collect();
+                let available_names: Vec<&str> = MODEL_OPTIONS.iter().map(|(_, name, _)| *name).collect();
                 bail!(
                     "Model '{}' does not exist. Available models: {}",
                     model_name,
@@ -442,6 +447,9 @@ pub async fn chat(
         None
     };
 
+    // if let Some(ref id) = model_id {
+    //     database.set_last_used_model_id(id.clone())?;
+    // }
     let conversation_id = Alphanumeric.sample_string(&mut rand::rng(), 9);
     info!(?conversation_id, "Generated new conversation id");
     let (prompt_request_sender, prompt_request_receiver) = std::sync::mpsc::channel::<Option<String>>();
@@ -598,10 +606,16 @@ impl ChatContext {
         let mut existing_conversation = false;
         let valid_model_id = match model_id {
             Some(id) => Some(id),
-            None => match database.get_last_used_model_id() {
-                Ok(Some(id)) => Some(id),
-                Ok(None) | Err(_) => database.settings.get_string(Setting::UserDefaultModel),
-            },
+            None => database
+                .settings
+                .get_string(Setting::ChatDefaultModel)
+                .and_then(|model_name| {
+                    MODEL_OPTIONS
+                        .iter()
+                        .find(|(_, name, _)| *name == model_name)
+                        .map(|(_, _, id)| id.to_string())
+                })
+                .or_else(|| Some(DEFAULT_MODEL_ID.to_string())),
         };
         let conversation_state = if resume_conversation {
             let prior = std::env::current_dir()
@@ -3080,7 +3094,7 @@ impl ChatContext {
                 let active_model_id = self.conversation_state.current_model_id.as_deref();
                 let labels: Vec<String> = MODEL_OPTIONS
                     .iter()
-                    .map(|(label, model_id)| {
+                    .map(|(label, _, model_id)| {
                         if (model_id.is_empty() && active_model_id.is_none()) || Some(*model_id) == active_model_id {
                             format!("{} (active)", label)
                         } else {
@@ -3090,7 +3104,7 @@ impl ChatContext {
                     .collect();
                 let default_index = MODEL_OPTIONS
                     .iter()
-                    .position(|(_, model_id)| Some(*model_id) == active_model_id)
+                    .position(|(_, _, model_id)| Some(*model_id) == active_model_id)
                     .unwrap_or(0);
                 let selection: Option<_> = match Select::with_theme(&crate::util::dialoguer_theme())
                     .with_prompt("Select a model for this chat session")
@@ -3113,17 +3127,17 @@ impl ChatContext {
                 queue!(self.output, style::ResetColor)?;
 
                 if let Some(index) = selection {
-                    let (label, model_id) = MODEL_OPTIONS[index];
+                    let (label, _, model_id) = MODEL_OPTIONS[index];
                     let model_id_str = model_id.to_string();
 
                     if model_id == "" {
                         self.conversation_state.current_model_id = None;
                         telemetry.update_model_id(None);
-                        let _ = database.unset_last_used_model_id();
+                        // let _ = database.unset_last_used_model_id();
                     } else {
                         self.conversation_state.current_model_id = Some(model_id_str.clone());
                         telemetry.update_model_id(Some(model_id_str.clone()));
-                        let _ = database.set_last_used_model_id(model_id_str);
+                        // let _ = database.set_last_used_model_id(model_id_str);
                     }
 
                     queue!(

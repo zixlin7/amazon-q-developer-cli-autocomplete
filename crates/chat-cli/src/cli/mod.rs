@@ -16,8 +16,12 @@ use anstream::{
     eprintln,
     println,
 };
-pub use chat::ConversationState;
 use chat::cli::Chat;
+pub use chat::{
+    ConversationState,
+    DEFAULT_MODEL_ID,
+    MODEL_OPTIONS,
+};
 use clap::{
     ArgAction,
     CommandFactory,

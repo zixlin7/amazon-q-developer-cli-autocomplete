@@ -31,7 +31,7 @@ pub enum Setting {
     McpInitTimeout,
     McpNoInteractiveTimeout,
     McpLoadedBefore,
-    UserDefaultModel,
+    ChatDefaultModel,
 }
 
 impl AsRef<str> for Setting {
@@ -51,7 +51,7 @@ impl AsRef<str> for Setting {
             Self::McpInitTimeout => "mcp.initTimeout",
             Self::McpNoInteractiveTimeout => "mcp.noInteractiveTimeout",
             Self::McpLoadedBefore => "mcp.loadedBefore",
-            Self::UserDefaultModel => "chat.userDefaultModel",
+            Self::ChatDefaultModel => "chat.defaultModel",
         }
     }
 }
@@ -81,7 +81,7 @@ impl TryFrom<&str> for Setting {
             "mcp.initTimeout" => Ok(Self::McpInitTimeout),
             "mcp.noInteractiveTimeout" => Ok(Self::McpNoInteractiveTimeout),
             "mcp.loadedBefore" => Ok(Self::McpLoadedBefore),
-            "chat.userDefaultModel" => Ok(Self::UserDefaultModel),
+            "chat.defaultModel" => Ok(Self::ChatDefaultModel),
             _ => Err(DatabaseError::InvalidSetting(value.to_string())),
         }
     }
@@ -200,13 +200,13 @@ mod test {
         assert_eq!(settings.get(Setting::OldClientId), None);
         assert_eq!(settings.get(Setting::ShareCodeWhispererContent), None);
         assert_eq!(settings.get(Setting::McpLoadedBefore), None);
-        assert_eq!(settings.get(Setting::UserDefaultModel), None);
+        assert_eq!(settings.get(Setting::ChatDefaultModel), None);
 
         settings.set(Setting::TelemetryEnabled, true).await.unwrap();
         settings.set(Setting::OldClientId, "test").await.unwrap();
         settings.set(Setting::ShareCodeWhispererContent, false).await.unwrap();
         settings.set(Setting::McpLoadedBefore, true).await.unwrap();
-        settings.set(Setting::UserDefaultModel, "model 1").await.unwrap();
+        settings.set(Setting::ChatDefaultModel, "model 1").await.unwrap();
 
         assert_eq!(settings.get(Setting::TelemetryEnabled), Some(&Value::Bool(true)));
         assert_eq!(
@@ -219,7 +219,7 @@ mod test {
         );
         assert_eq!(settings.get(Setting::McpLoadedBefore), Some(&Value::Bool(true)));
         assert_eq!(
-            settings.get(Setting::UserDefaultModel),
+            settings.get(Setting::ChatDefaultModel),
             Some(&Value::String("model 1".to_string()))
         );
 

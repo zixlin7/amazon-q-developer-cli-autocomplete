@@ -54,7 +54,11 @@ use uuid::{
 use crate::api_client::Client as CodewhispererClient;
 use crate::auth::builder_id::get_start_url_and_region;
 use crate::aws_common::app_name;
-use crate::cli::CliRootCommands;
+use crate::cli::{
+    CliRootCommands,
+    DEFAULT_MODEL_ID,
+    MODEL_OPTIONS,
+};
 use crate::database::settings::Setting;
 use crate::database::{
     Database,
@@ -151,10 +155,16 @@ impl Clone for TelemetryThread {
 
 impl TelemetryThread {
     pub async fn new(env: &Env, database: &mut Database) -> Result<Self, TelemetryError> {
-        let model_id = match database.get_last_used_model_id() {
-            Ok(Some(id)) => Some(id),
-            Ok(None) | Err(_) => database.settings.get_string(Setting::UserDefaultModel),
-        };
+        let model_id = database
+            .settings
+            .get_string(Setting::ChatDefaultModel)
+            .and_then(|model_name| {
+                MODEL_OPTIONS
+                    .iter()
+                    .find(|(_, name, _)| *name == model_name)
+                    .map(|(_, _, id)| id.to_string())
+            })
+            .or_else(|| Some(DEFAULT_MODEL_ID.to_string()));
         let current_model_id = Arc::new(RwLock::new(model_id));
         let telemetry_client = TelemetryClient::new(env, database, current_model_id.clone()).await?;
         let (tx, mut rx) = mpsc::unbounded_channel();

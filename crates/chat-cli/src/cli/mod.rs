@@ -3,6 +3,7 @@ mod debug;
 mod diagnostics;
 mod feed;
 mod issue;
+mod mcp;
 mod settings;
 mod user;
 
@@ -29,11 +30,8 @@ use tracing::{
     debug,
 };
 
-use crate::cli::chat::{
-    ChatArgs,
-    McpSubcommand,
-    mcp,
-};
+use crate::cli::chat::ChatArgs;
+use crate::cli::mcp::McpSubcommand;
 use crate::cli::user::{
     LoginArgs,
     WhoamiArgs,
@@ -75,7 +73,7 @@ impl OutputFormat {
 /// The Amazon Q CLI
 #[deny(missing_docs)]
 #[derive(Debug, PartialEq, clap::Subcommand)]
-pub enum Subcommand {
+pub enum RootSubcommand {
     /// AI assistant in your terminal
     #[command(alias("q"))]
     Chat(ChatArgs),
@@ -108,31 +106,28 @@ pub enum Subcommand {
     Mcp(McpSubcommand),
 }
 
-impl Subcommand {
+impl RootSubcommand {
     /// Whether the command should have an associated telemetry event.
     ///
     /// Emitting telemetry takes a long time so the answer is usually no.
     pub fn valid_for_telemetry(&self) -> bool {
-        matches!(
-            self,
-            Subcommand::Chat(_) | Subcommand::Login(_) | Subcommand::Profile | Subcommand::Issue(_)
-        )
+        matches!(self, Self::Chat(_) | Self::Login(_) | Self::Profile | Self::Issue(_))
     }
 }
 
-impl Display for Subcommand {
+impl Display for RootSubcommand {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let name = match self {
-            Subcommand::Chat(_) => "chat",
-            Subcommand::Login(_) => "login",
-            Subcommand::Logout => "logout",
-            Subcommand::Whoami(_) => "whoami",
-            Subcommand::Profile => "profile",
-            Subcommand::Settings(_) => "settings",
-            Subcommand::Diagnostic(_) => "diagnostic",
-            Subcommand::Issue(_) => "issue",
-            Subcommand::Version { .. } => "version",
-            Subcommand::Mcp(_) => "mcp",
+            Self::Chat(_) => "chat",
+            Self::Login(_) => "login",
+            Self::Logout => "logout",
+            Self::Whoami(_) => "whoami",
+            Self::Profile => "profile",
+            Self::Settings(_) => "settings",
+            Self::Diagnostic(_) => "diagnostic",
+            Self::Issue(_) => "issue",
+            Self::Version { .. } => "version",
+            Self::Mcp(_) => "mcp",
         };
 
         write!(f, "{name}")
@@ -143,7 +138,7 @@ impl Display for Subcommand {
 #[command(version, about, name = crate::util::CHAT_BINARY_NAME)]
 pub struct Cli {
     #[command(subcommand)]
-    pub subcommand: Option<Subcommand>,
+    pub subcommand: Option<RootSubcommand>,
     /// Increase logging verbosity
     #[arg(long, short = 'v', action = ArgAction::Count, global = true)]
     pub verbose: u8,
@@ -170,7 +165,7 @@ impl Cli {
             },
             log_to_stdout: std::env::var_os("Q_LOG_STDOUT").is_some() || self.verbose > 0,
             log_file_path: match self.subcommand {
-                Some(Subcommand::Chat { .. }) => Some("chat.log".to_owned()),
+                Some(RootSubcommand::Chat { .. }) => Some("chat.log".to_owned()),
                 _ => match crate::logging::get_log_level_max() >= Level::DEBUG {
                     true => Some("cli.log".to_owned()),
                     false => None,
@@ -192,16 +187,16 @@ impl Cli {
 
         let result = match self.subcommand {
             Some(subcommand) => match subcommand {
-                Subcommand::Diagnostic(args) => args.execute().await,
-                Subcommand::Login(args) => args.execute(&mut database, &telemetry).await,
-                Subcommand::Logout => user::logout(&mut database).await,
-                Subcommand::Whoami(args) => args.execute(&mut database).await,
-                Subcommand::Profile => user::profile(&mut database, &telemetry).await,
-                Subcommand::Settings(settings_args) => settings_args.execute(&mut database, &cli_context).await,
-                Subcommand::Issue(args) => args.execute().await,
-                Subcommand::Version { changelog } => Self::print_version(changelog),
-                Subcommand::Chat(args) => args.execute(&mut database, &telemetry).await,
-                Subcommand::Mcp(args) => mcp::execute_mcp(args).await,
+                RootSubcommand::Diagnostic(args) => args.execute().await,
+                RootSubcommand::Login(args) => args.execute(&mut database, &telemetry).await,
+                RootSubcommand::Logout => user::logout(&mut database).await,
+                RootSubcommand::Whoami(args) => args.execute(&mut database).await,
+                RootSubcommand::Profile => user::profile(&mut database, &telemetry).await,
+                RootSubcommand::Settings(settings_args) => settings_args.execute(&mut database, &cli_context).await,
+                RootSubcommand::Issue(args) => args.execute().await,
+                RootSubcommand::Version { changelog } => Self::print_version(changelog),
+                RootSubcommand::Chat(args) => args.execute(&mut database, &telemetry).await,
+                RootSubcommand::Mcp(args) => args.execute().await,
             },
             // Root command
             None => ChatArgs::default().execute(&mut database, &telemetry).await,
@@ -294,33 +289,12 @@ impl Cli {
 #[cfg(test)]
 mod test {
     use super::*;
-    use crate::cli::chat::{
-        McpAdd,
-        McpImport,
-        McpList,
-        McpRemove,
-        Scope,
-    };
     use crate::util::CHAT_BINARY_NAME;
+    use crate::util::test::assert_parse;
 
     #[test]
     fn debug_assert() {
         Cli::command().debug_assert();
-    }
-
-    macro_rules! assert_parse {
-        (
-            [ $($args:expr),+ ],
-            $subcommand:expr
-        ) => {
-            assert_eq!(
-                Cli::parse_from([CHAT_BINARY_NAME, $($args),*]),
-                Cli {
-                    subcommand: Some($subcommand),
-                    ..Default::default()
-                }
-            );
-        };
     }
 
     /// Test flag parsing for the top level [Cli]
@@ -345,7 +319,7 @@ mod test {
         });
 
         assert_eq!(Cli::parse_from([CHAT_BINARY_NAME, "chat", "-vv"]), Cli {
-            subcommand: Some(Subcommand::Chat(ChatArgs {
+            subcommand: Some(RootSubcommand::Chat(ChatArgs {
                 accept_all: false,
                 no_interactive: false,
                 resume: false,
@@ -361,21 +335,21 @@ mod test {
 
     #[test]
     fn test_version_changelog() {
-        assert_parse!(["version", "--changelog"], Subcommand::Version {
+        assert_parse!(["version", "--changelog"], RootSubcommand::Version {
             changelog: Some("".to_string()),
         });
     }
 
     #[test]
     fn test_version_changelog_all() {
-        assert_parse!(["version", "--changelog=all"], Subcommand::Version {
+        assert_parse!(["version", "--changelog=all"], RootSubcommand::Version {
             changelog: Some("all".to_string()),
         });
     }
 
     #[test]
     fn test_version_changelog_specific() {
-        assert_parse!(["version", "--changelog=1.8.0"], Subcommand::Version {
+        assert_parse!(["version", "--changelog=1.8.0"], RootSubcommand::Version {
             changelog: Some("1.8.0".to_string()),
         });
     }
@@ -384,7 +358,7 @@ mod test {
     fn test_chat_with_context_profile() {
         assert_parse!(
             ["chat", "--profile", "my-profile"],
-            Subcommand::Chat(ChatArgs {
+            RootSubcommand::Chat(ChatArgs {
                 accept_all: false,
                 no_interactive: false,
                 resume: false,
@@ -400,7 +374,7 @@ mod test {
     fn test_chat_with_context_profile_and_input() {
         assert_parse!(
             ["chat", "--profile", "my-profile", "Hello"],
-            Subcommand::Chat(ChatArgs {
+            RootSubcommand::Chat(ChatArgs {
                 accept_all: false,
                 no_interactive: false,
                 resume: false,
@@ -416,7 +390,7 @@ mod test {
     fn test_chat_with_context_profile_and_accept_all() {
         assert_parse!(
             ["chat", "--profile", "my-profile", "--accept-all"],
-            Subcommand::Chat(ChatArgs {
+            RootSubcommand::Chat(ChatArgs {
                 accept_all: true,
                 no_interactive: false,
                 resume: false,
@@ -432,7 +406,7 @@ mod test {
     fn test_chat_with_no_interactive_and_resume() {
         assert_parse!(
             ["chat", "--no-interactive", "--resume"],
-            Subcommand::Chat(ChatArgs {
+            RootSubcommand::Chat(ChatArgs {
                 accept_all: false,
                 no_interactive: true,
                 resume: true,
@@ -444,7 +418,7 @@ mod test {
         );
         assert_parse!(
             ["chat", "--no-interactive", "-r"],
-            Subcommand::Chat(ChatArgs {
+            RootSubcommand::Chat(ChatArgs {
                 accept_all: false,
                 no_interactive: true,
                 resume: true,
@@ -460,7 +434,7 @@ mod test {
     fn test_chat_with_tool_trust_all() {
         assert_parse!(
             ["chat", "--trust-all-tools"],
-            Subcommand::Chat(ChatArgs {
+            RootSubcommand::Chat(ChatArgs {
                 accept_all: false,
                 no_interactive: false,
                 resume: false,
@@ -476,7 +450,7 @@ mod test {
     fn test_chat_with_tool_trust_none() {
         assert_parse!(
             ["chat", "--trust-tools="],
-            Subcommand::Chat(ChatArgs {
+            RootSubcommand::Chat(ChatArgs {
                 accept_all: false,
                 no_interactive: false,
                 resume: false,
@@ -492,7 +466,7 @@ mod test {
     fn test_chat_with_tool_trust_some() {
         assert_parse!(
             ["chat", "--trust-tools=fs_read,fs_write"],
-            Subcommand::Chat(ChatArgs {
+            RootSubcommand::Chat(ChatArgs {
                 accept_all: false,
                 no_interactive: false,
                 resume: false,
@@ -501,77 +475,6 @@ mod test {
                 trust_all_tools: false,
                 trust_tools: Some(vec!["fs_read".to_string(), "fs_write".to_string()]),
             })
-        );
-    }
-    #[test]
-    fn test_mcp_subcomman_add() {
-        assert_parse!(
-            [
-                "mcp",
-                "add",
-                "--name",
-                "test_server",
-                "--command",
-                "test_command",
-                "--env",
-                "key1=value1,key2=value2"
-            ],
-            Subcommand::Mcp(McpSubcommand::Add(McpAdd {
-                name: "test_server".to_string(),
-                command: "test_command".to_string(),
-                scope: None,
-                env: vec![
-                    [
-                        ("key1".to_string(), "value1".to_string()),
-                        ("key2".to_string(), "value2".to_string())
-                    ]
-                    .into_iter()
-                    .collect()
-                ],
-                timeout: None,
-                force: false,
-            }))
-        );
-    }
-
-    #[test]
-    fn test_mcp_subcomman_remove_workspace() {
-        assert_parse!(
-            ["mcp", "remove", "--name", "old"],
-            Subcommand::Mcp(McpSubcommand::Remove(McpRemove {
-                name: "old".into(),
-                scope: None,
-            }))
-        );
-    }
-    #[test]
-    fn test_mcp_subcomman_import_profile_force() {
-        assert_parse!(
-            ["mcp", "import", "--file", "servers.json", "--force"],
-            Subcommand::Mcp(McpSubcommand::Import(McpImport {
-                file: "servers.json".into(),
-                scope: None,
-                force: true,
-            }))
-        );
-    }
-
-    #[test]
-    fn test_mcp_subcommand_status_simple() {
-        assert_parse!(
-            ["mcp", "status", "--name", "aws"],
-            Subcommand::Mcp(McpSubcommand::Status { name: "aws".into() })
-        );
-    }
-
-    #[test]
-    fn test_mcp_subcommand_list() {
-        assert_parse!(
-            ["mcp", "list", "global"],
-            Subcommand::Mcp(McpSubcommand::List(McpList {
-                scope: Some(Scope::Global),
-                profile: None
-            }))
         );
     }
 }

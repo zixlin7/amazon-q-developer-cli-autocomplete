@@ -279,7 +279,7 @@ impl ChatArgs {
         }
 
         // If modelId is specified, verify it exists before starting the chat
-        let model_id: Option<String> = if let Some(model_name) = model_name {
+        let model_id: Option<String> = if let Some(model_name) = self.model {
             let model_name_lower = model_name.to_lowercase();
             match MODEL_OPTIONS.iter().find(|(_, name, _)| name == &model_name_lower) {
                 Some((_, _, id)) => Some(id.to_string()),

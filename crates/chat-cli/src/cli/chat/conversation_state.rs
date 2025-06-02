@@ -119,7 +119,7 @@ impl ConversationState {
         profile: Option<String>,
         updates: Option<SharedWriter>,
         tool_manager: ToolManager,
-        curren_model_id: Option<String>,
+        current_model_id: Option<String>,
     ) -> Self {
         // Initialize context manager
         let context_manager = match ContextManager::new(ctx, None).await {

@@ -105,7 +105,8 @@ pub struct ConversationState {
     latest_summary: Option<String>,
     #[serde(skip)]
     pub updates: Option<SharedWriter>,
-    /// Model explicitly selected by the user in this conversation state via `/model`. (`None` == auto)
+    /// Model explicitly selected by the user in this conversation state via `/model`. (`None` ==
+    /// auto)
     #[serde(skip)]
     pub current_model_id: Option<String>,
 }

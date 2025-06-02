@@ -567,7 +567,10 @@ impl ChatContext {
         let output_clone = output.clone();
 
         let mut existing_conversation = false;
-        let model_id = database.settings.get_string(Setting::UserDefaultModel);
+        let model_id = match database.get_last_used_model_id() {
+            Ok(Some(id)) => Some(id),
+            Ok(None) | Err(_) => database.settings.get_string(Setting::UserDefaultModel),
+        };
         let conversation_state = if resume_conversation {
             let prior = std::env::current_dir()
                 .ok()
@@ -594,7 +597,7 @@ impl ChatContext {
                     profile,
                     Some(output_clone),
                     tool_manager,
-                    model_id
+                    model_id,
                 )
                 .await
             }
@@ -606,7 +609,7 @@ impl ChatContext {
                 profile,
                 Some(output_clone),
                 tool_manager,
-                model_id
+                model_id,
             )
             .await
         };
@@ -3042,32 +3045,67 @@ impl ChatContext {
             },
             Command::Model => {
                 queue!(self.output, style::Print("\n"))?;
-                let labels: Vec<&str> = MODEL_OPTIONS.iter().map(|(l, _)| *l).collect();
+                let active_model_id = self.conversation_state.current_model_id.as_deref();
+                let labels: Vec<String> = MODEL_OPTIONS
+                    .iter()
+                    .map(|(label, model_id)| {
+                        if (model_id.is_empty() && active_model_id.is_none()) || Some(*model_id) == active_model_id {
+                            format!("{} (active)", label)
+                        } else {
+                            label.to_string()
+                        }
+                    })
+                    .collect();
+                let default_index = MODEL_OPTIONS
+                    .iter()
+                    .position(|(_, model_id)| Some(*model_id) == active_model_id)
+                    .unwrap_or(0);
                 let selection: Option<_> = match Select::with_theme(&crate::util::dialoguer_theme())
                     .with_prompt("Select a model for this chat session")
                     .items(&labels)
-                    .default(0)
+                    .default(default_index)
                     .interact_on_opt(&dialoguer::console::Term::stdout())
                 {
-                    Ok(sel) => sel,
+                    Ok(sel) => {
+                        let _ = crossterm::execute!(
+                            std::io::stdout(),
+                            crossterm::style::SetForegroundColor(crossterm::style::Color::Magenta)
+                        );
+                        sel
+                    },
                     // Ctrl‑C -> Err(Interrupted)
                     Err(DError::IO(ref e)) if e.kind() == io::ErrorKind::Interrupted => None,
                     Err(e) => return Err(ChatError::Custom(format!("Failed to choose model: {e}").into())),
                 };
 
+                queue!(self.output, style::ResetColor)?;
+
                 if let Some(index) = selection {
-                    let (label, model_opt) = MODEL_OPTIONS[index];
+                    let (label, model_id) = MODEL_OPTIONS[index];
+                    let model_id_str = model_id.to_string();
 
-                    self.conversation_state.current_model_id = Some(model_opt.to_string());
-                    telemetry.update_model_id(self.conversation_state.current_model_id.clone());
+                    if model_id == "" {
+                        self.conversation_state.current_model_id = None;
+                        telemetry.update_model_id(None);
+                        let _ = database.unset_last_used_model_id();
+                    } else {
+                        self.conversation_state.current_model_id = Some(model_id_str.clone());
+                        telemetry.update_model_id(Some(model_id_str.clone()));
+                        let _ = database.set_last_used_model_id(model_id_str);
+                    }
 
-                    use crossterm::{
-                        queue,
-                        style,
-                    };
-                    queue!(self.output, style::Print("\n"), style::Print(format!(" Swtiched model to {}\n\n", label)))?;
+                    queue!(
+                        self.output,
+                        style::Print("\n"),
+                        style::Print(format!(" Switched model to {}\n\n", label)),
+                        style::ResetColor,
+                        style::SetForegroundColor(Color::Reset),
+                        style::SetBackgroundColor(Color::Reset),
+                    )?;
                 }
-                
+
+                queue!(self.output, style::ResetColor)?;
+                self.output.flush()?;
                 ChatState::PromptUser {
                     tool_uses: None,
                     pending_tool_index: None,

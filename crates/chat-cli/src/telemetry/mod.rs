@@ -6,7 +6,10 @@ mod install_method;
 
 use core::ToolUseEventBuilder;
 use std::str::FromStr;
-use std::sync::{Arc, RwLock};
+use std::sync::{
+    Arc,
+    RwLock,
+};
 
 use amzn_codewhisperer_client::types::{
     ChatAddMessageEvent,
@@ -148,8 +151,11 @@ impl Clone for TelemetryThread {
 
 impl TelemetryThread {
     pub async fn new(env: &Env, database: &mut Database) -> Result<Self, TelemetryError> {
-        //todo yifan change to last used modelid
-        let current_model_id = Arc::new(RwLock::new(None));
+        let model_id = match database.get_last_used_model_id() {
+            Ok(Some(id)) => Some(id),
+            Ok(None) | Err(_) => database.settings.get_string(Setting::UserDefaultModel),
+        };
+        let current_model_id = Arc::new(RwLock::new(model_id));
         let telemetry_client = TelemetryClient::new(env, database, current_model_id.clone()).await?;
         let (tx, mut rx) = mpsc::unbounded_channel();
         let handle = tokio::spawn(async move {
@@ -330,7 +336,11 @@ struct TelemetryClient {
 }
 
 impl TelemetryClient {
-    async fn new(env: &Env, database: &mut Database, current_model_id: Arc<RwLock<Option<String>>>) -> Result<Self, TelemetryError> {
+    async fn new(
+        env: &Env,
+        database: &mut Database,
+        current_model_id: Arc<RwLock<Option<String>>>,
+    ) -> Result<Self, TelemetryError> {
         let telemetry_enabled = !cfg!(test)
             && env.get_os("Q_DISABLE_TELEMETRY").is_none()
             && database.settings.get_bool(Setting::TelemetryEnabled).unwrap_or(true);
@@ -506,7 +516,13 @@ mod test {
     #[tokio::test]
     async fn client_context() {
         let mut database = Database::new().await.unwrap();
-        let client = TelemetryClient::new(&Env::new(), &mut database, Arc::new(RwLock::new(Some("model".to_owned())))).await.unwrap();
+        let client = TelemetryClient::new(
+            &Env::new(),
+            &mut database,
+            Arc::new(RwLock::new(Some("model".to_owned()))),
+        )
+        .await
+        .unwrap();
         let context = client.user_context().unwrap();
 
         assert_eq!(context.ide_category, IdeCategory::Cli);
@@ -575,7 +591,13 @@ mod test {
     #[ignore = "needs auth which is not in CI"]
     async fn test_without_optout() {
         let mut database = Database::new().await.unwrap();
-        let client = TelemetryClient::new(&Env::new(), &mut database, Arc::new(RwLock::new(Some("model".to_owned())))).await.unwrap();
+        let client = TelemetryClient::new(
+            &Env::new(),
+            &mut database,
+            Arc::new(RwLock::new(Some("model".to_owned()))),
+        )
+        .await
+        .unwrap();
         client
             .codewhisperer_client
             .send_telemetry_event(

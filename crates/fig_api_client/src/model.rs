@@ -646,7 +646,7 @@ pub struct UserInputMessage {
     pub user_input_message_context: Option<UserInputMessageContext>,
     pub user_intent: Option<UserIntent>,
     pub images: Option<Vec<ImageBlock>>,
-    pub model_id: Option<String>
+    pub model_id: Option<String>,
 }
 
 impl From<UserInputMessage> for amzn_codewhisperer_streaming_client::types::UserInputMessage {

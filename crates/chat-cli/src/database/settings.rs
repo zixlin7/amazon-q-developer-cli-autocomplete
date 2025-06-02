@@ -202,13 +202,11 @@ mod test {
         assert_eq!(settings.get(Setting::McpLoadedBefore), None);
         assert_eq!(settings.get(Setting::UserDefaultModel), None);
 
-
         settings.set(Setting::TelemetryEnabled, true).await.unwrap();
         settings.set(Setting::OldClientId, "test").await.unwrap();
         settings.set(Setting::ShareCodeWhispererContent, false).await.unwrap();
         settings.set(Setting::McpLoadedBefore, true).await.unwrap();
         settings.set(Setting::UserDefaultModel, "model 1").await.unwrap();
-
 
         assert_eq!(settings.get(Setting::TelemetryEnabled), Some(&Value::Bool(true)));
         assert_eq!(

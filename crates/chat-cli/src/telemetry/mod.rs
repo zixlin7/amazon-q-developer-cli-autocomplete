@@ -55,9 +55,9 @@ use crate::api_client::Client as CodewhispererClient;
 use crate::auth::builder_id::get_start_url_and_region;
 use crate::aws_common::app_name;
 use crate::cli::{
-    RootSubcommand,
     DEFAULT_MODEL_ID,
-    MODEL_OPTIONS
+    MODEL_OPTIONS,
+    RootSubcommand,
 };
 use crate::database::settings::Setting;
 use crate::database::{

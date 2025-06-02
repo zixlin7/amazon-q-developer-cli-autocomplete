@@ -191,7 +191,7 @@ pub struct ChatArgs {
     /// Context profile to use
     #[arg(long = "profile")]
     pub profile: Option<String>,
-     /// Current model to use
+    /// Current model to use
     #[arg(long = "model")]
     pub model: Option<String>,
     /// Allows the model to use any tool to run commands without asking for confirmation.
@@ -278,51 +278,27 @@ impl ChatArgs {
             }
         }
 
-    // If modelId is specified, verify it exists before starting the chat
-    let model_id: Option<String> = if let Some(model_name) = model_name {
-        let model_name_lower = model_name.to_lowercase();
-        match MODEL_OPTIONS.iter().find(|(_, name, _)| name == &model_name_lower) {
-            Some((_, _, id)) => Some(id.to_string()),
-            None => {
-                let available_names: Vec<&str> = MODEL_OPTIONS.iter().map(|(_, name, _)| *name).collect();
-                bail!(
-                    "Model '{}' does not exist. Available models: {}",
-                    model_name,
-                    available_names.join(", ")
-                );
-            },
-        }
-    } else {
-        None
-    };
+        // If modelId is specified, verify it exists before starting the chat
+        let model_id: Option<String> = if let Some(model_name) = model_name {
+            let model_name_lower = model_name.to_lowercase();
+            match MODEL_OPTIONS.iter().find(|(_, name, _)| name == &model_name_lower) {
+                Some((_, _, id)) => Some(id.to_string()),
+                None => {
+                    let available_names: Vec<&str> = MODEL_OPTIONS.iter().map(|(_, name, _)| *name).collect();
+                    bail!(
+                        "Model '{}' does not exist. Available models: {}",
+                        model_name,
+                        available_names.join(", ")
+                    );
+                },
+            }
+        } else {
+            None
+        };
 
-    // if let Some(ref id) = model_id {
-    //     database.set_last_used_model_id(id.clone())?;
-    // }
-    let conversation_id = Alphanumeric.sample_string(&mut rand::rng(), 9);
-    info!(?conversation_id, "Generated new conversation id");
-    let (prompt_request_sender, prompt_request_receiver) = std::sync::mpsc::channel::<Option<String>>();
-    let (prompt_response_sender, prompt_response_receiver) = std::sync::mpsc::channel::<Vec<String>>();
-    let tool_manager_output: Box<dyn Write + Send + Sync + 'static> = if interactive {
-        Box::new(output.clone())
-    } else {
-        Box::new(NullWriter {})
-    };
-    let mut tool_manager = ToolManagerBuilder::default()
-        .mcp_server_config(mcp_server_configs)
-        .prompt_list_sender(prompt_response_sender)
-        .prompt_list_receiver(prompt_request_receiver)
-        .conversation_id(&conversation_id)
-        .interactive(interactive)
-        .build(telemetry, tool_manager_output)
-        .await?;
-    let tool_config = tool_manager.load_tools(database, &mut output).await?;
-    let mut tool_permissions = ToolPermissions::new(tool_config.len());
-    if accept_all || trust_all_tools {
-        tool_permissions.trust_all = true;
-        for tool in tool_config.values() {
-            tool_permissions.trust_tool(&tool.name);
-        }
+        // if let Some(ref id) = model_id {
+        //     database.set_last_used_model_id(id.clone())?;
+        // }
         let conversation_id = Alphanumeric.sample_string(&mut rand::rng(), 9);
         info!(?conversation_id, "Generated new conversation id");
         let (prompt_request_sender, prompt_request_receiver) = std::sync::mpsc::channel::<Option<String>>();

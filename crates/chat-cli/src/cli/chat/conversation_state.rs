@@ -162,7 +162,7 @@ impl ConversationState {
             context_message_length: None,
             latest_summary: None,
             updates,
-            current_model_id: curren_model_id,
+            current_model_id: current_model_id,
         }
     }
 

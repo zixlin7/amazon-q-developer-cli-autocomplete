@@ -90,10 +90,6 @@ use parser::{
     RecvErrorKind,
     ResponseParser,
 };
-use rand::distr::{
-    Alphanumeric,
-    SampleString,
-};
 use regex::Regex;
 use serde_json::Map;
 use spinners::{
@@ -259,7 +255,7 @@ impl ChatArgs {
             }
         }
 
-        let conversation_id = Alphanumeric.sample_string(&mut rand::rng(), 9);
+        let conversation_id = uuid::Uuid::new_v4().to_string();
         info!(?conversation_id, "Generated new conversation id");
         let (prompt_request_sender, prompt_request_receiver) = std::sync::mpsc::channel::<Option<String>>();
         let (prompt_response_sender, prompt_response_receiver) = std::sync::mpsc::channel::<Vec<String>>();

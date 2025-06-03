@@ -95,10 +95,6 @@ use parser::{
     RecvErrorKind,
     ResponseParser,
 };
-use rand::distr::{
-    Alphanumeric,
-    SampleString,
-};
 use regex::Regex;
 use serde_json::Map;
 use spinners::{
@@ -146,7 +142,6 @@ use util::{
     animate_output,
     drop_matched_context_files,
     play_notification_bell,
-    region_check,
 };
 use uuid::Uuid;
 use winnow::Partial;
@@ -171,7 +166,6 @@ use crate::telemetry::{
     TelemetryResult,
     TelemetryThread,
 };
-use crate::util::CLI_BINARY_NAME;
 
 #[derive(Debug, Clone, PartialEq, Eq, Default, Args)]
 pub struct ChatArgs {
@@ -205,15 +199,6 @@ pub struct ChatArgs {
 
 impl ChatArgs {
     pub async fn execute(self, database: &mut Database, telemetry: &TelemetryThread) -> Result<ExitCode> {
-        if !crate::util::system_info::in_cloudshell() && !crate::auth::is_logged_in(database).await {
-            bail!(
-                "You are not logged in, please log in with {}",
-                format!("{CLI_BINARY_NAME} login").bold()
-            );
-        }
-
-        region_check("chat")?;
-
         let ctx = Context::new();
 
         let stdin = std::io::stdin();
@@ -299,7 +284,8 @@ impl ChatArgs {
         // if let Some(ref id) = model_id {
         //     database.set_last_used_model_id(id.clone())?;
         // }
-        let conversation_id = Alphanumeric.sample_string(&mut rand::rng(), 9);
+
+        let conversation_id = uuid::Uuid::new_v4().to_string();
         info!(?conversation_id, "Generated new conversation id");
         let (prompt_request_sender, prompt_request_receiver) = std::sync::mpsc::channel::<Option<String>>();
         let (prompt_response_sender, prompt_response_receiver) = std::sync::mpsc::channel::<Vec<String>>();
@@ -1482,9 +1468,10 @@ impl ChatContext {
                 self.send_tool_use_telemetry(telemetry).await;
 
                 if self.interactive {
-                    // Print newlines before starting the assistant response
-                    execute!(self.output, style::Print("\n\n"))?;
+                    queue!(self.output, style::SetForegroundColor(Color::Magenta))?;
+                    queue!(self.output, style::SetForegroundColor(Color::Reset))?;
                     queue!(self.output, cursor::Hide)?;
+                    execute!(self.output, style::Print("\n"))?;
                     self.spinner = Some(Spinner::new(Spinners::Dots, "Thinking...".to_owned()));
                 }
 
@@ -3382,18 +3369,6 @@ impl ChatContext {
             )?;
         }
 
-        // Add assistant indicator at the beginning of the response
-        if self.interactive {
-            queue!(
-                self.output,
-                style::SetForegroundColor(Color::Yellow),
-                style::SetAttribute(Attribute::Bold),
-                style::Print("Amazon Q > "),
-                style::SetAttribute(Attribute::Reset),
-                style::SetForegroundColor(Color::Reset),
-            )?;
-        }
-
         loop {
             match parser.recv().await {
                 Ok(msg_event) => {
@@ -3482,37 +3457,12 @@ impl ChatContext {
                             tool_use_id,
                             name,
                             message,
-                            time_elapsed,
+                            ..
                         } => {
                             error!(
                                 recv_error.request_id,
                                 tool_use_id, name, "The response stream ended before the entire tool use was received"
                             );
-                            if self.interactive {
-                                drop(self.spinner.take());
-                                queue!(
-                                    self.output,
-                                    terminal::Clear(terminal::ClearType::CurrentLine),
-                                    cursor::MoveToColumn(0),
-                                    style::SetForegroundColor(Color::Yellow),
-                                    style::SetAttribute(Attribute::Bold),
-                                    style::Print(format!(
-                                        "Warning: received an unexpected error from the model after {:.2}s",
-                                        time_elapsed.as_secs_f64()
-                                    )),
-                                )?;
-                                if let Some(request_id) = recv_error.request_id {
-                                    queue!(
-                                        self.output,
-                                        style::Print(format!("\n         request_id: {}", request_id))
-                                    )?;
-                                }
-                                execute!(self.output, style::Print("\n\n"), style::SetAttribute(Attribute::Reset))?;
-                                self.spinner = Some(Spinner::new(
-                                    Spinners::Dots,
-                                    "Trying to divide up the work...".to_string(),
-                                ));
-                            }
 
                             self.conversation_state.push_assistant_message(*message, database);
                             let tool_results = vec![ToolUseResult {
@@ -3570,7 +3520,7 @@ impl ChatContext {
 
                 // TODO: We should buffer output based on how much we have to parse, not as a constant
                 // Do not remove unless you are nabochay :)
-                std::thread::sleep(Duration::from_millis(8));
+                tokio::time::sleep(Duration::from_millis(8)).await;
             }
 
             // Set spinner after showing all of the assistant text content so far.

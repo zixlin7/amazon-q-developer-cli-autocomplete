@@ -162,7 +162,8 @@ impl Client<StdioTransport> {
             env,
         } = config;
         let child = {
-            let mut command = tokio::process::Command::new(bin_path);
+            let expanded_bin_path = shellexpand::tilde(&bin_path);
+            let mut command = tokio::process::Command::new(expanded_bin_path.as_ref());
             command
                 .stdin(Stdio::piped())
                 .stdout(Stdio::piped())
@@ -362,6 +363,16 @@ where
                     },
                     Err(e) => {
                         tracing::error!("Background listening thread for client {}: {:?}", server_name, e);
+                        // If we don't have anything on the other end, we should just end the task
+                        // now
+                        if let TransportError::RecvError(tokio::sync::broadcast::error::RecvError::Closed) = e {
+                            tracing::error!(
+                                "All senders dropped for transport layer for server {}: {:?}. This likely means the mcp server process is no longer running.",
+                                server_name,
+                                e
+                            );
+                            break;
+                        }
                     },
                 }
             }

@@ -26,7 +26,11 @@ use clap::{
     Parser,
     ValueEnum,
 };
-use eyre::Result;
+use crossterm::style::Stylize;
+use eyre::{
+    Result,
+    bail,
+};
 use feed::Feed;
 use serde::Serialize;
 use tracing::{
@@ -44,8 +48,12 @@ use crate::logging::{
     LogArgs,
     initialize_logging,
 };
-use crate::util::CliContext;
 use crate::util::directories::logs_dir;
+use crate::util::{
+    CLI_BINARY_NAME,
+    CliContext,
+    GOV_REGIONS,
+};
 
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq, ValueEnum)]
 pub enum OutputFormat {
@@ -79,7 +87,6 @@ impl OutputFormat {
 #[derive(Debug, PartialEq, clap::Subcommand)]
 pub enum RootSubcommand {
     /// AI assistant in your terminal
-    #[command(alias("q"))]
     Chat(ChatArgs),
     /// Log in to Amazon Q
     Login(LoginArgs),
@@ -117,6 +124,16 @@ impl RootSubcommand {
     pub fn valid_for_telemetry(&self) -> bool {
         matches!(self, Self::Chat(_) | Self::Login(_) | Self::Profile | Self::Issue(_))
     }
+
+    pub fn requires_auth(&self) -> bool {
+        matches!(self, Self::Chat(_) | Self::Profile)
+    }
+}
+
+impl Default for RootSubcommand {
+    fn default() -> Self {
+        Self::Chat(ChatArgs::default())
+    }
 }
 
 impl Display for RootSubcommand {
@@ -153,6 +170,7 @@ pub struct Cli {
 
 impl Cli {
     pub async fn execute(self) -> Result<ExitCode> {
+        let subcommand = self.subcommand.unwrap_or_default();
         // Initialize our logger and keep around the guard so logging can perform as expected.
         let _log_guard = initialize_logging(LogArgs {
             log_level: match self.verbose > 0 {
@@ -168,16 +186,19 @@ impl Cli {
                 false => None,
             },
             log_to_stdout: std::env::var_os("Q_LOG_STDOUT").is_some() || self.verbose > 0,
-            log_file_path: match self.subcommand {
-                Some(RootSubcommand::Chat { .. }) => Some("chat.log".to_owned()),
-                _ => match crate::logging::get_log_level_max() >= Level::DEBUG {
-                    true => Some("cli.log".to_owned()),
-                    false => None,
-                },
-            }
-            .map(|name| logs_dir().expect("home dir must be set").join(name)),
+            log_file_path: match subcommand {
+                RootSubcommand::Chat { .. } => Some(logs_dir().expect("home dir must be set").join("qchat.log")),
+                _ => None,
+            },
             delete_old_log_file: false,
         });
+
+        // Check for region support.
+        if let Ok(region) = std::env::var("AWS_REGION") {
+            if GOV_REGIONS.contains(&region.as_str()) {
+                bail!("AWS GovCloud ({region}) is not supported.")
+            }
+        }
 
         debug!(command =? std::env::args().collect::<Vec<_>>(), "Command being ran");
 
@@ -185,25 +206,31 @@ impl Cli {
         let mut database = crate::database::Database::new().await?;
         let telemetry = crate::telemetry::TelemetryThread::new(&env, &mut database).await?;
 
-        telemetry.send_cli_subcommand_executed(&self.subcommand).ok();
+        // Check for auth on subcommands that require it.
+        if subcommand.requires_auth() && !crate::auth::is_logged_in(&mut database).await {
+            bail!(
+                "You are not logged in, please log in with {}",
+                format!("{CLI_BINARY_NAME} login").bold()
+            );
+        }
 
+        // Send executed telemetry.
+        if subcommand.valid_for_telemetry() {
+            telemetry.send_cli_subcommand_executed(&subcommand).ok();
+        }
         let cli_context = CliContext::new();
 
-        let result = match self.subcommand {
-            Some(subcommand) => match subcommand {
-                RootSubcommand::Diagnostic(args) => args.execute().await,
-                RootSubcommand::Login(args) => args.execute(&mut database, &telemetry).await,
-                RootSubcommand::Logout => user::logout(&mut database).await,
-                RootSubcommand::Whoami(args) => args.execute(&mut database).await,
-                RootSubcommand::Profile => user::profile(&mut database, &telemetry).await,
-                RootSubcommand::Settings(settings_args) => settings_args.execute(&mut database, &cli_context).await,
-                RootSubcommand::Issue(args) => args.execute().await,
-                RootSubcommand::Version { changelog } => Self::print_version(changelog),
-                RootSubcommand::Chat(args) => args.execute(&mut database, &telemetry).await,
-                RootSubcommand::Mcp(args) => args.execute().await,
-            },
-            // Root command
-            None => ChatArgs::default().execute(&mut database, &telemetry).await,
+        let result = match subcommand {
+            RootSubcommand::Diagnostic(args) => args.execute().await,
+            RootSubcommand::Login(args) => args.execute(&mut database, &telemetry).await,
+            RootSubcommand::Logout => user::logout(&mut database).await,
+            RootSubcommand::Whoami(args) => args.execute(&mut database).await,
+            RootSubcommand::Profile => user::profile(&mut database, &telemetry).await,
+            RootSubcommand::Settings(settings_args) => settings_args.execute(&mut database, &cli_context).await,
+            RootSubcommand::Issue(args) => args.execute().await,
+            RootSubcommand::Version { changelog } => Self::print_version(changelog),
+            RootSubcommand::Chat(args) => args.execute(&mut database, &telemetry).await,
+            RootSubcommand::Mcp(args) => args.execute().await,
         };
 
         let telemetry_result = telemetry.finish().await;

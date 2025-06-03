@@ -72,7 +72,7 @@ impl Event {
                     create_time: self.created_time,
                     value: None,
                     credential_start_url: self.credential_start_url.map(Into::into),
-                    codewhispererterminal_in_cloudshell: in_cloudshell(),
+                    codewhispererterminal_in_cloudshell: None,
                 }
                 .into_metric_datum(),
             ),
@@ -90,7 +90,7 @@ impl Event {
                     result: Some(result.to_string().into()),
                     reason: reason.map(Into::into),
                     oauth_flow: Some(oauth_flow.into()),
-                    codewhispererterminal_in_cloudshell: in_cloudshell(),
+                    codewhispererterminal_in_cloudshell: None,
                 }
                 .into_metric_datum(),
             ),
@@ -100,7 +100,7 @@ impl Event {
                     value: None,
                     credential_start_url: self.credential_start_url.map(Into::into),
                     codewhispererterminal_subcommand: Some(subcommand.into()),
-                    codewhispererterminal_in_cloudshell: in_cloudshell(),
+                    codewhispererterminal_in_cloudshell: None,
                 }
                 .into_metric_datum(),
             ),
@@ -110,7 +110,7 @@ impl Event {
                     value: None,
                     credential_start_url: self.credential_start_url.map(Into::into),
                     amazonq_conversation_id: Some(conversation_id.into()),
-                    codewhispererterminal_in_cloudshell: in_cloudshell(),
+                    codewhispererterminal_in_cloudshell: None,
                 }
                 .into_metric_datum(),
             ),
@@ -120,7 +120,7 @@ impl Event {
                     value: None,
                     credential_start_url: self.credential_start_url.map(Into::into),
                     amazonq_conversation_id: Some(conversation_id.into()),
-                    codewhispererterminal_in_cloudshell: in_cloudshell(),
+                    codewhispererterminal_in_cloudshell: None,
                 }
                 .into_metric_datum(),
             ),
@@ -141,7 +141,7 @@ impl Event {
                     codewhispererterminal_utterance_id: message_id.map(Into::into),
                     credential_start_url: self.credential_start_url.map(Into::into),
                     sso_region: self.sso_region.map(Into::into),
-                    codewhispererterminal_in_cloudshell: in_cloudshell(),
+                    codewhispererterminal_in_cloudshell: None,
                     codewhispererterminal_context_file_length: context_file_length.map(|l| l as i64).map(Into::into),
                     result: result.to_string().into(),
                     reason: reason.map(Into::into),
@@ -420,8 +420,4 @@ pub enum QProfileSwitchIntent {
     Auth,
     Update,
     Reload,
-}
-
-fn in_cloudshell() -> Option<CodewhispererterminalInCloudshell> {
-    Some(crate::util::system_info::in_cloudshell().into())
 }

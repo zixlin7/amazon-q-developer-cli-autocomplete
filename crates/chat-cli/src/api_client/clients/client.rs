@@ -82,7 +82,7 @@ impl Client {
     ) -> Result<(), ApiClientError> {
         match &self.inner {
             inner::Inner::Codewhisperer(client) => {
-                let _ = client
+                client
                     .send_telemetry_event()
                     .telemetry_event(telemetry_event)
                     .user_context(user_context)
@@ -93,7 +93,7 @@ impl Client {
                     .set_profile_arn(self.profile.as_ref().map(|p| p.arn.clone()))
                     .set_model_id(model_id)
                     .send()
-                    .await;
+                    .await?;
                 Ok(())
             },
             inner::Inner::Mock => Ok(()),

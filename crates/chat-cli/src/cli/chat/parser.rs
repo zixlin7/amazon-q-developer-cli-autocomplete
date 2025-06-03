@@ -202,7 +202,6 @@ impl ResponseParser {
                 // If we failed deserializing after waiting for a long time, then this is most
                 // likely bedrock responding with a stop event for some reason without actually
                 // including the tool contents. Essentially, the tool was too large.
-                // Timeouts have been seen as short as ~1 minute, so setting the time to 30.
                 let time_elapsed = start.elapsed();
                 let args = serde_json::Value::Object(
                     [(
@@ -214,7 +213,7 @@ impl ResponseParser {
                     .into_iter()
                     .collect(),
                 );
-                if self.peek().await?.is_none() && time_elapsed > Duration::from_secs(30) {
+                if self.peek().await?.is_none() {
                     error!(
                         "Received an unexpected end of stream after spending ~{}s receiving tool events",
                         time_elapsed.as_secs_f64()

@@ -437,7 +437,7 @@ const ROTATING_TIPS: [&str; 15] = [
     color_print::cstr! {"Set a default model by running <green!>q settings chat.defaultModel MODEL</green!>. Run <green!>/model</green!> to learn more."},
 ];
 
-pub const MODEL_OPTIONS: [(&str, &str); 3] =  [
+pub const MODEL_OPTIONS: [(&str, &str); 3] = [
     // ("Auto", ""),
     ("claude-3.5-sonnet", "CLAUDE_3_5_SONNET_20241022_V2_0"),
     ("claude-3.7-sonnet", "CLAUDE_3_7_SONNET_20250219_V1_0"),

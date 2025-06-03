@@ -1,13 +1,13 @@
 use amzn_codewhisperer_client::operation::generate_completions::GenerateCompletionsError;
 use amzn_codewhisperer_client::operation::list_available_customizations::ListAvailableCustomizationsError;
 use amzn_codewhisperer_client::operation::list_available_profiles::ListAvailableProfilesError;
+use amzn_codewhisperer_client::operation::send_telemetry_event::SendTelemetryEventError;
 pub use amzn_codewhisperer_streaming_client::operation::generate_assistant_response::GenerateAssistantResponseError;
 use amzn_codewhisperer_streaming_client::types::error::ChatResponseStreamError as CodewhispererChatResponseStreamError;
 use amzn_consolas_client::operation::generate_recommendations::GenerateRecommendationsError;
 use amzn_consolas_client::operation::list_customizations::ListCustomizationsError;
 use amzn_qdeveloper_streaming_client::operation::send_message::SendMessageError as QDeveloperSendMessageError;
 use amzn_qdeveloper_streaming_client::types::error::ChatResponseStreamError as QDeveloperChatResponseStreamError;
-use aws_credential_types::provider::error::CredentialsError;
 use aws_smithy_runtime_api::client::orchestrator::HttpResponse;
 pub use aws_smithy_runtime_api::client::result::SdkError;
 use aws_smithy_types::event_stream::RawMessage;
@@ -18,9 +18,6 @@ use crate::aws_common::SdkErrorDisplay;
 
 #[derive(Debug, Error)]
 pub enum ApiClientError {
-    #[error("failed to load credentials: {}", .0)]
-    Credentials(CredentialsError),
-
     // Generate completions errors
     #[error("{}", SdkErrorDisplay(.0))]
     GenerateCompletions(#[from] SdkError<GenerateCompletionsError, HttpResponse>),
@@ -32,6 +29,10 @@ pub enum ApiClientError {
     ListAvailableCustomizations(#[from] SdkError<ListAvailableCustomizationsError, HttpResponse>),
     #[error("{}", SdkErrorDisplay(.0))]
     ListAvailableServices(#[from] SdkError<ListCustomizationsError, HttpResponse>),
+
+    // Telemetry client error
+    #[error("{}", SdkErrorDisplay(.0))]
+    SendTelemetryEvent(#[from] SdkError<SendTelemetryEventError, HttpResponse>),
 
     // Send message errors
     #[error("{}", SdkErrorDisplay(.0))]
@@ -92,7 +93,6 @@ mod tests {
 
     fn all_errors() -> Vec<ApiClientError> {
         vec![
-            ApiClientError::Credentials(CredentialsError::unhandled("<unhandled>")),
             ApiClientError::GenerateCompletions(SdkError::service_error(
                 GenerateCompletionsError::unhandled("<unhandled>"),
                 response(),

@@ -161,8 +161,8 @@ impl TelemetryThread {
             .and_then(|model_name| {
                 MODEL_OPTIONS
                     .iter()
-                    .find(|(_, name, _)| *name == model_name)
-                    .map(|(_, _, id)| (*id).to_owned())
+                    .find(|(name, _)| *name == model_name)
+                    .map(|(_, id)| (*id).to_owned())
             })
             .or_else(|| Some(DEFAULT_MODEL_ID.to_owned()));
         let current_model_id = Arc::new(RwLock::new(model_id));

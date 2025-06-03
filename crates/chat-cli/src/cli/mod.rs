@@ -171,6 +171,7 @@ pub struct Cli {
 impl Cli {
     pub async fn execute(self) -> Result<ExitCode> {
         let subcommand = self.subcommand.unwrap_or_default();
+
         // Initialize our logger and keep around the guard so logging can perform as expected.
         let _log_guard = initialize_logging(LogArgs {
             log_level: match self.verbose > 0 {
@@ -218,6 +219,7 @@ impl Cli {
         if subcommand.valid_for_telemetry() {
             telemetry.send_cli_subcommand_executed(&subcommand).ok();
         }
+
         let cli_context = CliContext::new();
 
         let result = match subcommand {

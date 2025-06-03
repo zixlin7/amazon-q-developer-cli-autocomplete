@@ -27,6 +27,7 @@ pub async fn get_cognito_credentials_send(
     telemetry_stage: &TelemetryStage,
 ) -> Result<Credentials, CredentialsError> {
     trace!("Creating new cognito credentials");
+
     let conf = aws_sdk_cognitoidentity::Config::builder()
         .behavior_version(BehaviorVersion::v2025_01_17())
         .region(telemetry_stage.region.clone())
@@ -159,5 +160,19 @@ fn is_expired(expiration: Option<&String>) -> bool {
             warn!(?err, "invalid cognito expiration was saved");
             true
         },
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use super::*;
+
+    #[tokio::test]
+    async fn pools() {
+        for telemetry_stage in [TelemetryStage::BETA, TelemetryStage::EXTERNAL_PROD] {
+            get_cognito_credentials_send(&mut Database::new().await.unwrap(), &telemetry_stage)
+                .await
+                .unwrap();
+        }
     }
 }

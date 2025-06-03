@@ -175,14 +175,18 @@ impl StreamingClient {
                             && e.raw_response().is_some_and(|resp| resp.status().as_u16() == 500)
                             && e.as_service_error().is_some_and(|err| {
                                 err.meta().message()
-                == Some("Encountered unexpectedly high load when processing the request, please try again.")
+                                == Some("Encountered unexpectedly high load when processing the request, please try again.")
                             });
                         if is_quota_breach {
                             Err(ApiClientError::QuotaBreach("quota has reached its limit"))
                         } else if is_context_window_overflow {
                             Err(ApiClientError::ContextWindowOverflow)
                         } else if is_model_unavailable {
-                            Err(ApiClientError::ModelOverloadedError())
+                            let request_id = e
+                                .as_service_error()
+                                .and_then(|err| err.meta().request_id())
+                                .map(|s| s.to_string());
+                            Err(ApiClientError::ModelOverloadedError(request_id))
                         } else {
                             Err(e.into())
                         }

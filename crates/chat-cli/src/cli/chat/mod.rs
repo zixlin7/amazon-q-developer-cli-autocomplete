@@ -1086,6 +1086,23 @@ impl ChatContext {
                         crate::api_client::ApiClientError::QuotaBreach(msg) => {
                             print_err!(msg, err);
                         },
+                        crate::api_client::ApiClientError::ModelOverloadedError(request_id) => {
+                            queue!(
+                                self.output,
+                                style::SetAttribute(Attribute::Bold),
+                                style::SetForegroundColor(Color::Red),
+                            )?;
+                            let message = "The model you've selected is temporarily unavailable. Please use '/model' to select a different model and try again.";
+                            queue!(
+                                self.output,
+                                style::Print(&format!("{}\nRequest ID: {}", message, request_id))
+                            )?;
+                            execute!(
+                                self.output,
+                                style::SetAttribute(Attribute::Reset),
+                                style::SetForegroundColor(Color::Reset),
+                            )?;
+                        },
                         _ => {
                             print_default_error!(err);
                         },

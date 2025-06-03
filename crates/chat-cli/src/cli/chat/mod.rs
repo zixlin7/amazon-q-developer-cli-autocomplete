@@ -3463,7 +3463,6 @@ impl ChatContext {
                                 recv_error.request_id,
                                 tool_use_id, name, "The response stream ended before the entire tool use was received"
                             );
-
                             self.conversation_state.push_assistant_message(*message, database);
                             let tool_results = vec![ToolUseResult {
                                     tool_use_id,

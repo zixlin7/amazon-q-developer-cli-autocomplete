@@ -25,7 +25,6 @@ use crate::telemetry::definitions::types::{
     CodewhispererterminalCustomToolInputTokenSize,
     CodewhispererterminalCustomToolLatency,
     CodewhispererterminalCustomToolOutputTokenSize,
-    CodewhispererterminalInCloudshell,
     CodewhispererterminalIsToolValid,
     CodewhispererterminalMcpServerInitFailureReason,
     CodewhispererterminalToolName,

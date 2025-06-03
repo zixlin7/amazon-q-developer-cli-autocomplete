@@ -29,10 +29,7 @@ use amzn_toolkit_telemetry_client::{
     Config,
 };
 use aws_credential_types::provider::SharedCredentialsProvider;
-use cognito::{
-    CognitoProvider,
-    get_cognito_credentials,
-};
+use cognito::CognitoProvider;
 use endpoint::StaticEndpoint;
 pub use install_method::{
     InstallMethod,

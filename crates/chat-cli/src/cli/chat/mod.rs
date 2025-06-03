@@ -622,6 +622,8 @@ impl ChatContext {
                 })
                 .or_else(|| Some(DEFAULT_MODEL_ID.to_owned())),
         };
+
+        print!("curretn valid: {:?}", valid_model_id);
         let conversation_state = if resume_conversation {
             let prior = std::env::current_dir()
                 .ok()
@@ -639,6 +641,7 @@ impl ChatContext {
                 cs.tool_manager = tool_manager;
                 cs.update_state(true).await;
                 cs.enforce_tool_use_history_invariants();
+                print!("resume valid: {:?}", cs.current_model_id);
                 cs
             } else {
                 ConversationState::new(

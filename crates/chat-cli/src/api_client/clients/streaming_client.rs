@@ -175,7 +175,7 @@ impl StreamingClient {
                             && e.raw_response().is_some_and(|resp| resp.status().as_u16() == 500)
                             && e.as_service_error().is_some_and(|err| {
                                 err.meta().message()
-                == Some("Encountered unexpectedly high load when processing the request, please try again.".into())
+                == Some("Encountered unexpectedly high load when processing the request, please try again.")
                             });
                         if is_quota_breach {
                             Err(ApiClientError::QuotaBreach("quota has reached its limit"))

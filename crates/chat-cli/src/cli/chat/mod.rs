@@ -141,7 +141,6 @@ use util::{
     animate_output,
     drop_matched_context_files,
     play_notification_bell,
-    region_check,
 };
 use uuid::Uuid;
 use winnow::Partial;
@@ -166,7 +165,6 @@ use crate::telemetry::{
     TelemetryResult,
     TelemetryThread,
 };
-use crate::util::CLI_BINARY_NAME;
 
 #[derive(Debug, Clone, PartialEq, Eq, Default, Args)]
 pub struct ChatArgs {
@@ -197,15 +195,6 @@ pub struct ChatArgs {
 
 impl ChatArgs {
     pub async fn execute(self, database: &mut Database, telemetry: &TelemetryThread) -> Result<ExitCode> {
-        if !crate::util::system_info::in_cloudshell() && !crate::auth::is_logged_in(database).await {
-            bail!(
-                "You are not logged in, please log in with {}",
-                format!("{CLI_BINARY_NAME} login").bold()
-            );
-        }
-
-        region_check("chat")?;
-
         let ctx = Context::new();
 
         let stdin = std::io::stdin();

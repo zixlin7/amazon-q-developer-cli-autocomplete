@@ -182,18 +182,10 @@ impl TelemetryThread {
         Ok(self.tx.send(Event::new(EventType::UserLoggedIn {}))?)
     }
 
-    pub fn send_cli_subcommand_executed(&self, subcommand: &Option<RootSubcommand>) -> Result<(), TelemetryError> {
-        let subcommand = match subcommand {
-            None => "chat".to_string(),
-            Some(subcommand) => match subcommand.valid_for_telemetry() {
-                true => subcommand.to_string(),
-                false => return Ok(()),
-            },
-        };
-
-        Ok(self
-            .tx
-            .send(Event::new(EventType::CliSubcommandExecuted { subcommand }))?)
+    pub fn send_cli_subcommand_executed(&self, subcommand: &RootSubcommand) -> Result<(), TelemetryError> {
+        Ok(self.tx.send(Event::new(EventType::CliSubcommandExecuted {
+            subcommand: subcommand.to_string(),
+        }))?)
     }
 
     #[allow(clippy::too_many_arguments)] // TODO: Should make a parameters struct.
@@ -535,7 +527,7 @@ mod test {
 
         thread.send_user_logged_in().ok();
         thread
-            .send_cli_subcommand_executed(&Some(RootSubcommand::Version { changelog: None }))
+            .send_cli_subcommand_executed(&RootSubcommand::Version { changelog: None })
             .ok();
         thread
             .send_chat_added_message(

@@ -60,7 +60,6 @@ const IDC_REGION_KEY: &str = "auth.idc.region";
 // We include this key to remove for backwards compatibility
 const CUSTOMIZATION_STATE_KEY: &str = "api.selectedCustomization";
 const ROTATING_TIP_KEY: &str = "chat.greeting.rotating_tips_current_index";
-// const LAST_USED_MODEL_ID: &str = "lastUsedModelId";
 
 const MIGRATIONS: &[Migration] = migrations![
     "000_migration_table",
@@ -307,21 +306,6 @@ impl Database {
         self.set_entry(Table::State, ROTATING_TIP_KEY, tip.wrapping_add(1))?;
         Ok(tip)
     }
-
-    // /// Get the model id used for last conversation state.
-    // pub fn get_last_used_model_id(&self) -> Result<Option<String>, DatabaseError> {
-    //     self.get_json_entry::<String>(Table::State, LAST_USED_MODEL_ID)
-    // }
-
-    // /// Set the model id used for last conversation state.
-    // pub fn set_last_used_model_id(&mut self, last_used_model_id: String) -> Result<usize,
-    // DatabaseError> {     self.set_json_entry(Table::State, LAST_USED_MODEL_ID,
-    // last_used_model_id) }
-
-    // /// UnsSet the model id used for last conversation state.
-    // pub fn unset_last_used_model_id(&mut self) -> Result<(), DatabaseError> {
-    //     self.delete_entry(Table::State, LAST_USED_MODEL_ID)
-    // }
 
     /// Get a chat conversation given a path to the conversation.
     pub fn get_conversation_by_path(

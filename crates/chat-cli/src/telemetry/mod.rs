@@ -450,12 +450,13 @@ impl TelemetryClient {
     }
 
     async fn send_telemetry_toolkit_metric(&self, event: Event) {
-        trace!("not sending toolkit metric - client does not exist");
         let Some(toolkit_telemetry_client) = self.toolkit_telemetry_client.clone() else {
+            trace!("not sending toolkit metric - client does not exist");
             return;
         };
         let client_id = self.client_id;
         let Some(metric_datum) = event.into_metric_datum() else {
+            trace!("not sending toolkit metric - metric datum does not exist");
             return;
         };
 

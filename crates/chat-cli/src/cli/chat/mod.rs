@@ -1092,11 +1092,18 @@ impl ChatContext {
                                 style::SetAttribute(Attribute::Bold),
                                 style::SetForegroundColor(Color::Red),
                             )?;
-                            let message = "The model you've selected is temporarily unavailable. Please use '/model' to select a different model and try again.";
-                            queue!(
-                                self.output,
-                                style::Print(&format!("{}\nRequest ID: {}", message, request_id))
-                            )?;
+
+                            let message = "    The model you've selected is temporarily unavailable. Please use '/model' to select a different model and try again.";
+                            let text = match request_id {
+                                Some(id) => format!(
+                                    "Amazon Q is having trouble responding right now:\n{}\n    Request ID: {}\n\n",
+                                    message, id
+                                ),
+                                None => format!("Amazon Q is having trouble responding right now:\n{}\n\n", message),
+                            };
+                            queue!(self.output, style::Print(&text))?;
+                            self.conversation_state.append_transcript(text);
+
                             execute!(
                                 self.output,
                                 style::SetAttribute(Attribute::Reset),

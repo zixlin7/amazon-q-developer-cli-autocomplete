@@ -105,6 +105,10 @@ pub struct ConversationState {
     latest_summary: Option<String>,
     #[serde(skip)]
     pub updates: Option<SharedWriter>,
+    /// Model explicitly selected by the user in this conversation state via `/model`. (`None` ==
+    /// auto)
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub current_model_id: Option<String>,
 }
 
 impl ConversationState {
@@ -115,6 +119,7 @@ impl ConversationState {
         profile: Option<String>,
         updates: Option<SharedWriter>,
         tool_manager: ToolManager,
+        current_model_id: Option<String>,
     ) -> Self {
         // Initialize context manager
         let context_manager = match ContextManager::new(ctx, None).await {
@@ -157,6 +162,7 @@ impl ConversationState {
             context_message_length: None,
             latest_summary: None,
             updates,
+            current_model_id,
         }
     }
 
@@ -528,6 +534,7 @@ impl ConversationState {
             context_messages,
             dropped_context_files,
             tools: &self.tools,
+            model_id: self.current_model_id.as_deref(),
         }
     }
 
@@ -599,6 +606,7 @@ impl ConversationState {
             user_input_message_context: None,
             user_intent: None,
             images: None,
+            model_id: self.current_model_id.clone(),
         };
 
         // If the last message contains tool uses, then add cancelled tool results to the summary
@@ -830,6 +838,7 @@ pub struct BackendConversationStateImpl<'a, T, U> {
     pub context_messages: U,
     pub dropped_context_files: Vec<(String, String)>,
     pub tools: &'a HashMap<ToolOrigin, Vec<Tool>>,
+    pub model_id: Option<&'a str>,
 }
 
 impl
@@ -846,6 +855,7 @@ impl
             .cloned()
             .map(UserMessage::into_user_input_message)
             .ok_or(eyre::eyre!("next user message is not set"))?;
+        user_input_message.model_id = self.model_id.map(str::to_string);
         if let Some(ctx) = user_input_message.user_input_message_context.as_mut() {
             ctx.tools = Some(self.tools.values().flatten().cloned().collect::<Vec<_>>());
         }
@@ -1059,6 +1069,7 @@ mod tests {
             None,
             None,
             tool_manager,
+            None,
         )
         .await;
 
@@ -1089,6 +1100,7 @@ mod tests {
             None,
             None,
             tool_manager.clone(),
+            None,
         )
         .await;
         conversation_state.set_next_user_message("start".to_string()).await;
@@ -1120,6 +1132,7 @@ mod tests {
             None,
             None,
             tool_manager.clone(),
+            None,
         )
         .await;
         conversation_state.set_next_user_message("start".to_string()).await;
@@ -1165,6 +1178,7 @@ mod tests {
             None,
             None,
             tool_manager,
+            None,
         )
         .await;
 
@@ -1235,6 +1249,7 @@ mod tests {
             None,
             Some(SharedWriter::stdout()),
             tool_manager,
+            None,
         )
         .await;
 

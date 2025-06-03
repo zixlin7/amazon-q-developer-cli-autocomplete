@@ -139,6 +139,7 @@ impl StreamingClient {
 
         match &self.inner {
             inner::Inner::Codewhisperer(client) => {
+                let model_id_opt: Option<String> = user_input_message.model_id.clone();
                 let conversation_state = amzn_codewhisperer_streaming_client::types::ConversationState::builder()
                     .set_conversation_id(conversation_id)
                     .current_message(
@@ -170,10 +171,22 @@ impl StreamingClient {
                                 && err.meta().message() == Some("Input is too long."))
                         });
 
+                        let is_model_unavailable = model_id_opt.is_some()
+                            && e.raw_response().is_some_and(|resp| resp.status().as_u16() == 500)
+                            && e.as_service_error().is_some_and(|err| {
+                                err.meta().message()
+                                == Some("Encountered unexpectedly high load when processing the request, please try again.")
+                            });
                         if is_quota_breach {
                             Err(ApiClientError::QuotaBreach("quota has reached its limit"))
                         } else if is_context_window_overflow {
                             Err(ApiClientError::ContextWindowOverflow)
+                        } else if is_model_unavailable {
+                            let request_id = e
+                                .as_service_error()
+                                .and_then(|err| err.meta().request_id())
+                                .map(|s| s.to_string());
+                            Err(ApiClientError::ModelOverloadedError(request_id))
                         } else {
                             Err(e.into())
                         }
@@ -291,6 +304,7 @@ mod tests {
                     content: "Hello".into(),
                     user_input_message_context: None,
                     user_intent: None,
+                    model_id: Some("model".to_owned()),
                 },
                 history: None,
             })
@@ -317,6 +331,7 @@ mod tests {
                     content: "How about rustc?".into(),
                     user_input_message_context: None,
                     user_intent: None,
+                    model_id: Some("model".to_owned()),
                 },
                 history: Some(vec![
                     ChatMessage::UserInputMessage(UserInputMessage {
@@ -324,6 +339,7 @@ mod tests {
                         content: "What language is the linux kernel written in, and who wrote it?".into(),
                         user_input_message_context: None,
                         user_intent: None,
+                        model_id: None,
                     }),
                     ChatMessage::AssistantResponseMessage(AssistantResponseMessage {
                         content: "It is written in C by Linus Torvalds.".into(),

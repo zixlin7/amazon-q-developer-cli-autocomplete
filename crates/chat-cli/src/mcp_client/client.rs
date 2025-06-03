@@ -363,6 +363,16 @@ where
                     },
                     Err(e) => {
                         tracing::error!("Background listening thread for client {}: {:?}", server_name, e);
+                        // If we don't have anything on the other end, we should just end the task
+                        // now
+                        if let TransportError::RecvError(tokio::sync::broadcast::error::RecvError::Closed) = e {
+                            tracing::error!(
+                                "All senders dropped for transport layer for server {}: {:?}. This likely means the mcp server process is no longer running.",
+                                server_name,
+                                e
+                            );
+                            break;
+                        }
                     },
                 }
             }

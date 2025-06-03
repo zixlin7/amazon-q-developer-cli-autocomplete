@@ -65,11 +65,6 @@ pub enum ApiClientError {
 
     #[error(transparent)]
     AuthError(#[from] AuthError),
-
-    #[error(
-        "The model you've selected is temporarily unavailable. Please use '/model' to select a different model and try again."
-    )]
-    ModelOverloadedError(Option<String>),
 }
 
 #[cfg(test)]

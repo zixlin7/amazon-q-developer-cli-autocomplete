@@ -128,7 +128,6 @@ impl UserMessage {
                 ..Default::default()
             }),
             user_intent: None,
-            model_id: None,
         }
     }
 
@@ -159,7 +158,6 @@ impl UserMessage {
                 ..Default::default()
             }),
             user_intent: None,
-            model_id: None,
         }
     }
 

@@ -434,7 +434,7 @@ const ROTATING_TIPS: [&str; 15] = [
     color_print::cstr! {"You can specify wait time (in ms) for mcp server loading with <green!>q settings mcp.initTimeout {timeout in int}</green!>. Servers that takes longer than the specified time will continue to load in the background. Use /tools to see pending servers."},
     color_print::cstr! {"You can see the server load status as well as any warnings or errors associated with <green!>/mcp</green!>"},
     color_print::cstr! {"Use <green!>/model</green!> to select the model to use for this conversation"},
-    color_print::cstr! {"Set a default model by running <green!>q settings chat.defaultModel MODEL</green!>"},
+    color_print::cstr! {"Set a default model by running <green!>q settings chat.defaultModel MODEL</green!>. Run <green!>/model</green!> to learn more."},
 ];
 
 pub const MODEL_OPTIONS: [(&str, &str); 3] = [

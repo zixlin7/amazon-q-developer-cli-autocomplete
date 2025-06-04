@@ -15,7 +15,11 @@ use std::io::{
 use std::process::ExitCode;
 
 use anstream::println;
-pub use chat::ConversationState;
+pub use chat::{
+    ConversationState,
+    DEFAULT_MODEL_ID,
+    MODEL_OPTIONS,
+};
 use clap::{
     ArgAction,
     CommandFactory,
@@ -354,6 +358,7 @@ mod test {
                 resume: false,
                 input: None,
                 profile: None,
+                model: None,
                 trust_all_tools: false,
                 trust_tools: None,
             })),
@@ -393,6 +398,7 @@ mod test {
                 resume: false,
                 input: None,
                 profile: Some("my-profile".to_string()),
+                model: None,
                 trust_all_tools: false,
                 trust_tools: None,
             })
@@ -409,6 +415,7 @@ mod test {
                 resume: false,
                 input: Some("Hello".to_string()),
                 profile: Some("my-profile".to_string()),
+                model: None,
                 trust_all_tools: false,
                 trust_tools: None,
             })
@@ -425,6 +432,7 @@ mod test {
                 resume: false,
                 input: None,
                 profile: Some("my-profile".to_string()),
+                model: None,
                 trust_all_tools: false,
                 trust_tools: None,
             })
@@ -441,6 +449,7 @@ mod test {
                 resume: true,
                 input: None,
                 profile: None,
+                model: None,
                 trust_all_tools: false,
                 trust_tools: None,
             })
@@ -453,6 +462,7 @@ mod test {
                 resume: true,
                 input: None,
                 profile: None,
+                model: None,
                 trust_all_tools: false,
                 trust_tools: None,
             })
@@ -469,6 +479,7 @@ mod test {
                 resume: false,
                 input: None,
                 profile: None,
+                model: None,
                 trust_all_tools: true,
                 trust_tools: None,
             })
@@ -485,6 +496,7 @@ mod test {
                 resume: false,
                 input: None,
                 profile: None,
+                model: None,
                 trust_all_tools: false,
                 trust_tools: Some(vec!["".to_string()]),
             })
@@ -501,6 +513,7 @@ mod test {
                 resume: false,
                 input: None,
                 profile: None,
+                model: None,
                 trust_all_tools: false,
                 trust_tools: Some(vec!["fs_read".to_string(), "fs_write".to_string()]),
             })

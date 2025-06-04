@@ -36,6 +36,7 @@ use std::time::Duration;
 use std::{
     env,
     fs,
+    io,
 };
 
 use clap::Args;
@@ -63,6 +64,10 @@ use crossterm::{
     queue,
     style,
     terminal,
+};
+use dialoguer::{
+    Error as DError,
+    Select,
 };
 use eyre::{
     ErrReport,
@@ -180,6 +185,9 @@ pub struct ChatArgs {
     /// Context profile to use
     #[arg(long = "profile")]
     pub profile: Option<String>,
+    /// Current model to use
+    #[arg(long = "model")]
+    pub model: Option<String>,
     /// Allows the model to use any tool to run commands without asking for confirmation.
     #[arg(long)]
     pub trust_all_tools: bool,
@@ -255,6 +263,28 @@ impl ChatArgs {
             }
         }
 
+        // If modelId is specified, verify it exists before starting the chat
+        let model_id: Option<String> = if let Some(model_name) = self.model {
+            let model_name_lower = model_name.to_lowercase();
+            match MODEL_OPTIONS.iter().find(|opt| opt.name == model_name_lower) {
+                Some(opt) => Some((opt.model_id).to_string()),
+                None => {
+                    let available_names: Vec<&str> = MODEL_OPTIONS.iter().map(|opt| opt.name).collect();
+                    bail!(
+                        "Model '{}' does not exist. Available models: {}",
+                        model_name,
+                        available_names.join(", ")
+                    );
+                },
+            }
+        } else {
+            None
+        };
+
+        // if let Some(ref id) = model_id {
+        //     database.set_last_used_model_id(id.clone())?;
+        // }
+
         let conversation_id = uuid::Uuid::new_v4().to_string();
         info!(?conversation_id, "Generated new conversation id");
         let (prompt_request_sender, prompt_request_receiver) = std::sync::mpsc::channel::<Option<String>>();
@@ -321,6 +351,7 @@ impl ChatArgs {
             || terminal::window_size().map(|s| s.columns.into()).ok(),
             tool_manager,
             self.profile,
+            model_id,
             tool_config,
             tool_permissions,
         )
@@ -374,7 +405,7 @@ const WELCOME_TEXT: &str = color_print::cstr! {"<cyan!>
 const SMALL_SCREEN_WELCOME_TEXT: &str = color_print::cstr! {"<em>Welcome to <cyan!>Amazon Q</cyan!>!</em>"};
 const RESUME_TEXT: &str = color_print::cstr! {"<em>Picking up where we left off...</em>"};
 
-const ROTATING_TIPS: [&str; 13] = [
+const ROTATING_TIPS: [&str; 15] = [
     color_print::cstr! {"You can resume the last conversation from your current directory by launching with <green!>q chat --resume</green!>"},
     color_print::cstr! {"Get notified whenever Q CLI finishes responding. Just run <green!>q settings chat.enableNotifications true</green!>"},
     color_print::cstr! {"You can use <green!>/editor</green!> to edit your prompt with a vim-like experience"},
@@ -388,7 +419,32 @@ const ROTATING_TIPS: [&str; 13] = [
     color_print::cstr! {"You can enable custom tools with <green!>MCP servers</green!>. Learn more with /help"},
     color_print::cstr! {"You can specify wait time (in ms) for mcp server loading with <green!>q settings mcp.initTimeout {timeout in int}</green!>. Servers that takes longer than the specified time will continue to load in the background. Use /tools to see pending servers."},
     color_print::cstr! {"You can see the server load status as well as any warnings or errors associated with <green!>/mcp</green!>"},
+    color_print::cstr! {"Use <green!>/model</green!> to select the model to use for this conversation"},
+    color_print::cstr! {"Set a default model by running <green!>q settings chat.defaultModel MODEL</green!>. Run <green!>/model</green!> to learn more."},
 ];
+
+pub struct ModelOption {
+    pub name: &'static str,
+    pub model_id: &'static str,
+}
+
+pub const MODEL_OPTIONS: [ModelOption; 3] = [
+    // ModelOption { name: "Auto", model_id: "CLAUDE_3_5_SONNET_20241022_V2_0" },
+    ModelOption {
+        name: "claude-3.5-sonnet",
+        model_id: "CLAUDE_3_5_SONNET_20241022_V2_0",
+    },
+    ModelOption {
+        name: "claude-3.7-sonnet",
+        model_id: "CLAUDE_3_7_SONNET_20250219_V1_0",
+    },
+    ModelOption {
+        name: "claude-4-sonnet",
+        model_id: "CLAUDE_SONNET_4_20250514_V1_0",
+    },
+];
+
+pub const DEFAULT_MODEL_ID: &str = "CLAUDE_3_7_SONNET_20250219_V1_0";
 
 const GREETING_BREAK_POINT: usize = 80;
 
@@ -418,6 +474,7 @@ const HELP_TEXT: &str = color_print::cstr! {"
   <em>trustall</em>    <black!>Trust all tools (equivalent to deprecated /acceptall)</black!>
   <em>reset</em>       <black!>Reset all tools to default permission levels</black!>
 <em>/mcp</em>          <black!>See mcp server loaded</black!>
+<em>/model</em>        <black!>Select a model for the current conversation session</black!>
 <em>/profile</em>      <black!>Manage profiles</black!>
   <em>help</em>        <black!>Show profile help</black!>
   <em>list</em>        <black!>List profiles</black!>
@@ -552,6 +609,7 @@ impl ChatContext {
         terminal_width_provider: fn() -> Option<usize>,
         tool_manager: ToolManager,
         profile: Option<String>,
+        model_id: Option<String>,
         tool_config: HashMap<String, ToolSpec>,
         tool_permissions: ToolPermissions,
     ) -> Result<Self> {
@@ -559,6 +617,20 @@ impl ChatContext {
         let output_clone = output.clone();
 
         let mut existing_conversation = false;
+        let valid_model_id = match model_id {
+            Some(id) => Some(id),
+            None => database
+                .settings
+                .get_string(Setting::ChatDefaultModel)
+                .and_then(|model_name| {
+                    MODEL_OPTIONS
+                        .iter()
+                        .find(|opt| opt.name == model_name)
+                        .map(|opt| opt.model_id.to_owned())
+                })
+                .or_else(|| Some(DEFAULT_MODEL_ID.to_owned())),
+        };
+
         let conversation_state = if resume_conversation {
             let prior = std::env::current_dir()
                 .ok()
@@ -585,6 +657,7 @@ impl ChatContext {
                     profile,
                     Some(output_clone),
                     tool_manager,
+                    valid_model_id,
                 )
                 .await
             }
@@ -596,6 +669,7 @@ impl ChatContext {
                 profile,
                 Some(output_clone),
                 tool_manager,
+                valid_model_id,
             )
             .await
         };
@@ -814,6 +888,21 @@ impl ChatContext {
             skip_printing_tools: true,
         });
 
+        if self.interactive {
+            if let Some(ref id) = self.conversation_state.current_model_id {
+                if let Some(model_option) = MODEL_OPTIONS.iter().find(|option| option.model_id == *id) {
+                    execute!(
+                        self.output,
+                        style::SetForegroundColor(Color::Cyan),
+                        style::Print(format!("🤖 You are chatting with {}\n", model_option.name)),
+                        style::SetForegroundColor(Color::Reset),
+                        style::Print("\n")
+                    )
+                    .expect("Failed to write model information to terminal");
+                }
+            }
+        }
+
         if let Some(user_input) = self.initial_input.take() {
             next_state = Some(ChatState::HandleInput {
                 input: user_input,
@@ -1020,6 +1109,30 @@ impl ChatContext {
                         },
                         crate::api_client::ApiClientError::QuotaBreach(msg) => {
                             print_err!(msg, err);
+                        },
+                        crate::api_client::ApiClientError::ModelOverloadedError { request_id } => {
+                            queue!(
+                                self.output,
+                                style::SetAttribute(Attribute::Bold),
+                                style::SetForegroundColor(Color::Red),
+                            )?;
+
+                            let message = "    The model you've selected is temporarily unavailable. Please use '/model' to select a different model and try again.";
+                            let text = match request_id {
+                                Some(id) => format!(
+                                    "Amazon Q is having trouble responding right now:\n{}\n    Request ID: {}\n\n",
+                                    message, id
+                                ),
+                                None => format!("Amazon Q is having trouble responding right now:\n{}\n\n", message),
+                            };
+                            queue!(self.output, style::Print(&text))?;
+                            self.conversation_state.append_transcript(text);
+
+                            execute!(
+                                self.output,
+                                style::SetAttribute(Attribute::Reset),
+                                style::SetForegroundColor(Color::Reset),
+                            )?;
                         },
                         _ => {
                             print_default_error!(err);
@@ -3036,6 +3149,70 @@ impl ChatContext {
                     skip_printing_tools: true,
                 }
             },
+            Command::Model => {
+                queue!(self.output, style::Print("\n"))?;
+                let active_model_id = self.conversation_state.current_model_id.as_deref();
+                let labels: Vec<String> = MODEL_OPTIONS
+                    .iter()
+                    .map(|opt| {
+                        if (opt.model_id.is_empty() && active_model_id.is_none())
+                            || Some(opt.model_id) == active_model_id
+                        {
+                            format!("{} (active)", opt.name)
+                        } else {
+                            opt.name.to_owned()
+                        }
+                    })
+                    .collect();
+                let default_index = MODEL_OPTIONS
+                    .iter()
+                    .position(|opt| Some(opt.model_id) == active_model_id)
+                    .unwrap_or(0);
+                let selection: Option<_> = match Select::with_theme(&crate::util::dialoguer_theme())
+                    .with_prompt("Select a model for this chat session")
+                    .items(&labels)
+                    .default(default_index)
+                    .interact_on_opt(&dialoguer::console::Term::stdout())
+                {
+                    Ok(sel) => {
+                        let _ = crossterm::execute!(
+                            std::io::stdout(),
+                            crossterm::style::SetForegroundColor(crossterm::style::Color::Magenta)
+                        );
+                        sel
+                    },
+                    // Ctrl‑C -> Err(Interrupted)
+                    Err(DError::IO(ref e)) if e.kind() == io::ErrorKind::Interrupted => None,
+                    Err(e) => return Err(ChatError::Custom(format!("Failed to choose model: {e}").into())),
+                };
+
+                queue!(self.output, style::ResetColor)?;
+
+                if let Some(index) = selection {
+                    let selected = &MODEL_OPTIONS[index];
+                    let model_id_str = selected.model_id.to_string();
+                    self.conversation_state.current_model_id = Some(model_id_str.clone());
+                    telemetry.update_model_id(Some(model_id_str.clone()));
+                    // let _ = database.set_last_used_model_id(model_id_str);
+
+                    queue!(
+                        self.output,
+                        style::Print("\n"),
+                        style::Print(format!(" Switched model to {}\n\n", selected.name)),
+                        style::ResetColor,
+                        style::SetForegroundColor(Color::Reset),
+                        style::SetBackgroundColor(Color::Reset),
+                    )?;
+                }
+
+                queue!(self.output, style::ResetColor)?;
+                self.output.flush()?;
+                ChatState::PromptUser {
+                    tool_uses: None,
+                    pending_tool_index: None,
+                    skip_printing_tools: false,
+                }
+            },
         })
     }
 
@@ -3888,6 +4065,7 @@ mod tests {
             || Some(80),
             tool_manager,
             None,
+            None,
             tool_config,
             ToolPermissions::new(0),
         )
@@ -4034,6 +4212,7 @@ mod tests {
             || Some(80),
             tool_manager,
             None,
+            None,
             tool_config,
             ToolPermissions::new(0),
         )
@@ -4133,6 +4312,7 @@ mod tests {
             || Some(80),
             tool_manager,
             None,
+            None,
             tool_config,
             ToolPermissions::new(0),
         )
@@ -4210,6 +4390,7 @@ mod tests {
             test_client,
             || Some(80),
             tool_manager,
+            None,
             None,
             tool_config,
             ToolPermissions::new(0),

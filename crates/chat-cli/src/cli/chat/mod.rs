@@ -266,10 +266,10 @@ impl ChatArgs {
         // If modelId is specified, verify it exists before starting the chat
         let model_id: Option<String> = if let Some(model_name) = self.model {
             let model_name_lower = model_name.to_lowercase();
-            match MODEL_OPTIONS.iter().find(|(name, _)| name == &model_name_lower) {
-                Some((_, id)) => Some((*id).to_string()),
+            match MODEL_OPTIONS.iter().find(|opt| opt.name == model_name_lower) {
+                Some(opt) => Some((opt.model_id).to_string()),
                 None => {
-                    let available_names: Vec<&str> = MODEL_OPTIONS.iter().map(|(name, _)| *name).collect();
+                    let available_names: Vec<&str> = MODEL_OPTIONS.iter().map(|opt| opt.name).collect();
                     bail!(
                         "Model '{}' does not exist. Available models: {}",
                         model_name,
@@ -423,11 +423,25 @@ const ROTATING_TIPS: [&str; 15] = [
     color_print::cstr! {"Set a default model by running <green!>q settings chat.defaultModel MODEL</green!>. Run <green!>/model</green!> to learn more."},
 ];
 
-pub const MODEL_OPTIONS: [(&str, &str); 3] = [
-    // ("Auto", ""),
-    ("claude-3.5-sonnet", "CLAUDE_3_5_SONNET_20241022_V2_0"),
-    ("claude-3.7-sonnet", "CLAUDE_3_7_SONNET_20250219_V1_0"),
-    ("claude-4-sonnet", "CLAUDE_SONNET_4_20250514_V1_0"),
+pub struct ModelOption {
+    pub name: &'static str,
+    pub model_id: &'static str,
+}
+
+pub const MODEL_OPTIONS: [ModelOption; 3] = [
+    // ModelOption { name: "Auto", model_id: "CLAUDE_3_5_SONNET_20241022_V2_0" },
+    ModelOption {
+        name: "claude-3.5-sonnet",
+        model_id: "CLAUDE_3_5_SONNET_20241022_V2_0",
+    },
+    ModelOption {
+        name: "claude-3.7-sonnet",
+        model_id: "CLAUDE_3_7_SONNET_20250219_V1_0",
+    },
+    ModelOption {
+        name: "claude-4-sonnet",
+        model_id: "CLAUDE_SONNET_4_20250514_V1_0",
+    },
 ];
 
 pub const DEFAULT_MODEL_ID: &str = "CLAUDE_3_7_SONNET_20250219_V1_0";
@@ -596,8 +610,8 @@ impl ChatContext {
                 .and_then(|model_name| {
                     MODEL_OPTIONS
                         .iter()
-                        .find(|(name, _)| *name == model_name)
-                        .map(|(_, id)| (*id).to_owned())
+                        .find(|opt| opt.name == model_name)
+                        .map(|opt| opt.model_id.to_owned())
                 })
                 .or_else(|| Some(DEFAULT_MODEL_ID.to_owned())),
         };
@@ -3104,17 +3118,19 @@ impl ChatContext {
                 let active_model_id = self.conversation_state.current_model_id.as_deref();
                 let labels: Vec<String> = MODEL_OPTIONS
                     .iter()
-                    .map(|(label, model_id)| {
-                        if (model_id.is_empty() && active_model_id.is_none()) || Some(*model_id) == active_model_id {
-                            format!("{} (active)", label)
+                    .map(|opt| {
+                        if (opt.model_id.is_empty() && active_model_id.is_none())
+                            || Some(opt.model_id) == active_model_id
+                        {
+                            format!("{} (active)", opt.name)
                         } else {
-                            (*label).to_owned()
+                            opt.name.to_owned()
                         }
                     })
                     .collect();
                 let default_index = MODEL_OPTIONS
                     .iter()
-                    .position(|(_, model_id)| Some(*model_id) == active_model_id)
+                    .position(|opt| Some(opt.model_id) == active_model_id)
                     .unwrap_or(0);
                 let selection: Option<_> = match Select::with_theme(&crate::util::dialoguer_theme())
                     .with_prompt("Select a model for this chat session")
@@ -3137,8 +3153,8 @@ impl ChatContext {
                 queue!(self.output, style::ResetColor)?;
 
                 if let Some(index) = selection {
-                    let (label, model_id) = MODEL_OPTIONS[index];
-                    let model_id_str = model_id.to_string();
+                    let selected = &MODEL_OPTIONS[index];
+                    let model_id_str = selected.model_id.to_string();
                     self.conversation_state.current_model_id = Some(model_id_str.clone());
                     telemetry.update_model_id(Some(model_id_str.clone()));
                     // let _ = database.set_last_used_model_id(model_id_str);
@@ -3146,7 +3162,7 @@ impl ChatContext {
                     queue!(
                         self.output,
                         style::Print("\n"),
-                        style::Print(format!(" Switched model to {}\n\n", label)),
+                        style::Print(format!(" Switched model to {}\n\n", selected.name)),
                         style::ResetColor,
                         style::SetForegroundColor(Color::Reset),
                         style::SetBackgroundColor(Color::Reset),

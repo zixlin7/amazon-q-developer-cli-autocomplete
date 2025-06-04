@@ -833,7 +833,7 @@ impl ChatContext {
 
             execute!(self.output, style::Print(welcome_text), style::Print("\n\n"),)?;
 
-            let current_tip_index = database.get_increment_rotating_tip().unwrap_or(0) % ROTATING_TIPS.len();
+            let current_tip_index = database.increment_rotating_tip(ROTATING_TIPS.len());
 
             let tip = ROTATING_TIPS[current_tip_index];
             if is_small_screen {

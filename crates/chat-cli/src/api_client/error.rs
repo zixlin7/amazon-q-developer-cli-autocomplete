@@ -92,6 +92,7 @@ impl ReasonCode for ApiClientError {
             ApiClientError::ContextWindowOverflow => "ContextWindowOverflow".to_string(),
             ApiClientError::SmithyBuild(_) => "SmithyBuildError".to_string(),
             ApiClientError::AuthError(_) => "AuthError".to_string(),
+            ApiClientError::ModelOverloadedError { .. } => "ModelOverloadedError".to_string(),
         }
     }
 }

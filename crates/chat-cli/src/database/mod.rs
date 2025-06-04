@@ -28,6 +28,7 @@ use serde_json::{
 use settings::Settings;
 use thiserror::Error;
 use tracing::{
+    error,
     info,
     trace,
 };
@@ -302,10 +303,21 @@ impl Database {
     }
 
     /// Get the rotating tip used for chat then post increment.
-    pub fn get_increment_rotating_tip(&mut self) -> Result<usize, DatabaseError> {
-        let tip: usize = self.get_entry(Table::State, ROTATING_TIP_KEY)?.unwrap_or(0);
-        self.set_entry(Table::State, ROTATING_TIP_KEY, tip.wrapping_add(1))?;
-        Ok(tip)
+    ///
+    /// If any error is encountered while reading the database, a random index is returned instead.
+    pub fn increment_rotating_tip(&mut self, max_size: usize) -> usize {
+        let tip: usize = match self.get_entry(Table::State, ROTATING_TIP_KEY) {
+            Ok(v) => v.unwrap_or(rand::random_range(0..max_size)),
+            Err(err) => {
+                error!(?err, "failed to get incrementing rotating tip");
+                rand::random_range(0..max_size)
+            },
+        };
+        let next_tip = tip.wrapping_add(1) % max_size;
+        self.set_entry(Table::State, ROTATING_TIP_KEY, next_tip)
+            .map_err(|err| error!(?err, next_tip, "failed to update rotating tip key"))
+            .ok();
+        tip
     }
 
     // /// Get the model id used for last conversation state.

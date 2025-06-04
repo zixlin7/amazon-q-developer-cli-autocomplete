@@ -406,7 +406,7 @@ const SMALL_SCREEN_WELCOME_TEXT: &str = color_print::cstr! {"<em>Welcome to <cya
 const RESUME_TEXT: &str = color_print::cstr! {"<em>Picking up where we left off...</em>"};
 
 // Only show the model-related tip for now to make users aware of this feature.
-const ROTATING_TIPS: [&str; 1] = [
+const ROTATING_TIPS: [&str; 2] = [
     // color_print::cstr! {"You can resume the last conversation from your current directory by launching with
     // <green!>q chat --resume</green!>"}, color_print::cstr! {"Get notified whenever Q CLI finishes responding.
     // Just run <green!>q settings chat.enableNotifications true</green!>"}, color_print::cstr! {"You can use
@@ -425,7 +425,7 @@ const ROTATING_TIPS: [&str; 1] = [
     // int}</green!>. Servers that takes longer than the specified time will continue to load in the background. Use
     // /tools to see pending servers."}, color_print::cstr! {"You can see the server load status as well as any
     // warnings or errors associated with <green!>/mcp</green!>"},
-    // color_print::cstr! {"Use <green!>/model</green!> to select the model to use for this conversation"},
+    color_print::cstr! {"Use <green!>/model</green!> to select the model to use for this conversation"},
     color_print::cstr! {"Set a default model by running <green!>q settings chat.defaultModel MODEL</green!>. Run <green!>/model</green!> to learn more."},
 ];
 
@@ -435,18 +435,17 @@ pub struct ModelOption {
 }
 
 pub const MODEL_OPTIONS: [ModelOption; 3] = [
-    // ModelOption { name: "Auto", model_id: "CLAUDE_3_5_SONNET_20241022_V2_0" },
     ModelOption {
-        name: "claude-3.5-sonnet",
-        model_id: "CLAUDE_3_5_SONNET_20241022_V2_0",
+        name: "claude-4-sonnet",
+        model_id: "CLAUDE_SONNET_4_20250514_V1_0",
     },
     ModelOption {
         name: "claude-3.7-sonnet",
         model_id: "CLAUDE_3_7_SONNET_20250219_V1_0",
     },
     ModelOption {
-        name: "claude-4-sonnet",
-        model_id: "CLAUDE_SONNET_4_20250514_V1_0",
+        name: "claude-3.5-sonnet",
+        model_id: "CLAUDE_3_5_SONNET_20241022_V2_0",
     },
 ];
 
@@ -839,9 +838,7 @@ impl ChatContext {
 
             execute!(self.output, style::Print(welcome_text), style::Print("\n\n"),)?;
 
-            let current_tip_index = database.increment_rotating_tip(ROTATING_TIPS.len());
-
-            let tip = ROTATING_TIPS[current_tip_index];
+            let tip = ROTATING_TIPS[usize::try_from(rand::random::<u32>()).unwrap_or(0) % ROTATING_TIPS.len()];
             if is_small_screen {
                 // If the screen is small, print the tip in a single line
                 execute!(
@@ -895,7 +892,7 @@ impl ChatContext {
         });
 
         if self.interactive {
-            if let Some(ref id) = self.conversation_state.current_model_id {
+            if let Some(ref id) = self.conversation_state.model {
                 if let Some(model_option) = MODEL_OPTIONS.iter().find(|option| option.model_id == *id) {
                     execute!(
                         self.output,
@@ -3157,7 +3154,7 @@ impl ChatContext {
             },
             Command::Model => {
                 queue!(self.output, style::Print("\n"))?;
-                let active_model_id = self.conversation_state.current_model_id.as_deref();
+                let active_model_id = self.conversation_state.model.as_deref();
                 let labels: Vec<String> = MODEL_OPTIONS
                     .iter()
                     .map(|opt| {
@@ -3170,14 +3167,11 @@ impl ChatContext {
                         }
                     })
                     .collect();
-                let default_index = MODEL_OPTIONS
-                    .iter()
-                    .position(|opt| Some(opt.model_id) == active_model_id)
-                    .unwrap_or(0);
+
                 let selection: Option<_> = match Select::with_theme(&crate::util::dialoguer_theme())
                     .with_prompt("Select a model for this chat session")
                     .items(&labels)
-                    .default(default_index)
+                    .default(0)
                     .interact_on_opt(&dialoguer::console::Term::stdout())
                 {
                     Ok(sel) => {
@@ -3197,14 +3191,12 @@ impl ChatContext {
                 if let Some(index) = selection {
                     let selected = &MODEL_OPTIONS[index];
                     let model_id_str = selected.model_id.to_string();
-                    self.conversation_state.current_model_id = Some(model_id_str.clone());
-                    telemetry.update_model_id(Some(model_id_str.clone()));
-                    // let _ = database.set_last_used_model_id(model_id_str);
+                    self.conversation_state.model = Some(model_id_str);
 
                     queue!(
                         self.output,
                         style::Print("\n"),
-                        style::Print(format!(" Switched model to {}\n\n", selected.name)),
+                        style::Print(format!(" Using {}\n\n", selected.name)),
                         style::ResetColor,
                         style::SetForegroundColor(Color::Reset),
                         style::SetBackgroundColor(Color::Reset),
@@ -3647,10 +3639,14 @@ impl ChatContext {
         for tool_use in tool_uses {
             let tool_use_id = tool_use.id.clone();
             let tool_use_name = tool_use.name.clone();
-            let mut tool_telemetry = ToolUseEventBuilder::new(conv_id.clone(), tool_use.id.clone())
-                .set_tool_use_id(tool_use_id.clone())
-                .set_tool_name(tool_use.name.clone())
-                .utterance_id(self.conversation_state.message_id().map(|s| s.to_string()));
+            let mut tool_telemetry = ToolUseEventBuilder::new(
+                conv_id.clone(),
+                tool_use.id.clone(),
+                self.conversation_state.model.clone(),
+            )
+            .set_tool_use_id(tool_use_id.clone())
+            .set_tool_name(tool_use.name.clone())
+            .utterance_id(self.conversation_state.message_id().map(|s| s.to_string()));
             match self.conversation_state.tool_manager.get_tool_from_tool_use(tool_use) {
                 Ok(mut tool) => {
                     // Apply non-Q-generated context to tools
@@ -3898,6 +3894,7 @@ impl ChatContext {
                 result,
                 reason,
                 reason_desc,
+                self.conversation_state.model.clone(),
             )
             .await
             .ok();

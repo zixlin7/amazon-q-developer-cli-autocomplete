@@ -30,6 +30,7 @@ mod tests {
             result: crate::telemetry::definitions::types::Result::new("Succeeded".to_string()),
             reason: None,
             reason_desc: None,
+            codewhispererterminal_model: None,
         });
 
         let s = serde_json::to_string_pretty(&metric_datum_init).unwrap();

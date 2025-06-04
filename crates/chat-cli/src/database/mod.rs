@@ -60,8 +60,6 @@ const START_URL_KEY: &str = "auth.idc.start-url";
 const IDC_REGION_KEY: &str = "auth.idc.region";
 // We include this key to remove for backwards compatibility
 const CUSTOMIZATION_STATE_KEY: &str = "api.selectedCustomization";
-const ROTATING_TIP_KEY: &str = "chat.greeting.rotating_tips_current_index";
-// const LAST_USED_MODEL_ID: &str = "lastUsedModelId";
 
 const MIGRATIONS: &[Migration] = migrations![
     "000_migration_table",
@@ -300,24 +298,6 @@ impl Database {
     pub fn set_idc_region(&mut self, region: String) -> Result<usize, DatabaseError> {
         // Annoyingly, this is encoded as a JSON string on older clients
         self.set_json_entry(Table::State, IDC_REGION_KEY, region)
-    }
-
-    /// Get the rotating tip used for chat then post increment.
-    ///
-    /// If any error is encountered while reading the database, a random index is returned instead.
-    pub fn increment_rotating_tip(&mut self, max_size: usize) -> usize {
-        let tip: usize = match self.get_entry(Table::State, ROTATING_TIP_KEY) {
-            Ok(v) => v.unwrap_or(rand::random_range(0..max_size)),
-            Err(err) => {
-                error!(?err, "failed to get incrementing rotating tip");
-                rand::random_range(0..max_size)
-            },
-        };
-        let next_tip = tip.wrapping_add(1) % max_size;
-        self.set_entry(Table::State, ROTATING_TIP_KEY, next_tip)
-            .map_err(|err| error!(?err, next_tip, "failed to update rotating tip key"))
-            .ok();
-        tip
     }
 
     // /// Get the model id used for last conversation state.

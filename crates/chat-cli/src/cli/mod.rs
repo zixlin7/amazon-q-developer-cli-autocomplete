@@ -15,11 +15,7 @@ use std::io::{
 use std::process::ExitCode;
 
 use anstream::println;
-pub use chat::{
-    ConversationState,
-    DEFAULT_MODEL_ID,
-    MODEL_OPTIONS,
-};
+pub use chat::ConversationState;
 use clap::{
     ArgAction,
     CommandFactory,

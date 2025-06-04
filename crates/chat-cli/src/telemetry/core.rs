@@ -103,23 +103,25 @@ impl Event {
                 }
                 .into_metric_datum(),
             ),
-            EventType::ChatStart { conversation_id } => Some(
+            EventType::ChatStart { conversation_id, model } => Some(
                 AmazonqStartChat {
                     create_time: self.created_time,
                     value: None,
                     credential_start_url: self.credential_start_url.map(Into::into),
                     amazonq_conversation_id: Some(conversation_id.into()),
                     codewhispererterminal_in_cloudshell: None,
+                    codewhispererterminal_model: model.map(Into::into),
                 }
                 .into_metric_datum(),
             ),
-            EventType::ChatEnd { conversation_id } => Some(
+            EventType::ChatEnd { conversation_id, model } => Some(
                 AmazonqEndChat {
                     create_time: self.created_time,
                     value: None,
                     credential_start_url: self.credential_start_url.map(Into::into),
                     amazonq_conversation_id: Some(conversation_id.into()),
                     codewhispererterminal_in_cloudshell: None,
+                    codewhispererterminal_model: model.map(Into::into),
                 }
                 .into_metric_datum(),
             ),
@@ -131,6 +133,7 @@ impl Event {
                 result,
                 reason,
                 reason_desc,
+                model,
                 ..
             } => Some(
                 CodewhispererterminalAddChatMessage {
@@ -146,6 +149,7 @@ impl Event {
                     result: result.to_string().into(),
                     reason: reason.map(Into::into),
                     reason_desc: reason_desc.map(Into::into),
+                    codewhispererterminal_model: model.map(Into::into),
                 }
                 .into_metric_datum(),
             ),
@@ -162,6 +166,7 @@ impl Event {
                 input_token_size,
                 output_token_size,
                 custom_tool_call_latency,
+                model,
             } => Some(
                 CodewhispererterminalToolUseSuggested {
                     create_time: self.created_time,
@@ -182,6 +187,7 @@ impl Event {
                         .map(|s| CodewhispererterminalCustomToolOutputTokenSize(s as i64)),
                     codewhispererterminal_custom_tool_latency: custom_tool_call_latency
                         .map(|l| CodewhispererterminalCustomToolLatency(l as i64)),
+                    codewhispererterminal_model: model.map(Into::into),
                 }
                 .into_metric_datum(),
             ),
@@ -279,9 +285,11 @@ pub enum EventType {
     },
     ChatStart {
         conversation_id: String,
+        model: Option<String>,
     },
     ChatEnd {
         conversation_id: String,
+        model: Option<String>,
     },
     ChatAddedMessage {
         conversation_id: String,
@@ -291,6 +299,7 @@ pub enum EventType {
         result: TelemetryResult,
         reason: Option<String>,
         reason_desc: Option<String>,
+        model: Option<String>,
     },
     ToolUseSuggested {
         conversation_id: String,
@@ -305,6 +314,7 @@ pub enum EventType {
         input_token_size: Option<usize>,
         output_token_size: Option<usize>,
         custom_tool_call_latency: Option<usize>,
+        model: Option<String>,
     },
     McpServerInit {
         conversation_id: String,
@@ -347,10 +357,11 @@ pub struct ToolUseEventBuilder {
     pub input_token_size: Option<usize>,
     pub output_token_size: Option<usize>,
     pub custom_tool_call_latency: Option<usize>,
+    pub model: Option<String>,
 }
 
 impl ToolUseEventBuilder {
-    pub fn new(conv_id: String, tool_use_id: String) -> Self {
+    pub fn new(conv_id: String, tool_use_id: String, model: Option<String>) -> Self {
         Self {
             conversation_id: conv_id,
             utterance_id: None,
@@ -364,6 +375,7 @@ impl ToolUseEventBuilder {
             input_token_size: None,
             output_token_size: None,
             custom_tool_call_latency: None,
+            model,
         }
     }
 

@@ -139,6 +139,11 @@
       "name": "codewhispererterminal_customToolLatency",
       "type": "int",
       "description": "Custom tool call latency in seconds"
+    },
+    {
+      "name": "codewhispererterminal_model",
+      "type": "string",
+      "description": "The underlying LLM used by the service, set by the client"
     }
   ],
   "metrics": [
@@ -148,7 +153,8 @@
       "metadata": [
         { "type": "amazonqConversationId" },
         { "type": "credentialStartUrl", "required": false },
-        { "type": "codewhispererterminal_inCloudshell" }
+        { "type": "codewhispererterminal_inCloudshell" },
+        { "type": "codewhispererterminal_model" }
       ]
     },
     {
@@ -164,7 +170,8 @@
         { "type": "requestId" },
         { "type": "result", "required": true },
         { "type": "reason", "required": false },
-        { "type": "reasonDesc", "required": false }
+        { "type": "reasonDesc", "required": false },
+        { "type": "codewhispererterminal_model" }
       ]
     },
     {
@@ -173,7 +180,8 @@
       "metadata": [
         { "type": "amazonqConversationId" },
         { "type": "credentialStartUrl", "required": false },
-        { "type": "codewhispererterminal_inCloudshell" }
+        { "type": "codewhispererterminal_inCloudshell" },
+        { "type": "codewhispererterminal_model" }
       ]
     },
     {
@@ -231,7 +239,8 @@
           "type": "codewhispererterminal_customToolOutputTokenSize",
           "required": false
         },
-        { "type": "codewhispererterminal_customToolLatency", "required": false }
+        { "type": "codewhispererterminal_customToolLatency", "required": false },
+        { "type": "codewhispererterminal_model" }
       ]
     },
     {

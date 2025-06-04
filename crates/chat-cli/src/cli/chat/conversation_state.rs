@@ -107,7 +107,7 @@ pub struct ConversationState {
     pub updates: Option<SharedWriter>,
     /// Model explicitly selected by the user in this conversation state via `/model`.
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub current_model_id: Option<String>,
+    pub model: Option<String>,
 }
 
 impl ConversationState {
@@ -161,7 +161,7 @@ impl ConversationState {
             context_message_length: None,
             latest_summary: None,
             updates,
-            current_model_id,
+            model: current_model_id,
         }
     }
 
@@ -533,7 +533,7 @@ impl ConversationState {
             context_messages,
             dropped_context_files,
             tools: &self.tools,
-            model_id: self.current_model_id.as_deref(),
+            model_id: self.model.as_deref(),
         }
     }
 
@@ -605,7 +605,7 @@ impl ConversationState {
             user_input_message_context: None,
             user_intent: None,
             images: None,
-            model_id: self.current_model_id.clone(),
+            model_id: self.model.clone(),
         };
 
         // If the last message contains tool uses, then add cancelled tool results to the summary

@@ -4,10 +4,6 @@ use std::time::{
 };
 
 use eyre::Result;
-use rand::distr::{
-    Alphanumeric,
-    SampleString,
-};
 use thiserror::Error;
 use tracing::{
     error,
@@ -105,7 +101,7 @@ pub struct ResponseParser {
 
 impl ResponseParser {
     pub fn new(response: SendMessageOutput) -> Self {
-        let message_id = Alphanumeric.sample_string(&mut rand::rng(), 9);
+        let message_id = uuid::Uuid::new_v4().to_string();
         info!(?message_id, "Generated new message id");
         Self {
             response,

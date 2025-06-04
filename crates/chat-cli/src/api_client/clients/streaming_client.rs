@@ -156,7 +156,7 @@ impl StreamingClient {
                                 .as_service_error()
                                 .and_then(|err| err.meta().request_id())
                                 .map(|s| s.to_string());
-                            Err(ApiClientError::ModelOverloadedError(request_id))
+                            Err(ApiClientError::ModelOverloadedError { request_id })
                         } else {
                             Err(e.into())
                         }

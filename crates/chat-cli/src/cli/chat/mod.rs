@@ -873,6 +873,21 @@ impl ChatContext {
             skip_printing_tools: true,
         });
 
+        if self.interactive {
+            if let Some(ref id) = self.conversation_state.current_model_id {
+                if let Some(model_option) = MODEL_OPTIONS.iter().find(|option| option.model_id == *id) {
+                    execute!(
+                        self.output,
+                        style::SetForegroundColor(Color::Cyan),
+                        style::Print(format!("🤖 You are chatting with {}\n", model_option.name)),
+                        style::SetForegroundColor(Color::Reset),
+                        style::Print("\n")
+                    )
+                    .expect("Failed to write model information to terminal");
+                }
+            }
+        }
+
         if let Some(user_input) = self.initial_input.take() {
             next_state = Some(ChatState::HandleInput {
                 input: user_input,
@@ -1079,7 +1094,7 @@ impl ChatContext {
                         crate::api_client::ApiClientError::QuotaBreach(msg) => {
                             print_err!(msg, err);
                         },
-                        crate::api_client::ApiClientError::ModelOverloadedError(request_id) => {
+                        crate::api_client::ApiClientError::ModelOverloadedError { request_id } => {
                             queue!(
                                 self.output,
                                 style::SetAttribute(Attribute::Bold),

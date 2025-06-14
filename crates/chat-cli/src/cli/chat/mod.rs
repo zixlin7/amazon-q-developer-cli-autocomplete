@@ -161,6 +161,7 @@ use crate::api_client::{
 };
 use crate::auth::AuthError;
 use crate::auth::builder_id::is_idc_user;
+use crate::cli::chat::token_counter::CharCount;
 use crate::database::Database;
 use crate::database::settings::Setting;
 use crate::mcp_client::{
@@ -2988,13 +2989,19 @@ impl ChatContext {
                 }
 
                 let data = state.calculate_conversation_size();
+                let tool_specs_json: String = state
+                    .tools
+                    .values()
+                    .filter_map(|s| serde_json::to_string(s).ok())
+                    .collect();
 
                 let context_token_count: TokenCount = data.context_messages.into();
                 let assistant_token_count: TokenCount = data.assistant_messages.into();
                 let user_token_count: TokenCount = data.user_messages.into();
+                let tools_char_count: CharCount = tool_specs_json.len().into(); // usize → CharCount
+                let tools_token_count: TokenCount = tools_char_count.into(); // CharCount → TokenCount
                 let total_token_used: TokenCount =
-                    (data.context_messages + data.user_messages + data.assistant_messages).into();
-
+                    (data.context_messages + data.user_messages + data.assistant_messages + tools_char_count).into();
                 let window_width = self.terminal_width();
                 // set a max width for the progress bar for better aesthetic
                 let progress_bar_width = std::cmp::min(window_width, 80);
@@ -3003,13 +3010,18 @@ impl ChatContext {
                     * progress_bar_width as f64) as usize;
                 let assistant_width = ((assistant_token_count.value() as f64 / CONTEXT_WINDOW_SIZE as f64)
                     * progress_bar_width as f64) as usize;
+                let tools_width = ((tools_token_count.value() as f64 / CONTEXT_WINDOW_SIZE as f64)
+                    * progress_bar_width as f64) as usize;
                 let user_width = ((user_token_count.value() as f64 / CONTEXT_WINDOW_SIZE as f64)
                     * progress_bar_width as f64) as usize;
 
                 let left_over_width = progress_bar_width
-                    - std::cmp::min(context_width + assistant_width + user_width, progress_bar_width);
+                    - std::cmp::min(
+                        context_width + assistant_width + user_width + tools_width,
+                        progress_bar_width,
+                    );
 
-                let is_overflow = (context_width + assistant_width + user_width) > progress_bar_width;
+                let is_overflow = (context_width + assistant_width + user_width + tools_width) > progress_bar_width;
 
                 if is_overflow {
                     queue!(
@@ -3036,6 +3048,7 @@ impl ChatContext {
                             total_token_used,
                             CONTEXT_WINDOW_SIZE / 1000
                         )),
+                        // Context files
                         style::SetForegroundColor(Color::DarkCyan),
                         // add a nice visual to mimic "tiny" progress, so the overral progress bar doesn't look too
                         // empty
@@ -3045,6 +3058,15 @@ impl ChatContext {
                             0
                         })),
                         style::Print("█".repeat(context_width)),
+                        // Tools
+                        style::SetForegroundColor(Color::DarkRed),
+                        style::Print("|".repeat(if tools_width == 0 && *tools_token_count > 0 {
+                            1
+                        } else {
+                            0
+                        })),
+                        style::Print("█".repeat(tools_width)),
+                        // Assistant responses
                         style::SetForegroundColor(Color::Blue),
                         style::Print("|".repeat(if assistant_width == 0 && *assistant_token_count > 0 {
                             1
@@ -3052,6 +3074,7 @@ impl ChatContext {
                             0
                         })),
                         style::Print("█".repeat(assistant_width)),
+                        // User prompts
                         style::SetForegroundColor(Color::Magenta),
                         style::Print("|".repeat(if user_width == 0 && *user_token_count > 0 { 1 } else { 0 })),
                         style::Print("█".repeat(user_width)),
@@ -3078,6 +3101,14 @@ impl ChatContext {
                         "~{} tokens ({:.2}%)\n",
                         context_token_count,
                         (context_token_count.value() as f32 / CONTEXT_WINDOW_SIZE as f32) * 100.0
+                    )),
+                    style::SetForegroundColor(Color::DarkRed),
+                    style::Print("█ Tools:    "),
+                    style::SetForegroundColor(Color::Reset),
+                    style::Print(format!(
+                        " ~{} tokens ({:.2}%)\n",
+                        tools_token_count,
+                        (tools_token_count.value() as f32 / CONTEXT_WINDOW_SIZE as f32) * 100.0
                     )),
                     style::SetForegroundColor(Color::Blue),
                     style::Print("█ Q responses: "),

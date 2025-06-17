@@ -580,6 +580,22 @@ pub enum ChatError {
     GetPromptError(#[from] GetPromptError),
 }
 
+impl ChatError {
+    fn status_code(&self) -> Option<u16> {
+        match self {
+            ChatError::Client(e) => e.status_code(),
+            ChatError::Auth(_) => None,
+            ChatError::ResponseStream(_) => None,
+            ChatError::Std(_) => None,
+            ChatError::Readline(_) => None,
+            ChatError::Custom(_) => None,
+            ChatError::Interrupted { .. } => None,
+            ChatError::NonInteractiveToolApproval => None,
+            ChatError::GetPromptError(_) => None,
+        }
+    }
+}
+
 impl ReasonCode for ChatError {
     fn reason_code(&self) -> String {
         match self {
@@ -1001,7 +1017,7 @@ impl ChatContext {
                 ChatState::HandleResponseStream(response) => tokio::select! {
                     res = self.handle_response(database, telemetry, response) => res,
                     Ok(_) = ctrl_c_stream => {
-                        self.send_chat_telemetry(database, telemetry, None, TelemetryResult::Cancelled, None, None).await;
+                        self.send_chat_telemetry(database, telemetry, None, TelemetryResult::Cancelled, None, None, None).await;
 
                         Err(ChatError::Interrupted { tool_uses: None })
                     }
@@ -1027,7 +1043,7 @@ impl ChatContext {
             Ok(state) => Ok(state),
             Err(e) => {
                 let (reason, reason_desc) = get_error_reason(&e);
-                self.send_error_telemetry(database, telemetry, reason, Some(reason_desc))
+                self.send_error_telemetry(database, telemetry, reason, Some(reason_desc), e.status_code())
                     .await;
 
                 macro_rules! print_err {
@@ -1096,7 +1112,7 @@ impl ChatContext {
                     ChatError::Client(err) => match err {
                         // Errors from attempting to send too large of a conversation history. In
                         // this case, attempt to automatically compact the history for the user.
-                        crate::api_client::ApiClientError::ContextWindowOverflow => {
+                        crate::api_client::ApiClientError::ContextWindowOverflow { .. } => {
                             if !self.conversation_state.can_create_summary_request().await {
                                 execute!(
                                     self.output,
@@ -1135,10 +1151,10 @@ impl ChatContext {
                                 help: false,
                             });
                         },
-                        crate::api_client::ApiClientError::QuotaBreach(msg) => {
-                            print_err!(msg, err);
+                        crate::api_client::ApiClientError::QuotaBreach { message, .. } => {
+                            print_err!(message, err);
                         },
-                        crate::api_client::ApiClientError::ModelOverloadedError { request_id } => {
+                        crate::api_client::ApiClientError::ModelOverloadedError { request_id, .. } => {
                             queue!(
                                 self.output,
                                 style::SetAttribute(Attribute::Bold),
@@ -1162,7 +1178,7 @@ impl ChatContext {
                                 style::SetForegroundColor(Color::Reset),
                             )?;
                         },
-                        crate::api_client::ApiClientError::MonthlyLimitReached => {
+                        crate::api_client::ApiClientError::MonthlyLimitReached { .. } => {
                             let subscription_status = get_subscription_status(database).await;
                             if subscription_status.is_err() {
                                 execute!(
@@ -1303,10 +1319,11 @@ impl ChatContext {
                     TelemetryResult::Failed,
                     Some(reason),
                     Some(reason_desc),
+                    e.status_code(),
                 )
                 .await;
                 match e {
-                    crate::api_client::ApiClientError::ContextWindowOverflow => {
+                    crate::api_client::ApiClientError::ContextWindowOverflow { .. } => {
                         self.conversation_state.clear(true);
                         if self.interactive {
                             self.spinner.take();
@@ -1353,6 +1370,7 @@ impl ChatContext {
                             TelemetryResult::Failed,
                             Some(reason),
                             Some(reason_desc),
+                            err.status_code(),
                         )
                         .await;
                         return Err(err.into());
@@ -1371,8 +1389,16 @@ impl ChatContext {
             )?;
         }
 
-        self.send_chat_telemetry(database, telemetry, request_id, TelemetryResult::Succeeded, None, None)
-            .await;
+        self.send_chat_telemetry(
+            database,
+            telemetry,
+            request_id,
+            TelemetryResult::Succeeded,
+            None,
+            None,
+            None,
+        )
+        .await;
 
         self.conversation_state.replace_history_with_summary(summary.clone());
 
@@ -3699,6 +3725,7 @@ impl ChatContext {
                         TelemetryResult::Failed,
                         Some(reason),
                         Some(reason_desc),
+                        recv_error.status_code(),
                     )
                     .await;
 
@@ -3810,8 +3837,16 @@ impl ChatContext {
             }
 
             if ended {
-                self.send_chat_telemetry(database, telemetry, request_id, TelemetryResult::Succeeded, None, None)
-                    .await;
+                self.send_chat_telemetry(
+                    database,
+                    telemetry,
+                    request_id,
+                    TelemetryResult::Succeeded,
+                    None,
+                    None,
+                    None,
+                )
+                .await;
 
                 if self.interactive
                     && database
@@ -4196,6 +4231,7 @@ impl ChatContext {
         Ok(())
     }
 
+    #[allow(clippy::too_many_arguments)]
     async fn send_chat_telemetry(
         &self,
         database: &Database,
@@ -4204,6 +4240,7 @@ impl ChatContext {
         result: TelemetryResult,
         reason: Option<String>,
         reason_desc: Option<String>,
+        status_code: Option<u16>,
     ) {
         telemetry
             .send_chat_added_message(
@@ -4215,6 +4252,7 @@ impl ChatContext {
                 result,
                 reason,
                 reason_desc,
+                status_code,
                 self.conversation_state.model.clone(),
             )
             .await
@@ -4227,6 +4265,7 @@ impl ChatContext {
         telemetry: &TelemetryThread,
         reason: String,
         reason_desc: Option<String>,
+        status_code: Option<u16>,
     ) {
         telemetry
             .send_response_error(
@@ -4236,6 +4275,7 @@ impl ChatContext {
                 TelemetryResult::Failed,
                 Some(reason),
                 reason_desc,
+                status_code,
             )
             .await
             .ok();

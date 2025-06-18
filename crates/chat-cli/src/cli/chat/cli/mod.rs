@@ -32,6 +32,7 @@ use crate::cli::chat::{
     ChatSession,
     ChatState,
 };
+use crate::cli::issue;
 use crate::database::Database;
 use crate::platform::Context;
 use crate::telemetry::TelemetryThread;
@@ -52,11 +53,14 @@ pub enum SlashCommand {
     #[command(subcommand)]
     Context(ContextSubcommand),
     /// Open $EDITOR (defaults to vi) to compose a prompt
+    #[command(name = "editor")]
     PromptEditor(EditorArgs),
     /// Summarize the conversation to free up context space
     Compact(CompactArgs),
     /// View and manage tools and permissions
     Tools(ToolsArgs),
+    /// Create a new Github issue
+    Issue(issue::IssueArgs),
     /// View and retrieve prompts
     Prompts(PromptsArgs),
     /// View and manage context hooks
@@ -91,6 +95,15 @@ impl SlashCommand {
             Self::PromptEditor(args) => args.execute(session).await,
             Self::Compact(args) => args.execute(ctx, database, telemetry, session).await,
             Self::Tools(args) => args.execute(session).await,
+            Self::Issue(args) => {
+                if let Err(err) = args.execute().await {
+                    return Err(ChatError::Custom(err.to_string().into()));
+                }
+
+                Ok(ChatState::PromptUser {
+                    skip_printing_tools: true,
+                })
+            },
             Self::Prompts(args) => args.execute(session).await,
             Self::Hooks(args) => args.execute(ctx, session).await,
             Self::Usage(args) => args.execute(ctx, session).await,

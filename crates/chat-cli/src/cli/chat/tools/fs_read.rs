@@ -93,7 +93,7 @@ impl FsImage {
                 if !is_supported_image_type(&processed_path) {
                     bail!("'{}' is not a supported image type", &processed_path);
                 }
-                let is_file = ctx.fs().symlink_metadata(&processed_path).await?.is_file();
+                let is_file = ctx.fs.symlink_metadata(&processed_path).await?.is_file();
                 if !is_file {
                     bail!("'{}' is not a file", &processed_path);
                 }
@@ -141,7 +141,7 @@ impl FsLine {
         if !path.exists() {
             bail!("'{}' does not exist", self.path);
         }
-        let is_file = ctx.fs().symlink_metadata(&path).await?.is_file();
+        let is_file = ctx.fs.symlink_metadata(&path).await?.is_file();
         if !is_file {
             bail!("'{}' is not a file", self.path);
         }
@@ -150,7 +150,7 @@ impl FsLine {
 
     pub async fn queue_description(&self, ctx: &Context, updates: &mut impl Write) -> Result<()> {
         let path = sanitize_path_tool_arg(ctx, &self.path);
-        let file_bytes = ctx.fs().read(&path).await?;
+        let file_bytes = ctx.fs.read(&path).await?;
         let file_content = String::from_utf8_lossy(&file_bytes);
         let line_count = file_content.lines().count();
         queue!(
@@ -191,7 +191,7 @@ impl FsLine {
     pub async fn invoke(&self, ctx: &Context, _updates: &mut impl Write) -> Result<InvokeOutput> {
         let path = sanitize_path_tool_arg(ctx, &self.path);
         debug!(?path, "Reading");
-        let file_bytes = ctx.fs().read(&path).await?;
+        let file_bytes = ctx.fs.read(&path).await?;
         let file_content = String::from_utf8_lossy(&file_bytes);
         let line_count = file_content.lines().count();
         let (start, end) = (
@@ -256,11 +256,11 @@ impl FsSearch {
 
     pub async fn validate(&mut self, ctx: &Context) -> Result<()> {
         let path = sanitize_path_tool_arg(ctx, &self.path);
-        let relative_path = format_path(ctx.env().current_dir()?, &path);
+        let relative_path = format_path(ctx.env.current_dir()?, &path);
         if !path.exists() {
             bail!("File not found: {}", relative_path);
         }
-        if !ctx.fs().symlink_metadata(path).await?.is_file() {
+        if !ctx.fs.symlink_metadata(path).await?.is_file() {
             bail!("Path is not a file: {}", relative_path);
         }
         if self.pattern.is_empty() {
@@ -289,7 +289,7 @@ impl FsSearch {
         let file_path = sanitize_path_tool_arg(ctx, &self.path);
         let pattern = &self.pattern;
 
-        let file_bytes = ctx.fs().read(&file_path).await?;
+        let file_bytes = ctx.fs.read(&file_path).await?;
         let file_content = String::from_utf8_lossy(&file_bytes);
         let lines: Vec<&str> = LinesWithEndings::from(&file_content).collect();
 
@@ -374,11 +374,11 @@ impl FsDirectory {
 
     pub async fn validate(&mut self, ctx: &Context) -> Result<()> {
         let path = sanitize_path_tool_arg(ctx, &self.path);
-        let relative_path = format_path(ctx.env().current_dir()?, &path);
+        let relative_path = format_path(ctx.env.current_dir()?, &path);
         if !path.exists() {
             bail!("Directory not found: {}", relative_path);
         }
-        if !ctx.fs().symlink_metadata(path).await?.is_dir() {
+        if !ctx.fs.symlink_metadata(path).await?.is_dir() {
             bail!("Path is not a directory: {}", relative_path);
         }
         Ok(())
@@ -411,7 +411,7 @@ impl FsDirectory {
             if depth > max_depth {
                 break;
             }
-            let mut read_dir = ctx.fs().read_dir(path).await?;
+            let mut read_dir = ctx.fs.read_dir(path).await?;
 
             #[cfg(windows)]
             while let Some(ent) = read_dir.next_entry().await? {

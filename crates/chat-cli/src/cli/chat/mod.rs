@@ -24,7 +24,6 @@ use std::collections::{
 };
 use std::io::Write;
 use std::process::ExitCode;
-use std::sync::Arc;
 use std::time::Duration;
 
 use amzn_codewhisperer_client::types::SubscriptionStatus;
@@ -32,7 +31,6 @@ use clap::{
     Args,
     Parser,
 };
-use consts::DUMMY_TOOL_NAME;
 use context::ContextManager;
 pub use conversation::ConversationState;
 use conversation::TokenWarningLevel;
@@ -108,7 +106,10 @@ use util::{
 use winnow::Partial;
 use winnow::stream::Offset;
 
-use crate::api_client::clients::SendMessageOutput;
+use crate::api_client::clients::{
+    SendMessageOutput,
+    StreamingClient,
+};
 use crate::api_client::model::{
     ChatResponseStream,
     Tool as FigTool,
@@ -117,7 +118,6 @@ use crate::api_client::model::{
 use crate::api_client::{
     ApiClientError,
     Client,
-    StreamingClient,
 };
 use crate::auth::AuthError;
 use crate::auth::builder_id::is_idc_user;
@@ -1146,6 +1146,9 @@ impl ChatSession {
         database: &Database,
         skip_printing_tools: bool,
     ) -> Result<ChatState, ChatError> {
+        #[cfg(windows)]
+        let _ = database;
+
         execute!(self.stderr, cursor::Show)?;
 
         // Check token usage and display warnings if needed
@@ -1189,6 +1192,10 @@ impl ChatSession {
         // q session unless we do this in prompt_user... unless you can find a better way)
         #[cfg(unix)]
         if let Some(ref context_manager) = self.conversation.context_manager {
+            use std::sync::Arc;
+
+            use crate::cli::chat::consts::DUMMY_TOOL_NAME;
+
             let tool_names = self
                 .conversation
                 .tool_manager
@@ -1200,6 +1207,7 @@ impl ChatSession {
             self.input_source
                 .put_skim_command_selector(database, Arc::new(context_manager.clone()), tool_names);
         }
+
         execute!(
             self.stderr,
             style::SetForegroundColor(Color::Reset),

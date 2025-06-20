@@ -151,7 +151,7 @@ impl Settings {
         self.get(key).and_then(|value| value.as_i64())
     }
 
-    async fn save_to_file(&self) -> Result<(), DatabaseError> {
+    pub async fn save_to_file(&self) -> Result<(), DatabaseError> {
         if cfg!(test) {
             return Ok(());
         }

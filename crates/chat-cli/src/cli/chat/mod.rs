@@ -2,6 +2,7 @@ mod cli;
 mod consts;
 mod context;
 mod conversation;
+mod error_formatter;
 mod input_source;
 mod message;
 mod parse;

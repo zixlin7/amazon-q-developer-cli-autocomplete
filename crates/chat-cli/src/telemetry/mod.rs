@@ -44,7 +44,10 @@ use uuid::{
     uuid,
 };
 
-use crate::api_client::ApiClient;
+use crate::api_client::{
+    ApiClient,
+    ApiClientError,
+};
 use crate::auth::builder_id::get_start_url_and_region;
 use crate::aws_common::app_name;
 use crate::cli::RootSubcommand;
@@ -72,7 +75,7 @@ pub enum TelemetryError {
     #[error(transparent)]
     Send(Box<mpsc::error::SendError<Event>>),
     #[error(transparent)]
-    ApiClient(#[from] crate::api_client::ApiClientError),
+    ApiClient(Box<crate::api_client::ApiClientError>),
     #[error(transparent)]
     Join(#[from] tokio::task::JoinError),
     #[error(transparent)]
@@ -90,6 +93,12 @@ impl From<amzn_toolkit_telemetry_client::operation::post_metrics::PostMetricsErr
 impl From<Box<mpsc::error::SendError<Event>>> for TelemetryError {
     fn from(value: Box<mpsc::error::SendError<Event>>) -> Self {
         Self::Send(value)
+    }
+}
+
+impl From<ApiClientError> for TelemetryError {
+    fn from(value: ApiClientError) -> Self {
+        Self::ApiClient(Box::new(value))
     }
 }
 
@@ -536,12 +545,12 @@ pub fn get_error_reason<E>(error: &E) -> (String, String)
 where
     E: ReasonCode + 'static,
 {
-    let err_chain = eyre::Chain::new(error);
+    let mut err_chain = eyre::Chain::new(error);
     let reason_desc = if err_chain.len() > 1 {
         format!(
             "'{}' caused by: {}",
             error,
-            err_chain.last().map_or("UNKNOWN".to_string(), |e| e.to_string())
+            err_chain.next_back().map_or("UNKNOWN".to_string(), |e| e.to_string())
         )
     } else {
         error.to_string()

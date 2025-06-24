@@ -432,7 +432,7 @@ impl ApiClient {
                 match event {
                     serde_json::Value::String(assistant_text) => {
                         stream.push(ChatResponseStream::AssistantResponseEvent {
-                            content: assistant_text.to_string(),
+                            content: assistant_text.clone(),
                         });
                     },
                     serde_json::Value::Object(tool_use) => {

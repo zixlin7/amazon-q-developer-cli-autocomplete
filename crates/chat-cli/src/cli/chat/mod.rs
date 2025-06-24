@@ -131,7 +131,7 @@ use crate::cli::chat::cli::prompts::GetPromptError;
 use crate::database::Database;
 use crate::database::settings::Setting;
 use crate::mcp_client::Prompt;
-use crate::platform::Context;
+use crate::os::Os;
 use crate::telemetry::core::ToolUseEventBuilder;
 use crate::telemetry::{
     ReasonCode,
@@ -170,12 +170,7 @@ pub struct ChatArgs {
 }
 
 impl ChatArgs {
-    pub async fn execute(
-        self,
-        ctx: &mut Context,
-        database: &mut Database,
-        telemetry: &TelemetryThread,
-    ) -> Result<ExitCode> {
+    pub async fn execute(self, os: &mut Os, database: &mut Database, telemetry: &TelemetryThread) -> Result<ExitCode> {
         if self.non_interactive && self.input.is_none() {
             bail!("Input must be supplied when --non-interactive is set");
         }
@@ -183,7 +178,7 @@ impl ChatArgs {
         let stdout = std::io::stdout();
         let mut stderr = std::io::stderr();
 
-        let client = match ctx.env.get("Q_MOCK_CHAT_RESPONSE") {
+        let client = match os.env.get("Q_MOCK_CHAT_RESPONSE") {
             Ok(json) => create_stream(serde_json::from_str(std::fs::read_to_string(json)?.as_str())?),
             _ => StreamingClient::new(database).await?,
         };
@@ -210,9 +205,9 @@ impl ChatArgs {
         // If profile is specified, verify it exists before starting the chat
         if let Some(ref profile_name) = self.profile {
             // Create a temporary context manager to check if the profile exists
-            match ContextManager::new(ctx, None).await {
+            match ContextManager::new(os, None).await {
                 Ok(context_manager) => {
-                    let profiles = context_manager.list_profiles(ctx).await?;
+                    let profiles = context_manager.list_profiles(os).await?;
                     if !profiles.contains(profile_name) {
                         bail!(
                             "Profile '{}' does not exist. Available profiles: {}",
@@ -285,7 +280,7 @@ impl ChatArgs {
         }
 
         ChatSession::new(
-            ctx,
+            os,
             database,
             stdout,
             stderr,
@@ -303,7 +298,7 @@ impl ChatArgs {
             !self.non_interactive,
         )
         .await?
-        .spawn(ctx, database, telemetry)
+        .spawn(os, database, telemetry)
         .await
         .map(|_| ExitCode::SUCCESS)
     }
@@ -469,7 +464,7 @@ pub struct ChatSession {
 impl ChatSession {
     #[allow(clippy::too_many_arguments)]
     pub async fn new(
-        ctx: &mut Context,
+        os: &mut Os,
         database: &mut Database,
         stdout: std::io::Stdout,
         stderr: std::io::Stderr,
@@ -517,7 +512,7 @@ impl ChatSession {
             true => {
                 let mut cs = previous_conversation.unwrap();
                 existing_conversation = true;
-                cs.reload_serialized_state(ctx).await;
+                cs.reload_serialized_state(os).await;
                 input = Some(input.unwrap_or("In a few words, summarize our conversation so far.".to_owned()));
                 cs.tool_manager = tool_manager;
                 cs.update_state(true).await;
@@ -526,7 +521,7 @@ impl ChatSession {
             },
             false => {
                 ConversationState::new(
-                    ctx,
+                    os,
                     conversation_id,
                     tool_config,
                     profile,
@@ -561,7 +556,7 @@ impl ChatSession {
 
     pub async fn next(
         &mut self,
-        ctx: &mut Context,
+        os: &mut Os,
         database: &mut Database,
         telemetry: &TelemetryThread,
     ) -> Result<(), ChatError> {
@@ -576,35 +571,35 @@ impl ChatSession {
                     return Ok(());
                 }
 
-                self.prompt_user(ctx, database, skip_printing_tools).await
+                self.prompt_user(os, database, skip_printing_tools).await
             },
             ChatState::HandleInput { input } => {
                 tokio::select! {
-                    res = self.handle_input(ctx, database, telemetry, input) => res,
+                    res = self.handle_input(os, database, telemetry, input) => res,
                     Ok(_) = ctrl_c_stream => Err(ChatError::Interrupted { tool_uses: Some(self.tool_uses.clone()) })
                 }
             },
             ChatState::CompactHistory { prompt, show_summary } => {
                 tokio::select! {
-                    res = self.compact_history(ctx, database, telemetry, prompt, show_summary) => res,
+                    res = self.compact_history(os, database, telemetry, prompt, show_summary) => res,
                     Ok(_) = ctrl_c_stream => Err(ChatError::Interrupted { tool_uses: Some(self.tool_uses.clone()) })
                 }
             },
             ChatState::ExecuteTools => {
                 let tool_uses_clone = self.tool_uses.clone();
                 tokio::select! {
-                    res = self.tool_use_execute(ctx, database, telemetry) => res,
+                    res = self.tool_use_execute(os, database, telemetry) => res,
                     Ok(_) = ctrl_c_stream => Err(ChatError::Interrupted { tool_uses: Some(tool_uses_clone) })
                 }
             },
             ChatState::ValidateTools(tool_uses) => {
                 tokio::select! {
-                    res = self.validate_tools(ctx, telemetry, tool_uses) => res,
+                    res = self.validate_tools(os, telemetry, tool_uses) => res,
                     Ok(_) = ctrl_c_stream => Err(ChatError::Interrupted { tool_uses: None })
                 }
             },
             ChatState::HandleResponseStream(response) => tokio::select! {
-                res = self.handle_response(ctx, database, telemetry, response) => res,
+                res = self.handle_response(os, database, telemetry, response) => res,
                 Ok(_) = ctrl_c_stream => {
                     self.send_chat_telemetry(database, telemetry, None, TelemetryResult::Cancelled, None, None, None).await;
                     Err(ChatError::Interrupted { tool_uses: None })
@@ -648,7 +643,7 @@ impl ChatSession {
                             .abandon_tool_use(tool_uses, "The user interrupted the tool execution.".to_string());
                         let _ = self
                             .conversation
-                            .as_sendable_conversation_state(ctx, &mut self.stderr, false)
+                            .as_sendable_conversation_state(os, &mut self.stderr, false)
                             .await?;
                         self.conversation.push_assistant_message(
                             AssistantMessage::new_response(
@@ -667,7 +662,7 @@ impl ChatSession {
                 // Errors from attempting to send too large of a conversation history. In
                 // this case, attempt to automatically compact the history for the user.
                 ApiClientError::ContextWindowOverflow { .. } => {
-                    if !self.conversation.can_create_summary_request(ctx).await? {
+                    if !self.conversation.can_create_summary_request(os).await? {
                         execute!(
                             self.stderr,
                             style::SetForegroundColor(Color::Red),
@@ -857,7 +852,7 @@ impl Default for ChatState {
 }
 
 impl ChatSession {
-    async fn spawn(&mut self, ctx: &mut Context, database: &mut Database, telemetry: &TelemetryThread) -> Result<()> {
+    async fn spawn(&mut self, os: &mut Os, database: &mut Database, telemetry: &TelemetryThread) -> Result<()> {
         let is_small_screen = self.terminal_width() < GREETING_BREAK_POINT;
         if database.settings.get_bool(Setting::ChatGreetingEnabled).unwrap_or(true) {
             let welcome_text = match self.existing_conversation {
@@ -934,7 +929,7 @@ impl ChatSession {
         }
 
         while !matches!(self.inner, Some(ChatState::Exit)) {
-            self.next(ctx, database, telemetry).await?;
+            self.next(os, database, telemetry).await?;
         }
 
         Ok(())
@@ -947,7 +942,7 @@ impl ChatSession {
     #[allow(clippy::too_many_arguments)]
     async fn compact_history(
         &mut self,
-        ctx: &Context,
+        os: &Os,
         database: &mut Database,
         telemetry: &TelemetryThread,
         custom_prompt: Option<String>,
@@ -972,7 +967,7 @@ impl ChatSession {
         // Send a request for summarizing the history.
         let summary_state = self
             .conversation
-            .create_summary_request(ctx, custom_prompt.as_ref())
+            .create_summary_request(os, custom_prompt.as_ref())
             .await?;
 
         execute!(self.stderr, cursor::Hide, style::Print("\n"))?;
@@ -1136,7 +1131,7 @@ impl ChatSession {
                 self.client
                     .send_message(
                         self.conversation
-                            .as_sendable_conversation_state(ctx, &mut self.stderr, false)
+                            .as_sendable_conversation_state(os, &mut self.stderr, false)
                             .await?,
                     )
                     .await?,
@@ -1152,7 +1147,7 @@ impl ChatSession {
     /// Read input from the user.
     async fn prompt_user(
         &mut self,
-        ctx: &Context,
+        os: &Os,
         database: &Database,
         skip_printing_tools: bool,
     ) -> Result<ChatState, ChatError> {
@@ -1164,8 +1159,8 @@ impl ChatSession {
         // Check token usage and display warnings if needed
         if self.pending_tool_index.is_none() {
             // Only display warnings when not waiting for tool approval
-            if self.conversation.can_create_summary_request(ctx).await? {
-                if let Err(err) = self.display_char_warnings(ctx).await {
+            if self.conversation.can_create_summary_request(os).await? {
+                if let Err(err) = self.display_char_warnings(os).await {
                     warn!("Failed to display character limit warnings: {}", err);
                 }
             }
@@ -1235,7 +1230,7 @@ impl ChatSession {
 
     async fn handle_input(
         &mut self,
-        ctx: &mut Context,
+        os: &mut Os,
         database: &mut Database,
         telemetry: &TelemetryThread,
         mut user_input: String,
@@ -1247,7 +1242,7 @@ impl ChatSession {
             args.insert(0, "q".to_owned());
             match SlashCommand::try_parse_from(args) {
                 Ok(command) => {
-                    match command.execute(ctx, database, telemetry, self).await {
+                    match command.execute(os, database, telemetry, self).await {
                         Ok(chat_state) if matches!(chat_state, ChatState::Exit) => return Ok(chat_state),
                         Err(err) => {
                             queue!(
@@ -1335,7 +1330,7 @@ impl ChatSession {
 
             let conv_state = self
                 .conversation
-                .as_sendable_conversation_state(ctx, &mut self.stderr, true)
+                .as_sendable_conversation_state(os, &mut self.stderr, true)
                 .await?;
             self.send_tool_use_telemetry(telemetry).await;
 
@@ -1353,7 +1348,7 @@ impl ChatSession {
 
     async fn tool_use_execute(
         &mut self,
-        ctx: &mut Context,
+        os: &mut Os,
         database: &Database,
         telemetry: &TelemetryThread,
     ) -> Result<ChatState, ChatError> {
@@ -1369,7 +1364,7 @@ impl ChatSession {
             // If there is an override, we will use it. Otherwise fall back to Tool's default.
             let allowed = self.tool_permissions.trust_all
                 || (self.tool_permissions.has(&tool.name) && self.tool_permissions.is_trusted(&tool.name))
-                || !tool.tool.requires_acceptance(ctx);
+                || !tool.tool.requires_acceptance(os);
 
             if database
                 .settings
@@ -1381,7 +1376,7 @@ impl ChatSession {
 
             // TODO: Control flow is hacky here because of borrow rules
             let _ = tool;
-            self.print_tool_description(ctx, i, allowed).await?;
+            self.print_tool_description(os, i, allowed).await?;
             let tool = &mut self.tool_uses[i];
 
             if allowed {
@@ -1405,7 +1400,7 @@ impl ChatSession {
             tool_telemetry = tool_telemetry.and_modify(|ev| ev.is_accepted = true);
 
             let tool_start = std::time::Instant::now();
-            let invoke_result = tool.tool.invoke(ctx, &mut self.stdout).await;
+            let invoke_result = tool.tool.invoke(os, &mut self.stdout).await;
 
             if self.spinner.is_some() {
                 queue!(
@@ -1523,7 +1518,7 @@ impl ChatSession {
             self.client
                 .send_message(
                     self.conversation
-                        .as_sendable_conversation_state(ctx, &mut self.stderr, false)
+                        .as_sendable_conversation_state(os, &mut self.stderr, false)
                         .await?,
                 )
                 .await?,
@@ -1532,7 +1527,7 @@ impl ChatSession {
 
     async fn handle_response(
         &mut self,
-        ctx: &mut Context,
+        os: &mut Os,
         database: &mut Database,
         telemetry: &TelemetryThread,
         response: SendMessageOutput,
@@ -1644,7 +1639,7 @@ impl ChatSession {
                                 self.client
                                     .send_message(
                                         self.conversation
-                                            .as_sendable_conversation_state(ctx, &mut self.stderr, false)
+                                            .as_sendable_conversation_state(os, &mut self.stderr, false)
                                             .await?,
                                     )
                                     .await?,
@@ -1674,7 +1669,7 @@ impl ChatSession {
                                 self.client
                                     .send_message(
                                         self.conversation
-                                            .as_sendable_conversation_state(ctx, &mut self.stderr, false)
+                                            .as_sendable_conversation_state(os, &mut self.stderr, false)
                                             .await?,
                                     )
                                     .await?,
@@ -1785,7 +1780,7 @@ impl ChatSession {
 
     async fn validate_tools(
         &mut self,
-        ctx: &Context,
+        os: &Os,
         telemetry: &TelemetryThread,
         tool_uses: Vec<AssistantToolUse>,
     ) -> Result<ChatState, ChatError> {
@@ -1807,7 +1802,7 @@ impl ChatSession {
                     // Apply non-Q-generated context to tools
                     self.contextualize_tool(&mut tool);
 
-                    match tool.validate(ctx).await {
+                    match tool.validate(os).await {
                         Ok(()) => {
                             tool_telemetry.is_valid = Some(true);
                             queued_tools.push(QueuedTool {
@@ -1880,7 +1875,7 @@ impl ChatSession {
                 .client
                 .send_message(
                     self.conversation
-                        .as_sendable_conversation_state(ctx, &mut self.stderr, false)
+                        .as_sendable_conversation_state(os, &mut self.stderr, false)
                         .await?,
                 )
                 .await?;
@@ -1910,12 +1905,7 @@ impl ChatSession {
         }
     }
 
-    async fn print_tool_description(
-        &mut self,
-        ctx: &Context,
-        tool_index: usize,
-        trusted: bool,
-    ) -> Result<(), ChatError> {
+    async fn print_tool_description(&mut self, os: &Os, tool_index: usize, trusted: bool) -> Result<(), ChatError> {
         let tool_use = &self.tool_uses[tool_index];
 
         queue!(
@@ -1949,7 +1939,7 @@ impl ChatSession {
 
         tool_use
             .tool
-            .queue_description(ctx, &mut self.stdout)
+            .queue_description(os, &mut self.stdout)
             .await
             .map_err(|e| ChatError::Custom(format!("failed to print tool, `{}`: {}", tool_use.name, e).into()))?;
 
@@ -2017,8 +2007,8 @@ impl ChatSession {
     }
 
     /// Display character limit warnings based on current conversation size
-    async fn display_char_warnings(&mut self, ctx: &Context) -> Result<(), ChatError> {
-        let warning_level = self.conversation.get_token_warning_level(ctx).await?;
+    async fn display_char_warnings(&mut self, os: &Os) -> Result<(), ChatError> {
+        let warning_level = self.conversation.get_token_warning_level(os).await?;
 
         match warning_level {
             TokenWarningLevel::Critical => {
@@ -2235,11 +2225,11 @@ where
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::platform::Env;
+    use crate::os::Env;
 
     #[tokio::test]
     async fn test_flow() {
-        let mut ctx = Context::new();
+        let mut os = Os::new();
         let test_client = create_stream(serde_json::json!([
             [
                 "Sure, I'll create a file for you",
@@ -2266,7 +2256,7 @@ mod tests {
         let tool_config = serde_json::from_str::<HashMap<String, ToolSpec>>(include_str!("tools/tool_index.json"))
             .expect("Tools failed to load");
         ChatSession::new(
-            &mut ctx,
+            &mut os,
             &mut database,
             std::io::stdout(),
             std::io::stderr(),
@@ -2289,17 +2279,17 @@ mod tests {
         )
         .await
         .unwrap()
-        .spawn(&mut ctx, &mut database, &telemetry)
+        .spawn(&mut os, &mut database, &telemetry)
         .await
         .unwrap();
 
-        assert_eq!(ctx.fs.read_to_string("/file.txt").await.unwrap(), "Hello, world!\n");
+        assert_eq!(os.fs.read_to_string("/file.txt").await.unwrap(), "Hello, world!\n");
     }
 
     #[tokio::test]
     async fn test_flow_tool_permissions() {
         // let _ = tracing_subscriber::fmt::try_init();
-        let mut ctx = Context::new();
+        let mut os = Os::new();
         let test_client = create_stream(serde_json::json!([
             [
                 "Ok",
@@ -2401,7 +2391,7 @@ mod tests {
         let tool_config = serde_json::from_str::<HashMap<String, ToolSpec>>(include_str!("tools/tool_index.json"))
             .expect("Tools failed to load");
         ChatSession::new(
-            &mut ctx,
+            &mut os,
             &mut database,
             std::io::stdout(),
             std::io::stderr(),
@@ -2437,21 +2427,21 @@ mod tests {
         )
         .await
         .unwrap()
-        .spawn(&mut ctx, &mut database, &telemetry)
+        .spawn(&mut os, &mut database, &telemetry)
         .await
         .unwrap();
 
-        assert_eq!(ctx.fs.read_to_string("/file2.txt").await.unwrap(), "Hello, world!\n");
-        assert_eq!(ctx.fs.read_to_string("/file3.txt").await.unwrap(), "Hello, world!\n");
-        assert!(!ctx.fs.exists("/file4.txt"));
-        assert_eq!(ctx.fs.read_to_string("/file5.txt").await.unwrap(), "Hello, world!\n");
-        assert!(!ctx.fs.exists("/file6.txt"));
+        assert_eq!(os.fs.read_to_string("/file2.txt").await.unwrap(), "Hello, world!\n");
+        assert_eq!(os.fs.read_to_string("/file3.txt").await.unwrap(), "Hello, world!\n");
+        assert!(!os.fs.exists("/file4.txt"));
+        assert_eq!(os.fs.read_to_string("/file5.txt").await.unwrap(), "Hello, world!\n");
+        assert!(!os.fs.exists("/file6.txt"));
     }
 
     #[tokio::test]
     async fn test_flow_multiple_tools() {
         // let _ = tracing_subscriber::fmt::try_init();
-        let mut ctx = Context::new();
+        let mut os = Os::new();
         let test_client = create_stream(serde_json::json!([
             [
                 "Sure, I'll create a file for you",
@@ -2511,7 +2501,7 @@ mod tests {
         let tool_config = serde_json::from_str::<HashMap<String, ToolSpec>>(include_str!("tools/tool_index.json"))
             .expect("Tools failed to load");
         ChatSession::new(
-            &mut ctx,
+            &mut os,
             &mut database,
             std::io::stdout(),
             std::io::stderr(),
@@ -2538,20 +2528,20 @@ mod tests {
         )
         .await
         .unwrap()
-        .spawn(&mut ctx, &mut database, &telemetry)
+        .spawn(&mut os, &mut database, &telemetry)
         .await
         .unwrap();
 
-        assert_eq!(ctx.fs.read_to_string("/file1.txt").await.unwrap(), "Hello, world!\n");
-        assert_eq!(ctx.fs.read_to_string("/file2.txt").await.unwrap(), "Hello, world!\n");
-        assert_eq!(ctx.fs.read_to_string("/file3.txt").await.unwrap(), "Hello, world!\n");
-        assert_eq!(ctx.fs.read_to_string("/file4.txt").await.unwrap(), "Hello, world!\n");
+        assert_eq!(os.fs.read_to_string("/file1.txt").await.unwrap(), "Hello, world!\n");
+        assert_eq!(os.fs.read_to_string("/file2.txt").await.unwrap(), "Hello, world!\n");
+        assert_eq!(os.fs.read_to_string("/file3.txt").await.unwrap(), "Hello, world!\n");
+        assert_eq!(os.fs.read_to_string("/file4.txt").await.unwrap(), "Hello, world!\n");
     }
 
     #[tokio::test]
     async fn test_flow_tools_trust_all() {
         // let _ = tracing_subscriber::fmt::try_init();
-        let mut ctx = Context::new();
+        let mut os = Os::new();
         let test_client = create_stream(serde_json::json!([
             [
                 "Sure, I'll create a file for you",
@@ -2593,7 +2583,7 @@ mod tests {
         let tool_config = serde_json::from_str::<HashMap<String, ToolSpec>>(include_str!("tools/tool_index.json"))
             .expect("Tools failed to load");
         ChatSession::new(
-            &mut ctx,
+            &mut os,
             &mut database,
             std::io::stdout(),
             std::io::stderr(),
@@ -2618,12 +2608,12 @@ mod tests {
         )
         .await
         .unwrap()
-        .spawn(&mut ctx, &mut database, &telemetry)
+        .spawn(&mut os, &mut database, &telemetry)
         .await
         .unwrap();
 
-        assert_eq!(ctx.fs.read_to_string("/file1.txt").await.unwrap(), "Hello, world!\n");
-        assert!(!ctx.fs.exists("/file2.txt"));
+        assert_eq!(os.fs.read_to_string("/file1.txt").await.unwrap(), "Hello, world!\n");
+        assert!(!os.fs.exists("/file2.txt"));
     }
 
     #[test]
@@ -2643,7 +2633,7 @@ mod tests {
 
     #[tokio::test]
     async fn test_subscribe_flow() {
-        let mut ctx = Context::new();
+        let mut os = Os::new();
 
         let env = Env::new();
         let mut database = Database::new().await.unwrap();
@@ -2653,7 +2643,7 @@ mod tests {
         let tool_config = serde_json::from_str::<HashMap<String, ToolSpec>>(include_str!("tools/tool_index.json"))
             .expect("Tools failed to load");
         ChatSession::new(
-            &mut ctx,
+            &mut os,
             &mut database,
             std::io::stdout(),
             std::io::stderr(),
@@ -2672,7 +2662,7 @@ mod tests {
         )
         .await
         .unwrap()
-        .spawn(&mut ctx, &mut database, &telemetry)
+        .spawn(&mut os, &mut database, &telemetry)
         .await
         .unwrap();
     }

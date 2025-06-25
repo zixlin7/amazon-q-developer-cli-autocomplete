@@ -6,6 +6,7 @@ mod error_formatter;
 mod input_source;
 mod message;
 mod parse;
+use std::path::MAIN_SEPARATOR;
 mod parser;
 mod prompt;
 mod prompt_parser;
@@ -136,6 +137,18 @@ use crate::telemetry::{
 const LIMIT_REACHED_TEXT: &str = color_print::cstr! { "You've used all your free requests for this month. You have two options:
 1. Upgrade to a paid subscription for increased limits. See our Pricing page for what's included> <blue!>https://aws.amazon.com/q/developer/pricing/</blue!>
 2. Wait until next month when your limit automatically resets." };
+
+pub const EXTRA_HELP: &str = color_print::cstr! {"
+<cyan,em>MCP:</cyan,em>
+<black!>You can now configure the Amazon Q CLI to use MCP servers. \nLearn how: https://docs.aws.amazon.com/en_us/amazonq/latest/qdeveloper-ug/command-line-mcp.html</black!>
+
+<cyan,em>Tips:</cyan,em>
+<em>!{command}</em>            <black!>Quickly execute a command in your current session</black!>
+<em>Ctrl(^) + j</em>           <black!>Insert new-line to provide multi-line prompt. Alternatively, [Alt(⌥) + Enter(⏎)]</black!>
+<em>Ctrl(^) + s</em>           <black!>Fuzzy search commands and context files. Use Tab to select multiple items.</black!>
+                      <black!>Change the keybind to ctrl+x with: q settings chat.skimCommandKey x (where x is any key)</black!>
+<em>chat.editMode</em>         <black!>Set editing mode (vim or emacs) using: q settings chat.editMode vi/emacs</black!>
+"};
 
 #[derive(Debug, Clone, PartialEq, Eq, Default, Args)]
 pub struct ChatArgs {
@@ -1210,6 +1223,22 @@ impl ChatSession {
         queue!(self.stderr, style::Print('\n'))?;
 
         let input = user_input.trim();
+
+        // handle image path
+        if input.starts_with('/') {
+            if let Some(after_slash) = input.strip_prefix('/') {
+                let looks_like_path = after_slash.contains(MAIN_SEPARATOR)
+                    || after_slash.contains('/')
+                    || after_slash.contains('\\')
+                    || after_slash.contains('.');
+
+                if looks_like_path {
+                    return Ok(ChatState::HandleInput {
+                        input: after_slash.to_string(),
+                    });
+                }
+            }
+        }
         if let Some(mut args) = input.strip_prefix("/").and_then(shlex::split) {
             args.insert(0, "q".to_owned());
             match SlashCommand::try_parse_from(args) {
@@ -1230,7 +1259,7 @@ impl ChatSession {
                     writeln!(self.stderr)?;
                 },
                 Err(err) => {
-                    writeln!(self.stderr, "{}", err)?;
+                    writeln!(self.stderr, "{}", err.render().ansi())?;
                 },
             }
 

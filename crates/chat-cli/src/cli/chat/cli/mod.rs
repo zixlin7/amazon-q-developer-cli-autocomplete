@@ -33,13 +33,14 @@ use crate::cli::chat::{
     ChatError,
     ChatSession,
     ChatState,
+    EXTRA_HELP,
 };
 use crate::cli::issue;
 use crate::os::Os;
 
 /// q (Amazon Q Chat)
 #[derive(Debug, PartialEq, Parser)]
-#[command(color = clap::ColorChoice::Always)]
+#[command(color = clap::ColorChoice::Always, after_long_help = EXTRA_HELP)]
 pub enum SlashCommand {
     /// Quit the application
     #[command(aliases = ["q", "exit"])]
@@ -49,7 +50,7 @@ pub enum SlashCommand {
     /// Manage profiles
     #[command(subcommand)]
     Profile(ProfileSubcommand),
-    /// Manage context files and hooks for the chat session
+    /// Manage context files for the chat session
     #[command(subcommand)]
     Context(ContextSubcommand),
     /// Manage knowledge base for persistent context storage
@@ -62,7 +63,7 @@ pub enum SlashCommand {
     Compact(CompactArgs),
     /// View and manage tools and permissions
     Tools(ToolsArgs),
-    /// Create a new Github issue
+    /// Create a new Github issue or make a feature request
     Issue(issue::IssueArgs),
     /// View and retrieve prompts
     Prompts(PromptsArgs),

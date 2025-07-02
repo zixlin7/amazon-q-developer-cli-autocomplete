@@ -81,6 +81,9 @@ fn should_play_bell() -> bool {
             "gnome-256color",
             "alacritty",
             "iterm2",
+            "eat-truecolor",
+            "eat-256color",
+            "eat-color",
         ];
 
         // Check if the current terminal is in the compatible list

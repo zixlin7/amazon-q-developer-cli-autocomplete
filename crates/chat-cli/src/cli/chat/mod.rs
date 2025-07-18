@@ -39,6 +39,7 @@ use clap::{
     Parser,
 };
 use cli::compact::CompactStrategy;
+use cli::model::select_model;
 use context::ContextManager;
 pub use conversation::ConversationState;
 use conversation::TokenWarningLevel;
@@ -660,6 +661,12 @@ impl ChatSession {
                     Err(ChatError::Interrupted { tool_uses: None })
                 }
             },
+            ChatState::RetryModelOverload => tokio::select! {
+                res = self.retry_model_overload(os) => res,
+                Ok(_) = ctrl_c_stream => {
+                    Err(ChatError::Interrupted { tool_uses: None })
+                }
+            },
             ChatState::Exit => return Ok(()),
         };
 
@@ -776,15 +783,49 @@ impl ChatSession {
                 },
                 ApiClientError::QuotaBreach { message, .. } => (message, Report::from(err), true),
                 ApiClientError::ModelOverloadedError { request_id, .. } => {
+                    if self.interactive {
+                        execute!(
+                            self.stderr,
+                            style::SetAttribute(Attribute::Bold),
+                            style::SetForegroundColor(Color::Red),
+                            style::Print(
+                                "\nThe model you've selected is temporarily unavailable. Please select a different model.\n"
+                            ),
+                            style::SetAttribute(Attribute::Reset),
+                            style::SetForegroundColor(Color::Reset),
+                        )?;
+
+                        if let Some(id) = request_id {
+                            self.conversation
+                                .append_transcript(format!("Model unavailable (Request ID: {})", id));
+                        }
+
+                        self.inner = Some(ChatState::RetryModelOverload);
+
+                        return Ok(());
+                    }
+
+                    // non-interactive throws this error
+                    let model_instruction = "Please relaunch with '--model <model_id>' to use a different model.";
                     let err = format!(
-                        "The model you've selected is temporarily unavailable. Please use '/model' to select a different model and try again.{}\n\n",
+                        "The model you've selected is temporarily unavailable. {}{}\n\n",
+                        model_instruction,
                         match request_id {
                             Some(id) => format!("\n    Request ID: {}", id),
                             None => "".to_owned(),
                         }
                     );
                     self.conversation.append_transcript(err.clone());
-                    ("Amazon Q is having trouble responding right now", eyre!(err), true)
+                    execute!(
+                        self.stderr,
+                        style::SetAttribute(Attribute::Bold),
+                        style::SetForegroundColor(Color::Red),
+                        style::Print("Amazon Q is having trouble responding right now:\n"),
+                        style::Print(format!("    {}\n", err.clone())),
+                        style::SetAttribute(Attribute::Reset),
+                        style::SetForegroundColor(Color::Reset),
+                    )?;
+                    ("Amazon Q is having trouble responding right now", eyre!(err), false)
                 },
                 ApiClientError::MonthlyLimitReached { .. } => {
                     let subscription_status = get_subscription_status(os).await;
@@ -935,6 +976,8 @@ enum ChatState {
         /// Parameters for how to perform the compaction request.
         strategy: CompactStrategy,
     },
+    /// Retry the current request if we encounter a model overloaded error.
+    RetryModelOverload,
     /// Exit the chat.
     Exit,
 }
@@ -2084,6 +2127,35 @@ impl ChatSession {
         self.tool_uses = queued_tools;
         self.pending_tool_index = Some(0);
         Ok(ChatState::ExecuteTools)
+    }
+
+    async fn retry_model_overload(&mut self, os: &mut Os) -> Result<ChatState, ChatError> {
+        match select_model(self) {
+            Ok(Some(_)) => (),
+            Ok(None) => {
+                // User did not select a model, so reset the current request state.
+                self.conversation.enforce_conversation_invariants();
+                self.conversation.reset_next_user_message();
+                self.pending_tool_index = None;
+                return Ok(ChatState::PromptUser {
+                    skip_printing_tools: false,
+                });
+            },
+            Err(err) => return Err(err),
+        }
+
+        let conv_state = self
+            .conversation
+            .as_sendable_conversation_state(os, &mut self.stderr, true)
+            .await?;
+
+        if self.interactive {
+            self.spinner = Some(Spinner::new(Spinners::Dots, "Thinking...".to_owned()));
+        }
+
+        Ok(ChatState::HandleResponseStream(
+            os.client.send_message(conv_state).await?,
+        ))
     }
 
     /// Apply program context to tools that Q may not have.

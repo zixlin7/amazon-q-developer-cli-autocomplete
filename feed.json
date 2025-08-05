@@ -12,6 +12,26 @@
     },
     {
       "type": "release",
+      "date": "2025-08-05",
+      "version": "1.13.2",
+      "title": "Version 1.13.2",
+      "changes": [
+        {
+          "type": "added",
+          "description": "Regex matching for the `toolsSettings.execute_bash.allowedCommands` agent configuration - [#2483](https://github.com/aws/amazon-q-developer-cli/pull/2483)"
+        },
+        {
+          "type": "added",
+          "description": "`/context show` to differentiate between agent and session context - [#2494](https://github.com/aws/amazon-q-developer-cli/pull/2494)"
+        },
+        {
+          "type": "fixed",
+          "description": "Issues with `q mcp` subcommands failing - [#2475](https://github.com/aws/amazon-q-developer-cli/pull/2475)"
+        }
+      ]
+    },
+    {
+      "type": "release",
       "date": "2025-08-01",
       "version": "1.13.1",
       "title": "Version 1.13.1",

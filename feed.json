@@ -18,6 +18,10 @@
       "changes": [
         {
           "type": "added",
+          "description": "A new preview model GPT-OSS-120b from OpenAI - [#2500](https://github.com/aws/amazon-q-developer-cli/pull/2500)"
+        },
+        {
+          "type": "added",
           "description": "Regex matching for the `toolsSettings.execute_bash.allowedCommands` agent configuration - [#2483](https://github.com/aws/amazon-q-developer-cli/pull/2483)"
         },
         {
@@ -27,6 +31,10 @@
         {
           "type": "fixed",
           "description": "Issues with `q mcp` subcommands failing - [#2475](https://github.com/aws/amazon-q-developer-cli/pull/2475)"
+        },
+        {
+          "type": "fixed",
+          "description": "The `knowledge` tool always requiring permission - [#2501](https://github.com/aws/amazon-q-developer-cli/pull/2501)"
         }
       ]
     },

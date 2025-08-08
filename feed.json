@@ -12,7 +12,7 @@
     },
     {
       "type": "release",
-      "date": "2025-08-07",
+      "date": "2025-08-08",
       "version": "1.13.2",
       "title": "Version 1.13.2",
       "changes": [
@@ -33,8 +33,8 @@
           "description": "Issues with `q mcp` subcommands failing - [#2475](https://github.com/aws/amazon-q-developer-cli/pull/2475)"
         },
         {
-          "type": "removed",
-          "description": "The `knowledge` beta tool - [#2513](https://github.com/aws/amazon-q-developer-cli/pull/2513)"
+          "type": "fixed",
+          "description": "The `knowledge` tool always requiring permission - [#2501](https://github.com/aws/amazon-q-developer-cli/pull/2501)"
         }
       ]
     },

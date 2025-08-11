@@ -12,6 +12,34 @@
     },
     {
       "type": "release",
+      "date": "2025-08-11",
+      "version": "1.13.3",
+      "title": "Version 1.13.3",
+      "changes": [
+        {
+          "type": "added",
+          "description": "Support for setting denied shell commands with `toolsSettings.execute_bash.deniedCommands` - [#2512](https://github.com/aws/amazon-q-developer-cli/pull/2512)"
+        },
+        {
+          "type": "added",
+          "description": "Support for setting denied AWS services with `toolsSettings.use_aws.deniedServices` - [#2512](https://github.com/aws/amazon-q-developer-cli/pull/2512)"
+        },
+        {
+          "type": "added",
+          "description": "Support for setting denied file paths for `fs_read` and `fs_write` using `deniedPaths` in `toolsSettings` - [#2512](https://github.com/aws/amazon-q-developer-cli/pull/2512)"
+        },
+        {
+          "type": "added",
+          "description": "Support for setting environment variables in MCP config - [#2241](https://github.com/aws/amazon-q-developer-cli/pull/2241)"
+        },
+        {
+          "type": "fixed",
+          "description": "`q mcp add` from failing when the targeted `mcp.json` file does not exist - [#2561](https://github.com/aws/amazon-q-developer-cli/pull/2561)"
+        }
+      ]
+    },
+    {
+      "type": "release",
       "date": "2025-08-08",
       "version": "1.13.2",
       "title": "Version 1.13.2",

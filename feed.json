@@ -12,6 +12,30 @@
     },
     {
       "type": "release",
+      "date": "2025-08-14",
+      "version": "1.14.0",
+      "title": "Version 1.14.0",
+      "changes": [
+        {
+          "type": "added",
+          "description": "Additional supported models in `q chat`, see `/model` - [#2419](https://github.com/aws/amazon-q-developer-cli/pull/2419)"
+        },
+        {
+          "type": "added",
+          "description": "`--include` and `--exclude` flags for the `/knowledge add` command - [#2545](https://github.com/aws/amazon-q-developer-cli/pull/2545)"
+        },
+        {
+          "type": "added",
+          "description": "Notifications on API retries - [#2607](https://github.com/aws/amazon-q-developer-cli/pull/2607)"
+        },
+        {
+          "type": "fixed",
+          "description": "An issue where `toolSettings` would not be applied unless the tool was in `allowedTools` - [#2606](https://github.com/aws/amazon-q-developer-cli/pull/2606)"
+        }
+      ]
+    },
+    {
+      "type": "release",
       "date": "2025-08-11",
       "version": "1.13.3",
       "title": "Version 1.13.3",

@@ -12,7 +12,7 @@
     },
     {
       "type": "release",
-      "date": "2025-08-14",
+      "date": "2025-08-15",
       "version": "1.14.0",
       "title": "Version 1.14.0",
       "changes": [
@@ -27,10 +27,6 @@
         {
           "type": "added",
           "description": "Notifications on API retries - [#2607](https://github.com/aws/amazon-q-developer-cli/pull/2607)"
-        },
-        {
-          "type": "fixed",
-          "description": "An issue where `toolSettings` would not be applied unless the tool was in `allowedTools` - [#2606](https://github.com/aws/amazon-q-developer-cli/pull/2606)"
         }
       ]
     },

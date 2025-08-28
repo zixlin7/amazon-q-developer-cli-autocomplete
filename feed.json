@@ -12,6 +12,38 @@
     },
     {
       "type": "release",
+      "date": "2025-08-28",
+      "version": "1.15.0",
+      "title": "Version 1.15.0",
+      "changes": [
+        {
+          "type": "added",
+          "description": "A new command `/experiment` for toggling experimental features - [#2711](https://github.com/aws/amazon-q-developer-cli/pull/2711)"
+        },
+        {
+          "type": "added",
+          "description": "A new command `/agent` generate for generating agent config with Q - [#2690](https://github.com/aws/amazon-q-developer-cli/pull/2690)"
+        },
+        {
+          "type": "added",
+          "description": "A new command `/tangent` for going on a tangent without context pollution - [#2634](https://github.com/aws/amazon-q-developer-cli/pull/2634)"
+        },
+        {
+          "type": "added",
+          "description": "A new to-do list tool for handling complex multi-step prompts - [#2533](https://github.com/aws/amazon-q-developer-cli/pull/2533)"
+        },
+        {
+          "type": "added",
+          "description": "Agent-scoped knowledge base and context-specific search - [#2647](https://github.com/aws/amazon-q-developer-cli/pull/2647)"
+        },
+        {
+          "type": "added",
+          "description": "A new tool `introspect` that allows Q CLI to answer questions about itself - [#2677](https://github.com/aws/amazon-q-developer-cli/pull/2677)"
+        }
+      ]
+    },
+    {
+      "type": "release",
       "date": "2025-08-21",
       "version": "1.14.1",
       "title": "Version 1.14.1",
